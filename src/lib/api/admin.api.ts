@@ -2,6 +2,7 @@ import api from "./client";
 import { PagedResponse } from "@/types/api";
 import {
   AdminDashboardResponse,
+  AdminProfileResponse,
   ProviderApplicationResponse,
   ProviderReviewActionRequest,
 } from "@/types/admin";
@@ -10,6 +11,12 @@ import { BookingResponse } from "@/types/booking";
 import { ProviderProfileResponse } from "@/types/provider";
 
 export const adminApi = {
+  getMyProfile: () =>
+    api.get<AdminProfileResponse>("/api/v1/admins/me"),
+
+  updateMyProfile: (formData: FormData) =>
+    api.putFormData<AdminProfileResponse>("/api/v1/admins/me", formData),
+
   getDashboard: () =>
     api.get<AdminDashboardResponse>("/api/v1/admin/dashboard"),
 

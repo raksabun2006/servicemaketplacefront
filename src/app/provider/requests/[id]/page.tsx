@@ -117,9 +117,9 @@ export default function ProviderRequestDetailPage() {
   if (isLoading) {
     return (
       <ProtectedRoute allowedRoles={["PROVIDER"]}>
-        <div className="flex">
+        <div className="flex w-full min-w-0">
           <Sidebar />
-          <div className="flex-1 min-h-[60vh] flex flex-col items-center justify-center space-y-3">
+          <div className="flex-1 min-w-0 min-h-[60vh] flex flex-col items-center justify-center space-y-3">
             <div className="w-10 h-10 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin" />
             <p className="text-xs text-slate-500">{t("loading")}</p>
           </div>
@@ -131,9 +131,9 @@ export default function ProviderRequestDetailPage() {
   if (!request) {
     return (
       <ProtectedRoute allowedRoles={["PROVIDER"]}>
-        <div className="flex">
+        <div className="flex w-full min-w-0">
           <Sidebar />
-          <div className="flex-1 max-w-4xl mx-auto px-4 py-12">
+          <div className="flex-1 min-w-0 max-w-4xl mx-auto px-4 py-12">
             <EmptyState
               title="រកមិនឃើញសំណើសេវាកម្មទេ"
               subtitle="សំណើសេវាកម្មនេះប្រហែលជាត្រូវបានលុប ឬ បិទបញ្ចប់រួចហើយ។"
@@ -152,10 +152,10 @@ export default function ProviderRequestDetailPage() {
 
   return (
     <ProtectedRoute allowedRoles={["PROVIDER"]}>
-      <div className="flex">
+      <div className="flex w-full min-w-0">
         <Sidebar />
 
-        <div className="flex-1 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+        <div className="flex-1 min-w-0 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
           {error && (
             <div className="flex items-center space-x-2 p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs">
               <AlertCircle className="w-4 h-4 shrink-0" />

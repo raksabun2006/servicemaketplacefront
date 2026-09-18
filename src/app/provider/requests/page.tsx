@@ -14,7 +14,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Search, AlertTriangle, Compass } from "lucide-react";
 
 export default function ProviderRequestsPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const [location, setLocation] = useState<Partial<LocationData>>({
     latitude: 11.5435,
@@ -85,14 +85,16 @@ export default function ProviderRequestsPage() {
 
   return (
     <ProtectedRoute allowedRoles={["PROVIDER"]}>
-      <div className="flex">
+      <div className="flex w-full min-w-0">
         <Sidebar />
 
-        <div className="flex-1 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+        <div className="flex-1 min-w-0 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">{t("nearbyRequests")}</h1>
-            <p className="text-xs text-slate-500 mt-1">
-              ស្វែងរកការងារ និងសំណើសេវាកម្មដែលអតិថិជនបានបង្ហោះនៅជិតទីតាំងរបស់អ្នក
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900">{t("nearbyRequests")}</h1>
+            <p className="text-xs sm:text-sm text-slate-500 mt-1">
+              {language === "km"
+                ? "ស្វែងរកការងារ និងសំណើសេវាកម្មដែលអតិថិជនបានបង្ហោះនៅជិតទីតាំងរបស់អ្នក"
+                : "Browse jobs and service requests posted by clients near your location."}
             </p>
           </div>
 

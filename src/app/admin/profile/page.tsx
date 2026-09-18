@@ -6,13 +6,13 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { fileApi } from "@/lib/api/file.api";
+import { adminApi } from "@/lib/api/admin.api";
 import {
   User,
   Mail,
   Phone,
   ShieldCheck,
   Camera,
-  Upload,
   Trash2,
   CheckCircle2,
   AlertCircle,
@@ -28,6 +28,7 @@ export default function AdminProfilePage() {
   const [fullName, setFullName] = useState(user?.fullName || "");
   const [phone, setPhone] = useState(user?.phone || "");
   const [avatarUrl, setAvatarUrl] = useState<string>(user?.avatarUrl || "");
+  const [selectedAvatarFile, setSelectedAvatarFile] = useState<File | null>(null);
 
   // Password state
   const [currentPassword, setCurrentPassword] = useState("");
@@ -40,12 +41,25 @@ export default function AdminProfilePage() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
-    if (user) {
-      setFullName(user.fullName || "");
-      setPhone(user.phone || "");
-      setAvatarUrl(user.avatarUrl || "");
-    }
-  }, [user]);
+    adminApi
+      .getMyProfile()
+      .then((profile) => {
+        if (profile) {
+          setFullName(profile.fullName || "");
+          setPhone(profile.phone || "");
+          if (profile.avatarUrl) {
+            setAvatarUrl(fileApi.getFileUrl(profile.avatarUrl));
+          }
+        }
+      })
+      .catch(() => {
+        if (user) {
+          setFullName(user.fullName || "");
+          setPhone(user.phone || "");
+          setAvatarUrl(user.avatarUrl ? fileApi.getFileUrl(user.avatarUrl) : "");
+        }
+      });
+  }, []);
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -58,24 +72,31 @@ export default function AdminProfilePage() {
 
     const localPreviewUrl = URL.createObjectURL(file);
     setAvatarUrl(localPreviewUrl);
+    setSelectedAvatarFile(file);
 
     try {
       setIsUploadingAvatar(true);
       setErrorMsg(null);
 
-      // Upload file to storage
-      const uploaded = await fileApi.upload(file, "AVATAR");
-      const serverUrl = fileApi.getFileUrl(uploaded.url || uploaded.id);
+      const formData = new FormData();
+      formData.append("fullName", fullName.trim() || user?.fullName || "Admin");
+      if (phone.trim()) {
+        formData.append("phone", phone.trim());
+      }
+      formData.append("avatarUploadFile", file);
 
+      const updated = await adminApi.updateMyProfile(formData);
+      const serverUrl = updated.avatarUrl ? fileApi.getFileUrl(updated.avatarUrl) : localPreviewUrl;
       setAvatarUrl(serverUrl);
+      setSelectedAvatarFile(null);
 
-      // Update auth context & persistent storage
       if (user) {
-        const updatedUser = {
+        updateUser({
           ...user,
-          avatarUrl: serverUrl,
-        };
-        updateUser(updatedUser);
+          fullName: updated.fullName || user.fullName,
+          phone: updated.phone || user.phone,
+          avatarUrl: updated.avatarUrl || user.avatarUrl,
+        });
       }
 
       setSuccessMsg("រូបភាពប្រវត្តិរូបត្រូវបានផ្លាស់ប្តូរដោយជោគជ័យ!");
@@ -91,6 +112,7 @@ export default function AdminProfilePage() {
 
   const handleRemoveAvatar = () => {
     setAvatarUrl("");
+    setSelectedAvatarFile(null);
     if (user) {
       const updatedUser = {
         ...user,
@@ -115,12 +137,28 @@ export default function AdminProfilePage() {
     try {
       setIsSaving(true);
 
+      const formData = new FormData();
+      formData.append("fullName", fullName.trim());
+      if (phone.trim()) {
+        formData.append("phone", phone.trim());
+      }
+      if (selectedAvatarFile) {
+        formData.append("avatarUploadFile", selectedAvatarFile);
+      }
+
+      const updated = await adminApi.updateMyProfile(formData);
+      const serverUrl = updated.avatarUrl ? fileApi.getFileUrl(updated.avatarUrl) : avatarUrl;
+      if (updated.avatarUrl) {
+        setAvatarUrl(serverUrl);
+      }
+      setSelectedAvatarFile(null);
+
       if (user) {
         const updatedUser = {
           ...user,
-          fullName: fullName.trim(),
-          phone: phone.trim() || undefined,
-          avatarUrl: avatarUrl || undefined,
+          fullName: updated.fullName || fullName.trim(),
+          phone: updated.phone || phone.trim() || undefined,
+          avatarUrl: updated.avatarUrl || user.avatarUrl,
         };
         updateUser(updatedUser);
       }

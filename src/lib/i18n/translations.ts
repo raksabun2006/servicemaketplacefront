@@ -14,6 +14,8 @@ export const translations = {
     myBookings: "ការកក់សេវាកម្ម",
     myJobs: "ការងាររបស់ខ្ញុំ",
     findJobs: "រកការងារ",
+    findHelper: "រកអ្នកជួយ",
+    jobs: "ការងារ",
     offers: "សំណើតម្លៃ",
     nearbyRequests: "ការងារនៅជិតអ្នក",
     availability: "ស្ថានភាពការងារ",
@@ -195,6 +197,8 @@ export const translations = {
     phnomPenhCambodia: "រាជធានីភ្នំពេញ កម្ពុជា",
     allRightsReserved: "រក្សាសិទ្ធិគ្រប់យ៉ាង។",
     digitalPlatform: "វេទិកាសេវាកម្មឌីជីថលកម្ពុជា",
+    providerCtaTitle: "តើអ្នកជាអ្នកជំនាញ ឬ ជាងសេវាកម្មមែនទេ?",
+    providerCtaDesc: "បង្កើនចំណូលរបស់អ្នកដោយទទួលការងារពីអតិថិជននៅជិតអ្នក។ ចុះឈ្មោះជាអ្នកផ្តល់សេវាដោយឥតគិតថ្លៃ!",
   },
   en: {
     // Navigation
@@ -209,6 +213,8 @@ export const translations = {
     myBookings: "My Bookings",
     myJobs: "My Jobs",
     findJobs: "Find Jobs",
+    findHelper: "Find Helpers",
+    jobs: "Jobs",
     offers: "Offers",
     nearbyRequests: "Jobs Near You",
     availability: "Availability",
@@ -327,8 +333,8 @@ export const translations = {
     status_PENDING: "Pending",
     status_CONFIRMED: "Confirmed",
     status_ACCEPTED: "Accepted",
-    status_IN_PROGRESS: "Solving",
-    status_COMPLETED: "Solved",
+    status_IN_PROGRESS: "In Progress",
+    status_COMPLETED: "Completed",
     status_CANCELLED: "Cancelled",
     status_REJECTED: "Rejected",
     status_EXPIRED: "Expired",
@@ -390,6 +396,8 @@ export const translations = {
     phnomPenhCambodia: "Phnom Penh, Cambodia",
     allRightsReserved: "All rights reserved.",
     digitalPlatform: "Cambodia Digital Service Platform",
+    providerCtaTitle: "Are you a skilled technician or service provider?",
+    providerCtaDesc: "Grow your business and earn more by connecting with customers near you. Register as a provider for free!",
   },
 };
 

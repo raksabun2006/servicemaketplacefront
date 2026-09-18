@@ -11,6 +11,20 @@ export interface AdminDashboardResponse {
   pendingProviderVerifications?: number;
 }
 
+export interface AdminProfileResponse {
+  id?: string;
+  userId?: string;
+  fullName: string;
+  email: string;
+  phone?: string;
+  avatarUrl?: string;
+  department?: string;
+  position?: string;
+  emergencyContact?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export interface ApplicantDto {
   id: string;
   fullName: string;

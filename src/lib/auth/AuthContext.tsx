@@ -5,6 +5,7 @@ import { AuthResponse, LoginRequest, RegisterRequest, UserResponse, UserRole } f
 import { authApi } from "@/lib/api/auth.api";
 import { providerApi } from "@/lib/api/provider.api";
 import { customerApi } from "@/lib/api/customer.api";
+import { adminApi } from "@/lib/api/admin.api";
 import api from "@/lib/api/client";
 
 interface AuthContextType {
@@ -59,6 +60,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             fullName: cust.fullName || parsedUser.fullName,
             avatarUrl: cust.avatarUrl || parsedUser.avatarUrl,
             phone: cust.phone || parsedUser.phone,
+          };
+          setUser(updated);
+          localStorage.setItem("user", JSON.stringify(updated));
+        }
+      } else if (parsedUser.role === "ADMIN") {
+        const adm = await adminApi.getMyProfile();
+        if (adm) {
+          const updated: UserResponse = {
+            ...parsedUser,
+            fullName: adm.fullName || parsedUser.fullName,
+            avatarUrl: adm.avatarUrl || parsedUser.avatarUrl,
+            phone: adm.phone || parsedUser.phone,
           };
           setUser(updated);
           localStorage.setItem("user", JSON.stringify(updated));

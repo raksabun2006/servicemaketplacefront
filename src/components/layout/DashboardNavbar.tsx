@@ -118,40 +118,26 @@ export const DashboardNavbar: React.FC = () => {
   const drawerLinks = isCustomer ? customerLinks : isProvider ? providerLinks : isAdmin ? adminLinks : [];
 
   return (
-    <header className="sticky top-0 z-40 bg-white border-b border-slate-200">
+    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Left: Mobile Toggle + Logo + Role Tag */}
+          {/* Left: Logo + Role Tag */}
           <div className="flex items-center space-x-3 sm:space-x-4">
-            {/* Mobile Drawer Trigger */}
-            <button
-              onClick={() => setMobileDrawerOpen(!mobileDrawerOpen)}
-              className="md:hidden p-2 rounded-xl text-slate-600 hover:bg-slate-100 transition"
-              aria-label="Toggle menu"
-            >
-              {mobileDrawerOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
-
             {/* Brand Logo */}
-            <Link href={dashboardHomeLink} className="flex items-center space-x-2.5 group">
+            <Link href={dashboardHomeLink} className="flex items-center space-x-2 group shrink-0">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/logo.png"
-                alt="សេវាខ្មែរ Logo"
-                className="w-9 h-9 object-contain group-hover:scale-105 transition-transform"
+                alt="Khmer Service Logo"
+                className="w-8 h-8 sm:w-9 sm:h-9 object-contain group-hover:scale-105 transition-transform"
               />
-              <div className="flex flex-col">
-                <span className="font-bold text-base text-slate-900 leading-tight">
-                  សេវាខ្មែរ
-                </span>
-                <span className="text-[10px] uppercase font-semibold text-blue-600 tracking-wider">
-                  {isCustomer ? "ផ្ទាំងអតិថិជន" : isProvider ? "ផ្ទាំងអ្នកផ្តល់សេវា" : "ផ្ទាំងគ្រប់គ្រង"}
-                </span>
-              </div>
+              <span className="font-bold text-base sm:text-lg text-slate-900 leading-tight whitespace-nowrap">
+                Khmer Service
+              </span>
             </Link>
 
             {/* Role Badge on Desktop */}
-            <div className="hidden sm:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+            <div className="hidden sm:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 whitespace-nowrap">
               {isCustomer ? "អតិថិជន" : isProvider ? "អ្នកផ្តល់សេវា" : "អ្នកគ្រប់គ្រង"}
             </div>
 
@@ -166,7 +152,7 @@ export const DashboardNavbar: React.FC = () => {
           </div>
 
           {/* Right Section Actions */}
-          <div className="flex items-center space-x-2 sm:space-x-3">
+          <div className="flex items-center space-x-1 sm:space-x-2 shrink-0">
             {/* Primary Action Button */}
             {isCustomer && (
               <Link
@@ -188,19 +174,19 @@ export const DashboardNavbar: React.FC = () => {
               </Link>
             )}
 
-            {/* Messages Shortcut */}
+            {/* Messages Shortcut - Hidden on mobile because it's in bottom bar */}
             <Link
               href={isCustomer ? "/customer/messages" : isProvider ? "/provider/messages" : "/admin/dashboard"}
-              className="p-2 text-slate-600 hover:text-blue-600 hover:bg-slate-100 rounded-xl transition relative"
+              className="hidden md:inline-flex p-2 text-slate-600 hover:text-blue-600 hover:bg-slate-100 rounded-xl transition relative"
               title={t("messages")}
             >
               <MessageSquare className="w-4 h-4" />
             </Link>
 
-            {/* Notifications Shortcut */}
+            {/* Notifications Shortcut - Hidden on mobile because it's in drawer/nav */}
             <Link
               href={isCustomer ? "/customer/notifications" : "/provider/dashboard"}
-              className="p-2 text-slate-600 hover:text-blue-600 hover:bg-slate-100 rounded-xl transition relative"
+              className="hidden md:inline-flex p-2 text-slate-600 hover:text-blue-600 hover:bg-slate-100 rounded-xl transition relative"
               title={t("notifications")}
             >
               <Bell className="w-4 h-4" />
@@ -216,7 +202,7 @@ export const DashboardNavbar: React.FC = () => {
             <div className="relative">
               <button
                 onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                className="flex items-center space-x-2 p-1.5 rounded-xl hover:bg-slate-100 transition"
+                className="flex items-center space-x-1 sm:space-x-1.5 p-1 rounded-xl hover:bg-slate-100 transition"
               >
                 {userAvatarUrl ? (
                   /* eslint-disable-next-line @next/next/no-img-element */
@@ -233,7 +219,7 @@ export const DashboardNavbar: React.FC = () => {
                 <span className="hidden md:block text-xs font-semibold text-slate-800 max-w-[100px] truncate">
                   {user?.fullName || "គណនី"}
                 </span>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                <ChevronDown className="w-3.5 h-3.5 text-slate-400 hidden sm:block" />
               </button>
 
               {/* Dropdown Menu */}
@@ -281,6 +267,15 @@ export const DashboardNavbar: React.FC = () => {
                 </div>
               )}
             </div>
+
+            {/* Mobile Drawer Hamburger */}
+            <button
+              onClick={() => setMobileDrawerOpen(!mobileDrawerOpen)}
+              className="md:hidden p-1.5 rounded-lg text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition shrink-0"
+              aria-label="Toggle navigation menu"
+            >
+              {mobileDrawerOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
           </div>
         </div>
       </div>

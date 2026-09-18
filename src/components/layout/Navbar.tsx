@@ -61,26 +61,21 @@ export const Navbar: React.FC = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200">
+    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Brand Logo */}
-          <div className="flex items-center space-x-6">
-            <Link href="/" className="flex items-center space-x-2.5 group">
+          <div className="flex items-center space-x-4 md:space-x-6 min-w-0">
+            <Link href="/" className="flex items-center space-x-2 group shrink-0">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/logo.png"
-                alt="សេវាខ្មែរ Logo"
-                className="w-10 h-10 object-contain group-hover:scale-105 transition-transform"
+                alt="Khmer Service Logo"
+                className="w-8 h-8 sm:w-10 sm:h-10 object-contain group-hover:scale-105 transition-transform"
               />
-              <div className="flex flex-col">
-                <span className="font-bold text-lg text-slate-900 leading-tight">
-                  សេវាខ្មែរ
-                </span>
-                <span className="text-[10px] uppercase tracking-wider font-semibold text-blue-600">
-                  Khmer Services
-                </span>
-              </div>
+              <span className="font-bold text-base sm:text-lg text-slate-900 leading-tight whitespace-nowrap">
+                Khmer Service
+              </span>
             </Link>
 
             {/* Desktop Primary Navigation */}
@@ -121,7 +116,7 @@ export const Navbar: React.FC = () => {
           </div>
 
           {/* Right Section Actions */}
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-1 sm:space-x-2.5 shrink-0">
             {/* Language Switcher with Flags */}
             <LanguageSelector />
 
@@ -149,8 +144,7 @@ export const Navbar: React.FC = () => {
                   </Link>
                 )}
 
-
-                {/* Notifications Bell */}
+                {/* Notifications Bell - Desktop only on header, mobile has bottom nav & drawer */}
                 <Link
                   href={
                     isCustomer
@@ -159,7 +153,7 @@ export const Navbar: React.FC = () => {
                       ? "/provider/messages"
                       : "/admin/dashboard"
                   }
-                  className="relative p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition"
+                  className="hidden md:inline-flex relative p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition"
                 >
                   <Bell className="w-5 h-5" />
                   {unreadNotifications > 0 && (
@@ -169,10 +163,10 @@ export const Navbar: React.FC = () => {
                   )}
                 </Link>
 
-                {/* Messages Icon */}
+                {/* Messages Icon - Desktop only on header, mobile has bottom nav */}
                 <Link
                   href={isCustomer ? "/customer/messages" : isProvider ? "/provider/messages" : "/admin/dashboard"}
-                  className="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition"
+                  className="hidden md:inline-flex p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition"
                 >
                   <MessageSquare className="w-5 h-5" />
                 </Link>
@@ -181,7 +175,7 @@ export const Navbar: React.FC = () => {
                 <div className="relative">
                   <button
                     onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                    className="flex items-center space-x-2 p-1.5 rounded-xl hover:bg-slate-100 transition"
+                    className="flex items-center space-x-1 sm:space-x-2 p-1 rounded-xl hover:bg-slate-100 transition"
                   >
                     <div className="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-sm overflow-hidden shrink-0 border border-slate-200">
                       {user?.avatarUrl ? (
@@ -209,7 +203,7 @@ export const Navbar: React.FC = () => {
                         {user?.role}
                       </span>
                     </div>
-                    <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-400 hidden sm:block" />
                   </button>
 
                   {profileDropdownOpen && (
@@ -376,17 +370,17 @@ export const Navbar: React.FC = () => {
                 </div>
               </>
             ) : (
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-1 sm:space-x-2">
                 <Link
                   href="/login"
-                  className="flex items-center space-x-1 px-3 py-2 text-xs font-semibold text-slate-700 hover:text-slate-900 rounded-lg hover:bg-slate-50 transition"
+                  className="flex items-center space-x-1 px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs font-semibold text-slate-700 hover:text-slate-900 rounded-lg hover:bg-slate-50 transition"
                 >
-                  <LogIn className="w-4 h-4" />
+                  <LogIn className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   <span>{t("login")}</span>
                 </Link>
                 <Link
                   href="/register"
-                  className="flex items-center space-x-1 px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl shadow-sm transition"
+                  className="hidden sm:inline-flex items-center space-x-1 px-3 sm:px-3.5 py-1.5 sm:py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl shadow-sm transition whitespace-nowrap"
                 >
                   <span>{t("register")}</span>
                 </Link>
@@ -396,9 +390,10 @@ export const Navbar: React.FC = () => {
             {/* Mobile menu hamburger */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-slate-600 hover:text-slate-900 rounded-lg"
+              className="md:hidden p-1.5 text-slate-700 hover:text-slate-900 rounded-lg hover:bg-slate-100 transition shrink-0"
+              aria-label="Toggle navigation menu"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
         </div>

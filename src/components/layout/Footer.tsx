@@ -19,17 +19,12 @@ export const Footer: React.FC = () => {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/logo.png"
-                alt="សេវាខ្មែរ Logo"
-                className="w-10 h-10 object-contain bg-white rounded-xl p-0.5 shadow-sm group-hover:scale-105 transition-transform"
+                alt="Khmer Service Logo"
+                className="w-10 h-10 object-contain group-hover:scale-105 transition-transform"
               />
-              <div className="flex flex-col">
-                <span className="font-bold text-lg text-white group-hover:text-blue-400 transition-colors">
-                  សេវាខ្មែរ
-                </span>
-                <span className="text-[10px] uppercase font-semibold text-blue-400 tracking-wider">
-                  {t("cambodiaServicesSubtitle")}
-                </span>
-              </div>
+              <span className="font-bold text-lg text-white group-hover:text-blue-400 transition-colors">
+                Khmer Service
+              </span>
             </Link>
             <p className="text-xs text-slate-400 leading-relaxed">
               {t("footerTagline")}
@@ -140,7 +135,7 @@ export const Footer: React.FC = () => {
 
         {/* Bottom bar */}
         <div className="pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500">
-          <p>© {currentYear} សេវាខ្មែរ (Khmer Services). {t("allRightsReserved")}</p>
+          <p>© {currentYear} Khmer Service. {t("allRightsReserved")}</p>
           <p className="mt-2 sm:mt-0">{t("digitalPlatform")}</p>
         </div>
       </div>

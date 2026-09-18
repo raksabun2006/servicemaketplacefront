@@ -27,7 +27,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     return (
       <div className="min-h-screen flex flex-col bg-slate-50">
         <DashboardNavbar />
-        <main className="flex-1 pb-16 md:pb-0 flex flex-col">{children}</main>
+        <main className="flex-1 pb-24 md:pb-0 flex flex-col">{children}</main>
         <DashboardFooter />
         <MobileNavigation />
       </div>
@@ -35,12 +35,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col">
       <Navbar />
-      <main className="flex-1 pb-16 md:pb-0">{children}</main>
+      <main className="flex-1 pb-24 md:pb-0">{children}</main>
       <Footer />
       <MobileNavigation />
-    </>
+    </div>
   );
 }
 

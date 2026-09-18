@@ -19,31 +19,26 @@ import {
   Wrench,
   Zap,
   Droplets,
-  Paintbrush,
   Wind,
   ShieldCheck,
   Star,
   Users,
   Smartphone,
   Laptop,
-  Car,
   Bike,
   Hammer,
   ArrowRight,
   CheckCircle2,
 } from "lucide-react";
-import { categoryApi } from "@/lib/api/category.api";
-import { CategoryResponse } from "@/types/category";
 
 export default function HomePage() {
   const router = useRouter();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [requests, setRequests] = useState<ServiceRequestSummaryResponse[]>([]);
   const [providers, setProviders] = useState<ProviderProfileResponse[]>([]);
   const [loadingRequests, setLoadingRequests] = useState(true);
   const [loadingProviders, setLoadingProviders] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [fetchedCategories, setFetchedCategories] = useState<CategoryResponse[]>([]);
 
   useEffect(() => {
     serviceRequestApi
@@ -57,15 +52,6 @@ export default function HomePage() {
       .then((res) => setProviders(res.content || []))
       .catch(() => setProviders([]))
       .finally(() => setLoadingProviders(false));
-
-    categoryApi
-      .getActive()
-      .then((data) => {
-        if (data && data.length > 0) {
-          setFetchedCategories(data.slice(0, 10));
-        }
-      })
-      .catch(() => {});
   }, []);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
@@ -92,67 +78,72 @@ export default function HomePage() {
   return (
     <div className="space-y-12 sm:space-y-16 pb-16">
       {/* Problem-Solving Hero Section */}
-      <section className="bg-white border-b border-slate-200/80 pt-8 sm:pt-14 pb-12 sm:pb-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center space-y-6">
-          <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-xs font-semibold text-blue-800">
-            <ShieldCheck className="w-4 h-4 text-blue-600" />
-            <span>មានបញ្ហា? ប្រាប់យើង ហើយយើងជួយស្វែងរកអ្នកដោះស្រាយ។</span>
+      <section className="bg-white border-b border-slate-200/80 pt-10 sm:pt-16 pb-14 sm:pb-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto text-center space-y-7">
+          <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-blue-50 border border-blue-200/90 text-xs font-semibold text-blue-900 shadow-2xs">
+            <ShieldCheck className="w-4 h-4 text-blue-600 shrink-0" />
+            <span>{language === "km" ? "មានបញ្ហា? ប្រាប់យើង ហើយយើងជួយស្វែងរកអ្នកដោះស្រាយ។" : "Have a problem? Tell us and we'll help find the solution."}</span>
           </div>
 
-          <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 leading-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-extrabold tracking-normal text-slate-900 leading-[1.4] sm:leading-[1.45] max-w-3xl mx-auto">
             {t("heroTitle")}
           </h1>
 
-          <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto font-normal leading-relaxed">
-            {t("heroSubtitle")}
-          </p>
+          {/* Scannable Two-Line Subtitle with Strong WCAG AA Contrast */}
+          <div className="text-sm sm:text-base text-slate-700 max-w-2xl mx-auto font-medium leading-[1.8] space-y-1">
+            <p>{language === "km" ? "ប្រាប់យើងពីបញ្ហារបស់អ្នក" : "Tell us what you need help with"}</p>
+            <p className="text-slate-600 font-normal">{language === "km" ? "ស្វែងរកអ្នកជំនាញដែលអាចដោះស្រាយបានរហ័ស និងទុកចិត្តបាន" : "Find trusted local technicians ready to assist you quickly"}</p>
+          </div>
 
-          {/* TWO MAIN OBVIOUS ACTIONS ONLY */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2 max-w-lg mx-auto">
+          {/* TWO MAIN OBVIOUS ACTIONS WITH COLOR + ICON + LABEL & AMPLE PADDING */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3.5 pt-2 max-w-xl mx-auto w-full">
             <Link
               href="/customer/requests/create"
-              className="w-full sm:flex-1 inline-flex items-center justify-center space-x-2 px-6 py-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-base font-bold rounded-2xl shadow-md shadow-blue-500/20 transition group"
+              className="flex-1 inline-flex items-center justify-center space-x-2.5 px-6 py-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-base font-bold rounded-2xl shadow-md shadow-blue-500/20 transition group"
             >
-              <PlusCircle className="w-5 h-5 group-hover:scale-110 transition-transform" />
-              <span>{t("iNeedService")}</span>
+              <PlusCircle className="w-5 h-5 shrink-0 group-hover:scale-110 transition-transform" />
+              <span className="leading-normal">{t("iNeedService")}</span>
             </Link>
 
             <Link
               href="/register?role=PROVIDER"
-              className="w-full sm:flex-1 inline-flex items-center justify-center space-x-2 px-6 py-4 bg-white hover:bg-slate-50 text-slate-800 text-base font-bold rounded-2xl border-2 border-slate-200 transition shadow-2xs group"
+              className="flex-1 inline-flex items-center justify-center space-x-2.5 px-6 py-4 bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-900 text-base font-bold rounded-2xl border-2 border-slate-300 hover:border-blue-400 transition shadow-2xs group"
             >
-              <Wrench className="w-5 h-5 text-blue-600 group-hover:scale-110 transition-transform" />
-              <span>{t("iWantToProvideService")}</span>
+              <Wrench className="w-5 h-5 text-blue-600 shrink-0 group-hover:scale-110 transition-transform" />
+              <span className="leading-normal">{t("iWantToProvideService")}</span>
             </Link>
           </div>
 
-          {/* Problem-Based Input Bar */}
+          {/* Problem-Based Input Bar with High Contrast & 'ស្វែងរក' Action */}
           <div className="max-w-2xl mx-auto pt-4">
             <form
               onSubmit={handleSearchSubmit}
-              className="bg-white rounded-2xl border-2 border-slate-200 focus-within:border-blue-600 shadow-sm p-1.5 flex items-center gap-2 transition hover:shadow-md"
+              className="bg-white rounded-2xl border-2 border-slate-300 focus-within:border-blue-600 shadow-sm p-1.5 sm:p-2 flex items-center gap-2 transition hover:shadow-md"
             >
               <div className="flex-1 flex items-center pl-3">
-                <Search className="w-5 h-5 text-slate-400 shrink-0 mr-2.5" />
+                <Search className="w-5 h-5 text-slate-500 shrink-0 mr-2.5" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="មានបញ្ហាអ្វី? សរសេរនៅទីនេះ... (ឧ. ម៉ាស៊ីនត្រជាក់មិនត្រជាក់)"
-                  className="w-full text-sm text-slate-900 placeholder:text-slate-400 bg-transparent focus:outline-none"
+                  placeholder={language === "km" ? "មានបញ្ហាអ្វី? សរសេរនៅទីនេះ... (ឧ. ម៉ាស៊ីនត្រជាក់មិនត្រជាក់)" : "What's the issue? Type here... (e.g. AC not cooling)"}
+                  className="w-full text-xs sm:text-sm text-slate-900 placeholder:text-slate-500 bg-transparent focus:outline-none leading-relaxed py-1"
                 />
               </div>
               <button
                 type="submit"
-                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold rounded-xl transition shrink-0"
+                className="inline-flex items-center space-x-1.5 px-5 sm:px-6 py-3 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs sm:text-sm font-bold rounded-xl transition shrink-0 shadow-xs"
               >
-                បន្ត
+                <Search className="w-4 h-4 shrink-0" />
+                <span>{language === "km" ? "ស្វែងរក" : "Search"}</span>
               </button>
             </form>
 
-            {/* Quick Common Problem Chips */}
-            <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 mt-3.5 text-xs">
-              <span className="text-[11px] font-semibold text-slate-400">បញ្ហាជួបញឹកញាប់៖</span>
+            {/* Quick Common Problem Chips with Generous Padding and Spacing for Diacritics */}
+            <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 mt-4 text-xs">
+              <span className="text-xs font-bold text-slate-600 shrink-0">
+                {language === "km" ? "បញ្ហាជួបញឹកញាប់៖" : "Common problems:"}
+              </span>
               {commonProblems.slice(0, 5).map((prob) => {
                 const IconComponent = prob.icon;
                 return (
@@ -160,7 +151,7 @@ export default function HomePage() {
                     key={prob.problem}
                     type="button"
                     onClick={() => router.push(`/customer/requests/create?problem=${encodeURIComponent(prob.problem)}&category=${prob.category}`)}
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-100 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 text-slate-700 text-[11px] font-medium rounded-xl border border-slate-200 transition"
+                    className="inline-flex items-center gap-2 px-3.5 py-2.5 bg-slate-100 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 text-slate-800 text-xs font-medium rounded-xl border border-slate-200/90 shadow-2xs transition active:scale-95 leading-normal"
                   >
                     <IconComponent className="w-3.5 h-3.5 text-blue-600 shrink-0" />
                     <span>{prob.label}</span>
@@ -171,18 +162,18 @@ export default function HomePage() {
           </div>
 
           {/* Trust Guarantees */}
-          <div className="pt-8 grid grid-cols-1 sm:grid-cols-3 gap-3 border-t border-slate-100 max-w-2xl mx-auto text-xs text-slate-600">
-            <div className="flex items-center justify-center space-x-2 p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+          <div className="pt-8 grid grid-cols-1 sm:grid-cols-3 gap-3 border-t border-slate-100 max-w-2xl mx-auto text-xs text-slate-700">
+            <div className="flex items-center justify-center space-x-2 p-3 rounded-xl bg-slate-50 border border-slate-200/70">
               <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-              <span className="font-semibold">{t("verifiedIdentity")}</span>
+              <span className="font-semibold text-slate-800">{t("verifiedIdentity")}</span>
             </div>
-            <div className="flex items-center justify-center space-x-2 p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+            <div className="flex items-center justify-center space-x-2 p-3 rounded-xl bg-slate-50 border border-slate-200/70">
               <Star className="w-4 h-4 text-amber-500 shrink-0" />
-              <span className="font-semibold">{t("realCustomerReviews")}</span>
+              <span className="font-semibold text-slate-800">{t("realCustomerReviews")}</span>
             </div>
-            <div className="flex items-center justify-center space-x-2 p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+            <div className="flex items-center justify-center space-x-2 p-3 rounded-xl bg-slate-50 border border-slate-200/70">
               <Users className="w-4 h-4 text-blue-600 shrink-0" />
-              <span className="font-semibold">{t("directFreeContact")}</span>
+              <span className="font-semibold text-slate-800">{t("directFreeContact")}</span>
             </div>
           </div>
         </div>
@@ -190,18 +181,18 @@ export default function HomePage() {
 
       {/* Section 6: បញ្ហាដែលមនុស្សតែងតែត្រូវការជំនួយ */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between mb-5">
+        <div className="flex items-start sm:items-center justify-between gap-3 mb-5">
           <div>
             <h2 className="text-lg sm:text-xl font-bold text-slate-900">
               បញ្ហាដែលមនុស្សតែងតែត្រូវការជំនួយ
             </h2>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="text-xs text-slate-600 mt-1 leading-relaxed">
               ជ្រើសរើសបញ្ហាដែលអ្នកកំពុងជួប ដើម្បីស្វែងរកអ្នកជំនាញមកជួយដោះស្រាយ
             </p>
           </div>
           <Link
             href="/services"
-            className="inline-flex items-center space-x-1 text-xs font-bold text-blue-600 hover:text-blue-700"
+            className="inline-flex items-center space-x-1 text-xs font-bold text-blue-600 hover:text-blue-700 shrink-0 pt-0.5 sm:pt-0"
           >
             <span>មើលបញ្ហាទាំងអស់</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -221,10 +212,10 @@ export default function HomePage() {
                   <Icon className="w-6 h-6" />
                 </div>
                 <div className="text-left min-w-0">
-                  <h3 className="text-sm font-bold text-slate-900 group-hover:text-blue-600 transition truncate">
+                  <h3 className="text-sm font-bold text-slate-900 group-hover:text-blue-600 transition truncate leading-snug">
                     {prob.problem}
                   </h3>
-                  <p className="text-[11px] text-slate-500 truncate mt-0.5">
+                  <p className="text-xs text-slate-600 truncate mt-1 leading-relaxed">
                     {prob.sub}
                   </p>
                 </div>
@@ -236,18 +227,18 @@ export default function HomePage() {
 
       {/* Recent Open Requests */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between mb-5">
+        <div className="flex items-start sm:items-center justify-between gap-3 mb-5">
           <div>
             <h2 className="text-lg sm:text-xl font-bold text-slate-900">
               {t("popularServices")}
             </h2>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-600 mt-1 leading-relaxed">
               សំណើសេវាកម្មថ្មីៗដែលកំពុងស្វែងរកអ្នកជំនាញនៅជិតអ្នក
             </p>
           </div>
           <Link
             href="/services"
-            className="inline-flex items-center space-x-1 text-xs font-bold text-blue-600 hover:text-blue-700"
+            className="inline-flex items-center space-x-1 text-xs font-bold text-blue-600 hover:text-blue-700 shrink-0 pt-0.5 sm:pt-0"
           >
             <span>មើលទាំងអស់</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -278,18 +269,18 @@ export default function HomePage() {
 
       {/* Verified Providers Near You */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between mb-5">
+        <div className="flex items-start sm:items-center justify-between gap-3 mb-5">
           <div>
             <h2 className="text-lg sm:text-xl font-bold text-slate-900">
               {t("nearbyProvidersTitle")}
             </h2>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-600 mt-1 leading-relaxed">
               អ្នកផ្តល់សេវាជំនាញដែលមានការផ្ទៀងផ្ទាត់ និងការវាយតម្លៃល្អ
             </p>
           </div>
           <Link
             href="/providers"
-            className="inline-flex items-center space-x-1 text-xs font-bold text-blue-600 hover:text-blue-700"
+            className="inline-flex items-center space-x-1 text-xs font-bold text-blue-600 hover:text-blue-700 shrink-0 pt-0.5 sm:pt-0"
           >
             <span>មើលទាំងអស់</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -321,46 +312,46 @@ export default function HomePage() {
       {/* How It Works - Clean Cambodian 4 Steps */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-10 shadow-2xs">
-          <div className="text-center max-w-xl mx-auto mb-8 space-y-1.5">
+          <div className="text-center max-w-xl mx-auto mb-8 space-y-2">
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
               {t("howItWorks")}
             </h2>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
               ដំណោះស្រាយងាយៗ ៤ ជំហានដើម្បីដោះស្រាយបញ្ហាក្នុងគេហដ្ឋានរបស់អ្នក
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 space-y-2">
+            <div className="p-4 sm:p-5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2.5">
               <div className="w-8 h-8 rounded-lg bg-blue-600 text-white font-bold flex items-center justify-center text-xs">
                 1
               </div>
-              <h3 className="text-xs sm:text-sm font-bold text-slate-900">{t("step1Title")}</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">{t("step1Desc")}</p>
+              <h3 className="text-xs sm:text-sm font-bold text-slate-900 leading-snug">{t("step1Title")}</h3>
+              <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">{t("step1Desc")}</p>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 space-y-2">
+            <div className="p-4 sm:p-5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2.5">
               <div className="w-8 h-8 rounded-lg bg-blue-600 text-white font-bold flex items-center justify-center text-xs">
                 2
               </div>
-              <h3 className="text-xs sm:text-sm font-bold text-slate-900">{t("step2Title")}</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">{t("step2Desc")}</p>
+              <h3 className="text-xs sm:text-sm font-bold text-slate-900 leading-snug">{t("step2Title")}</h3>
+              <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">{t("step2Desc")}</p>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 space-y-2">
+            <div className="p-4 sm:p-5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2.5">
               <div className="w-8 h-8 rounded-lg bg-blue-600 text-white font-bold flex items-center justify-center text-xs">
                 3
               </div>
-              <h3 className="text-xs sm:text-sm font-bold text-slate-900">{t("step3Title")}</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">{t("step3Desc")}</p>
+              <h3 className="text-xs sm:text-sm font-bold text-slate-900 leading-snug">{t("step3Title")}</h3>
+              <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">{t("step3Desc")}</p>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 space-y-2">
+            <div className="p-4 sm:p-5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2.5">
               <div className="w-8 h-8 rounded-lg bg-blue-600 text-white font-bold flex items-center justify-center text-xs">
                 4
               </div>
-              <h3 className="text-xs sm:text-sm font-bold text-slate-900">{t("step4Title")}</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">{t("step4Desc")}</p>
+              <h3 className="text-xs sm:text-sm font-bold text-slate-900 leading-snug">{t("step4Title")}</h3>
+              <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">{t("step4Desc")}</p>
             </div>
           </div>
         </div>
@@ -371,17 +362,17 @@ export default function HomePage() {
         <div className="bg-slate-900 rounded-2xl p-6 sm:p-8 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
           <div className="space-y-1.5 text-center md:text-left">
             <h3 className="text-lg sm:text-xl font-bold">
-              តើអ្នកជាអ្នកជំនាញ ឬ ជាងសេវាកម្មមែនទេ?
+              {t("providerCtaTitle")}
             </h3>
             <p className="text-xs sm:text-sm text-slate-300 max-w-xl">
-              បង្កើនចំណូលរបស់អ្នកដោយទទួលការងារពីអតិថិជននៅជិតអ្នក។ ចុះឈ្មោះជាអ្នកផ្តល់សេវាដោយឥតគិតថ្លៃ!
+              {t("providerCtaDesc")}
             </p>
           </div>
           <Link
             href="/register?role=PROVIDER"
             className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-bold text-xs rounded-xl transition shrink-0"
           >
-            ចុះឈ្មោះជាអ្នកផ្តល់សេវា
+            {t("registerAsProvider")}
           </Link>
         </div>
       </section>

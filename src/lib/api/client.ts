@@ -144,6 +144,17 @@ class ApiClient {
 
     return this.handleResponse<T>(response);
   }
+
+  public async putFormData<T>(path: string, formData: FormData): Promise<T> {
+    const url = path.startsWith("http") ? path : `${BASE_URL}${path}`;
+    const response = await fetch(url, {
+      method: "PUT",
+      headers: this.getHeaders(true),
+      body: formData,
+    });
+
+    return this.handleResponse<T>(response);
+  }
 }
 
 export const api = new ApiClient();

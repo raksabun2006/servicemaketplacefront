@@ -9,200 +9,130 @@ import {
   Home,
   Wrench,
   MessageSquare,
-  Bell,
   User,
   LayoutDashboard,
   Search,
-  Calendar,
-  ShieldAlert,
+  ShieldCheck,
+  Tag,
+  LogIn,
+  Users,
 } from "lucide-react";
 
 export const MobileNavigation: React.FC = () => {
-  const { isAuthenticated, isCustomer, isProvider } = useAuth();
+  const { isAuthenticated, isCustomer, isProvider, isAdmin } = useAuth();
   const { t } = useLanguage();
   const pathname = usePathname();
 
-  // If not authenticated, show basic public bottom navigation
+  // Helper for active link checking
+  const checkIsActive = (href: string) => {
+    if (
+      href === "/" ||
+      href === "/customer/dashboard" ||
+      href === "/provider/dashboard" ||
+      href === "/admin/dashboard"
+    ) {
+      return pathname === href;
+    }
+    return pathname.startsWith(href);
+  };
+
+  const renderTab = (
+    href: string,
+    Icon: React.ComponentType<{ className?: string }>,
+    label: string,
+    activeColorClass = "text-blue-600"
+  ) => {
+    const isActive = checkIsActive(href);
+    return (
+      <Link
+        key={href}
+        href={href}
+        className="flex flex-col items-center justify-center py-1 transition-all group active:scale-95 select-none"
+      >
+        <div
+          className={`flex items-center justify-center w-7 h-7 rounded-full transition-colors duration-150 ${
+            isActive
+              ? `${activeColorClass} bg-blue-50/90 font-bold`
+              : "text-slate-400 group-hover:text-slate-600"
+          }`}
+        >
+          <Icon className="w-5 h-5 shrink-0" />
+        </div>
+        <span
+          className={`text-[10px] tracking-tight leading-tight mt-0.5 max-w-[64px] truncate text-center transition-colors duration-150 ${
+            isActive
+              ? `${activeColorClass} font-bold`
+              : "text-slate-500 font-normal"
+          }`}
+        >
+          {label}
+        </span>
+      </Link>
+    );
+  };
+
+  // If not authenticated, show public mobile bottom navigation
   if (!isAuthenticated) {
     return (
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur border-t border-slate-200 py-2 px-3 flex justify-around items-center">
-        <Link
-          href="/"
-          className={`flex flex-col items-center text-[10px] font-medium transition ${
-            pathname === "/" ? "text-blue-600 font-bold" : "text-slate-500 hover:text-slate-900"
-          }`}
-        >
-          <Home className="w-5 h-5 mb-0.5" />
-          <span>{t("home")}</span>
-        </Link>
-        <Link
-          href="/services"
-          className={`flex flex-col items-center text-[10px] font-medium transition ${
-            pathname.startsWith("/services") ? "text-blue-600 font-bold" : "text-slate-500 hover:text-slate-900"
-          }`}
-        >
-          <Search className="w-5 h-5 mb-0.5" />
-          <span>{t("services")}</span>
-        </Link>
-        <Link
-          href="/providers"
-          className={`flex flex-col items-center text-[10px] font-medium transition ${
-            pathname.startsWith("/providers") ? "text-blue-600 font-bold" : "text-slate-500 hover:text-slate-900"
-          }`}
-        >
-          <User className="w-5 h-5 mb-0.5" />
-          <span>{t("providers")}</span>
-        </Link>
-        <Link
-          href="/login"
-          className={`flex flex-col items-center text-[10px] font-medium transition ${
-            pathname === "/login" ? "text-blue-600 font-bold" : "text-slate-500 hover:text-slate-900"
-          }`}
-        >
-          <User className="w-5 h-5 mb-0.5" />
-          <span>{t("login")}</span>
-        </Link>
-      </div>
+      <nav
+        aria-label="Mobile Navigation"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] px-2 pt-1.5 pb-[max(0.75rem,env(safe-area-inset-bottom))] grid grid-cols-4 items-center"
+      >
+        {renderTab("/", Home, t("home"))}
+        {renderTab("/services", Search, t("services"))}
+        {renderTab("/providers", Users, t("providers"))}
+        {renderTab("/login", LogIn, t("login"))}
+      </nav>
     );
   }
 
-  // Customer Mobile Navigation (Section 17): ទំព័រដើម, រកអ្នកជួយ, ការងារ, សារ, គណនី
+  // Customer Mobile Navigation (5 equal tabs)
   if (isCustomer) {
     return (
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur border-t border-slate-200 py-2 px-1 flex justify-around items-center">
-        <Link
-          href="/"
-          className={`flex flex-col items-center py-1 px-2 text-[10px] font-medium transition ${
-            pathname === "/" ? "text-blue-600 font-bold" : "text-slate-500 hover:text-slate-900"
-          }`}
-        >
-          <Home className="w-5 h-5 mb-0.5" />
-          <span>ទំព័រដើម</span>
-        </Link>
-        <Link
-          href="/providers"
-          className={`flex flex-col items-center py-1 px-2 text-[10px] font-medium transition ${
-            pathname.startsWith("/providers") ? "text-blue-600 font-bold" : "text-slate-500 hover:text-slate-900"
-          }`}
-        >
-          <Search className="w-5 h-5 mb-0.5" />
-          <span>រកអ្នកជួយ</span>
-        </Link>
-        <Link
-          href="/customer/requests"
-          className={`flex flex-col items-center py-1 px-2 text-[10px] font-medium transition ${
-            pathname.startsWith("/customer/requests") ? "text-blue-600 font-bold" : "text-slate-500 hover:text-slate-900"
-          }`}
-        >
-          <Wrench className="w-5 h-5 mb-0.5" />
-          <span>ការងារ</span>
-        </Link>
-        <Link
-          href="/customer/messages"
-          className={`flex flex-col items-center py-1 px-2 text-[10px] font-medium transition ${
-            pathname.startsWith("/customer/messages") ? "text-blue-600 font-bold" : "text-slate-500 hover:text-slate-900"
-          }`}
-        >
-          <MessageSquare className="w-5 h-5 mb-0.5" />
-          <span>សារ</span>
-        </Link>
-        <Link
-          href="/customer/profile"
-          className={`flex flex-col items-center py-1 px-2 text-[10px] font-medium transition ${
-            pathname.startsWith("/customer/profile") ? "text-blue-600 font-bold" : "text-slate-500 hover:text-slate-900"
-          }`}
-        >
-          <User className="w-5 h-5 mb-0.5" />
-          <span>គណនី</span>
-        </Link>
-      </div>
+      <nav
+        aria-label="Customer Navigation"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] px-1 pt-1.5 pb-[max(0.75rem,env(safe-area-inset-bottom))] grid grid-cols-5 items-center"
+      >
+        {renderTab("/", Home, t("home"))}
+        {renderTab("/providers", Search, t("findHelper"))}
+        {renderTab("/customer/requests", Wrench, t("jobs"))}
+        {renderTab("/customer/messages", MessageSquare, t("messages"))}
+        {renderTab("/customer/profile", User, t("account"))}
+      </nav>
     );
   }
 
-  // Provider Mobile Navigation (Section 17): ទំព័រដើម, រកការងារ, ការងារ, សារ, គណនី
+  // Provider Mobile Navigation (5 equal tabs)
   if (isProvider) {
     return (
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur border-t border-slate-200 py-2 px-1 flex justify-around items-center">
-        <Link
-          href="/provider/dashboard"
-          className={`flex flex-col items-center py-1 px-2 text-[10px] font-medium transition ${
-            pathname === "/provider/dashboard" ? "text-blue-600 font-bold" : "text-slate-500 hover:text-slate-900"
-          }`}
-        >
-          <Home className="w-5 h-5 mb-0.5" />
-          <span>ទំព័រដើម</span>
-        </Link>
-        <Link
-          href="/provider/requests"
-          className={`flex flex-col items-center py-1 px-2 text-[10px] font-medium transition ${
-            pathname.startsWith("/provider/requests") ? "text-blue-600 font-bold" : "text-slate-500 hover:text-slate-900"
-          }`}
-        >
-          <Search className="w-5 h-5 mb-0.5" />
-          <span>រកការងារ</span>
-        </Link>
-        <Link
-          href="/provider/bookings"
-          className={`flex flex-col items-center py-1 px-2 text-[10px] font-medium transition ${
-            pathname.startsWith("/provider/bookings") ? "text-blue-600 font-bold" : "text-slate-500 hover:text-slate-900"
-          }`}
-        >
-          <Wrench className="w-5 h-5 mb-0.5" />
-          <span>ការងារ</span>
-        </Link>
-        <Link
-          href="/provider/messages"
-          className={`flex flex-col items-center py-1 px-2 text-[10px] font-medium transition ${
-            pathname.startsWith("/provider/messages") ? "text-blue-600 font-bold" : "text-slate-500 hover:text-slate-900"
-          }`}
-        >
-          <MessageSquare className="w-5 h-5 mb-0.5" />
-          <span>សារ</span>
-        </Link>
-        <Link
-          href="/provider/profile"
-          className={`flex flex-col items-center py-1 px-2 text-[10px] font-medium transition ${
-            pathname.startsWith("/provider/profile") ? "text-blue-600 font-bold" : "text-slate-500 hover:text-slate-900"
-          }`}
-        >
-          <User className="w-5 h-5 mb-0.5" />
-          <span>គណនី</span>
-        </Link>
-      </div>
+      <nav
+        aria-label="Provider Navigation"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] px-1 pt-1.5 pb-[max(0.75rem,env(safe-area-inset-bottom))] grid grid-cols-5 items-center"
+      >
+        {renderTab("/provider/dashboard", Home, t("home"))}
+        {renderTab("/provider/requests", Search, t("findJobs"))}
+        {renderTab("/provider/bookings", Wrench, t("jobs"))}
+        {renderTab("/provider/messages", MessageSquare, t("messages"))}
+        {renderTab("/provider/profile", User, t("account"))}
+      </nav>
     );
   }
 
+  // Admin Mobile Navigation (5 equal tabs)
+  if (isAdmin) {
+    return (
+      <nav
+        aria-label="Admin Navigation"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] px-1 pt-1.5 pb-[max(0.75rem,env(safe-area-inset-bottom))] grid grid-cols-5 items-center"
+      >
+        {renderTab("/admin/dashboard", LayoutDashboard, t("dashboard"), "text-purple-600")}
+        {renderTab("/admin/providers", ShieldCheck, t("providers"), "text-purple-600")}
+        {renderTab("/admin/users", Users, t("users"), "text-purple-600")}
+        {renderTab("/admin/categories", Tag, t("categories"), "text-purple-600")}
+        {renderTab("/admin/profile", User, t("profile"), "text-purple-600")}
+      </nav>
+    );
+  }
 
-  // Admin Mobile Navigation
-  return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur border-t border-slate-200 py-2 px-2 flex justify-around items-center">
-      <Link
-        href="/admin/dashboard"
-        className={`flex flex-col items-center text-[10px] font-medium transition ${
-          pathname === "/admin/dashboard" ? "text-purple-600" : "text-slate-500 hover:text-slate-900"
-        }`}
-      >
-        <LayoutDashboard className="w-5 h-5 mb-0.5" />
-        <span>{t("dashboard")}</span>
-      </Link>
-      <Link
-        href="/admin/providers"
-        className={`flex flex-col items-center text-[10px] font-medium transition ${
-          pathname.startsWith("/admin/providers") ? "text-purple-600" : "text-slate-500 hover:text-slate-900"
-        }`}
-      >
-        <ShieldAlert className="w-5 h-5 mb-0.5" />
-        <span>{t("providers")}</span>
-      </Link>
-      <Link
-        href="/admin/users"
-        className={`flex flex-col items-center text-[10px] font-medium transition ${
-          pathname.startsWith("/admin/users") ? "text-purple-600" : "text-slate-500 hover:text-slate-900"
-        }`}
-      >
-        <User className="w-5 h-5 mb-0.5" />
-        <span>{t("users")}</span>
-      </Link>
-    </div>
-  );
+  return null;
 };
