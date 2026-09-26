@@ -31,9 +31,10 @@ export const FOOTER_SERVICES_LINKS: FooterLink[] = [
 
 // 2. Column 3: សម្រាប់អ្នកប្រើប្រាស់ (For Customers)
 export const FOOTER_CUSTOMER_LINKS: FooterLink[] = [
+  { name: "អំពីខ្មែរ សេវា", href: "/about" },
   { name: "ស្វែងរកសេវាកម្ម", href: "/services" },
   { name: "ស្វែងរកជាង", href: "/providers" },
-  { name: "របៀបប្រើប្រាស់", href: "/about" },
+  { name: "របៀបប្រើប្រាស់", href: "/about#how-it-works" },
   { name: "សំណួរដែលសួរញឹកញាប់", href: "/about#faq" },
   { name: "ទំនាក់ទំនង", href: "/about#contact" },
   { name: "រាយការណ៍បញ្ហា", href: "/customer/requests/create" },

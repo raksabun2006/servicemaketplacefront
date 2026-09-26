@@ -20,9 +20,10 @@ import {
   MapPin,
   ChevronRight,
   ChevronLeft,
-  Clock,
   Eye,
   EyeOff,
+  ShieldCheck,
+  Star,
 } from "lucide-react";
 import { LanguageSelector } from "@/components/ui/LanguageSelector";
 
@@ -65,6 +66,7 @@ function RegisterContent() {
   });
 
   // Feedback State
+  const [showCustomerLocation, setShowCustomerLocation] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>({});
@@ -73,15 +75,17 @@ function RegisterContent() {
     setTouchedFields((prev) => ({ ...prev, [field]: true }));
   };
 
-  // Password matching check
   const passwordsMatch = !confirmPassword || password === confirmPassword;
 
-  // Validation before advancing provider steps
   const validateStep = (step: number): boolean => {
     setError(null);
     if (step === 1) {
       if (!fullName.trim()) {
         setError("សូមបញ្ចូលឈ្មោះពេញរបស់អ្នក");
+        return false;
+      }
+      if (!phone.trim()) {
+        setError("សូមបញ្ចូលលេខទូរស័ព្ទរបស់អ្នក");
         return false;
       }
       if (!email.trim() || !email.includes("@")) {
@@ -156,21 +160,24 @@ function RegisterContent() {
       setIsLoading(true);
       setError(null);
 
+      const isProvider = role === "PROVIDER";
+      const hasCustomerLocation = !isProvider && showCustomerLocation && Boolean(location.address?.trim());
+
       const res = await register({
         fullName: fullName.trim(),
         email: email.trim(),
         phone: phone.trim() || undefined,
         password,
         role,
-        businessName: role === "PROVIDER" ? businessName.trim() || fullName.trim() : undefined,
-        bio: role === "PROVIDER" ? bio.trim() : undefined,
-        experienceYears: role === "PROVIDER" ? Number(experienceYears) : undefined,
-        serviceArea: role === "PROVIDER" ? serviceArea.trim() || location.district || "Phnom Penh" : undefined,
-        address: location.address,
-        city: location.city,
-        district: location.district,
-        latitude: location.latitude,
-        longitude: location.longitude,
+        businessName: isProvider ? businessName.trim() || fullName.trim() : undefined,
+        bio: isProvider ? bio.trim() : undefined,
+        experienceYears: isProvider ? Number(experienceYears) : undefined,
+        serviceArea: isProvider ? serviceArea.trim() || location.district || "Phnom Penh" : undefined,
+        address: isProvider ? location.address : (hasCustomerLocation ? location.address : undefined),
+        city: isProvider ? location.city : (hasCustomerLocation ? location.city : undefined),
+        district: isProvider ? location.district : (hasCustomerLocation ? location.district : undefined),
+        latitude: isProvider ? location.latitude : (hasCustomerLocation ? location.latitude : undefined),
+        longitude: isProvider ? location.longitude : (hasCustomerLocation ? location.longitude : undefined),
       });
 
       if (res.user?.role === "PROVIDER") {
@@ -186,348 +193,186 @@ function RegisterContent() {
     }
   };
 
-  const providerSteps = [
-    { num: 1, title: "ព័ត៌មានគណនី", subtitle: "Account", icon: User },
-    { num: 2, title: "ព័ត៌មានអាជីវកម្ម", subtitle: "Business", icon: Briefcase },
-    { num: 3, title: "ទីតាំងប្រតិបត្តិការ", subtitle: "Location", icon: MapPin },
-  ];
-
   return (
-    <div className="min-h-screen w-full flex flex-col justify-between bg-[#f8fafc] bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(147,51,234,0.06),rgba(255,255,255,0))] text-slate-900 py-4 sm:py-8 px-4 sm:px-6 lg:px-8">
-      {/* Top Header Bar */}
-      <header className="w-full max-w-[960px] mx-auto flex items-center justify-between mb-4 sm:mb-6">
+    <div className="min-h-screen w-full flex flex-col justify-between bg-gradient-to-br from-slate-50 via-indigo-50/30 to-slate-100 text-slate-900 py-2 sm:py-3 px-3 sm:px-6">
+      {/* Top Navigation Bar */}
+      <header className="w-full max-w-3xl mx-auto py-1 flex items-center justify-between">
         <Link
           href="/"
-          className="inline-flex items-center space-x-2 text-slate-600 hover:text-purple-700 font-medium text-xs sm:text-sm transition group"
+          className="inline-flex items-center space-x-1.5 text-slate-600 hover:text-indigo-600 font-semibold text-xs transition group"
         >
-          <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-          <span>{language === "km" ? "ត្រឡប់ទៅទំព័រដើម" : "Back to Home"}</span>
+          <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
+          <span>{language === "km" ? "ត្រឡប់ទៅទំព័រដើម" : "Back"}</span>
         </Link>
 
-        <div className="flex items-center space-x-4">
-          <Link
-            href={email ? `/login?email=${encodeURIComponent(email)}` : "/login"}
-            className="text-xs sm:text-sm font-semibold text-slate-600 hover:text-purple-700 transition"
-          >
-            {t("login") || "ចូលគណនី"}
-          </Link>
-          <LanguageSelector variant="pill" />
-        </div>
+        {/* Language Switcher */}
+        <LanguageSelector variant="pill" />
       </header>
 
-      {/* Main Registration Card */}
-      <main className="w-full max-w-[960px] mx-auto bg-white rounded-2xl border border-slate-200/80 shadow-xs sm:shadow-sm p-6 sm:p-8 lg:p-10 transition-all">
-        {/* Brand / Logo + Header */}
-        <div className="text-center mb-6 sm:mb-8">
-          <div className="inline-flex items-center justify-center space-x-2.5 mb-3">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/logo.png"
-              alt="សេវាខ្មែរ Logo"
-              className="w-8 h-8 object-contain"
-            />
-            <span className="font-bold text-base text-slate-900 tracking-tight">សេវាខ្មែរ</span>
-          </div>
+      {/* Main Container - 2-Column Split Matching Login */}
+      <div className="flex-1 flex items-center justify-center py-2">
+        <div className="w-full max-w-3xl bg-white rounded-2xl shadow-md shadow-indigo-950/5 border border-slate-200/90 overflow-hidden grid grid-cols-1 lg:grid-cols-12 min-h-[480px]">
+          {/* Left Hero Column (Matching Login) */}
+          <div className="hidden lg:flex lg:col-span-5 bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-800 text-white p-6 sm:p-7 flex-col justify-between relative overflow-hidden">
+            {/* Background Decorative Rings */}
+            <div className="absolute -top-16 -left-16 w-48 h-48 rounded-full bg-white/10 blur-xl pointer-events-none" />
+            <div className="absolute -bottom-16 -right-16 w-56 h-56 rounded-full bg-purple-500/20 blur-2xl pointer-events-none" />
 
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-            បង្កើតគណនីថ្មី
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-2 max-w-lg mx-auto leading-relaxed">
-            ចុះឈ្មោះដើម្បីប្រើប្រាស់សេវាកម្ម និងស្វែងរកជាងដែលសមរម្យសម្រាប់អ្នក
-          </p>
-        </div>
+            <div className="space-y-4 relative z-10">
+              <div className="flex items-center space-x-2.5">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/logo.png"
+                  alt="សេវាខ្មែរ Logo"
+                  className="w-9 h-9 object-contain bg-white rounded-xl p-0.5"
+                />
+                <div>
+                  <h2 className="font-bold text-base leading-tight">សេវាខ្មែរ</h2>
+                  <p className="text-[9px] text-indigo-200 tracking-wider uppercase font-semibold">
+                    Khmer Marketplace
+                  </p>
+                </div>
+              </div>
 
-        {/* Polished Registration Type Selector */}
-        <div className="max-w-xl mx-auto mb-8">
-          <div className="grid grid-cols-2 p-1.5 bg-slate-100/90 rounded-2xl border border-slate-200/60 gap-1.5">
-            {/* Option 1: Customer */}
-            <button
-              type="button"
-              onClick={() => {
-                setRole("CUSTOMER");
-                setError(null);
-              }}
-              className={`py-3 px-3 sm:px-4 rounded-xl text-center transition-all duration-150 flex flex-col items-center justify-center ${
-                role === "CUSTOMER"
-                  ? "bg-purple-600 text-white shadow-xs"
-                  : "bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900 border border-slate-200/60"
-              }`}
-            >
-              <span className="text-xs sm:text-sm font-bold leading-tight">
-                អ្នកប្រើប្រាស់
-              </span>
-              <span
-                className={`text-[11px] sm:text-xs mt-0.5 ${
-                  role === "CUSTOMER" ? "text-purple-100" : "text-slate-500"
-                }`}
-              >
-                សម្រាប់ស្នើសុំសេវាកម្ម
-              </span>
-            </button>
+              <div className="space-y-2 pt-2">
+                <h3 className="text-xl font-black leading-snug">
+                  ស្វាគមន៍មកកាន់ <br />
+                  ទីផ្សារសេវាកម្មកម្ពុជា
+                </h3>
+                <p className="text-[11px] text-indigo-100/90 leading-relaxed font-normal">
+                  ភ្ជាប់ជាមួយជាងជំនាញរាប់ពាន់នាក់នៅទូទាំងប្រទេសកម្ពុជាដោយទំនុកចិត្ត។
+                </p>
+              </div>
 
-            {/* Option 2: Provider */}
-            <button
-              type="button"
-              onClick={() => {
-                setRole("PROVIDER");
-                setError(null);
-              }}
-              className={`py-3 px-3 sm:px-4 rounded-xl text-center transition-all duration-150 flex flex-col items-center justify-center ${
-                role === "PROVIDER"
-                  ? "bg-purple-600 text-white shadow-xs"
-                  : "bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900 border border-slate-200/60"
-              }`}
-            >
-              <span className="text-xs sm:text-sm font-bold leading-tight">
-                អ្នកផ្តល់សេវា
-              </span>
-              <span
-                className={`text-[11px] sm:text-xs mt-0.5 ${
-                  role === "PROVIDER" ? "text-purple-100" : "text-slate-500"
-                }`}
-              >
-                សម្រាប់ផ្តល់សេវាកម្ម
-              </span>
-            </button>
-          </div>
-        </div>
+              {/* Feature Highlights */}
+              <div className="space-y-2 pt-1">
+                <div className="flex items-center space-x-2 text-[11px] text-indigo-100">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>ជាងជំនាញមានការផ្ទៀងផ្ទាត់ត្រឹមត្រូវ</span>
+                </div>
+                <div className="flex items-center space-x-2 text-[11px] text-indigo-100">
+                  <Star className="w-3.5 h-3.5 text-amber-300 shrink-0" />
+                  <span>ការវាយតម្លៃពិតប្រាកដពីអតិថិជន</span>
+                </div>
+                <div className="flex items-center space-x-2 text-[11px] text-indigo-100">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-cyan-300 shrink-0" />
+                  <span>ដោះស្រាយបញ្ហារហ័សទាន់ចិត្ត</span>
+                </div>
+              </div>
+            </div>
 
-        {/* Provider Wizard Step Indicator */}
-        {role === "PROVIDER" && (
-          <div className="max-w-2xl mx-auto mb-8">
-            <div className="grid grid-cols-3 gap-2">
-              {providerSteps.map((s) => {
-                const StepIcon = s.icon;
-                const isCompleted = providerStep > s.num;
-                const isCurrent = providerStep === s.num;
-
-                return (
-                  <button
-                    key={s.num}
-                    type="button"
-                    onClick={() => {
-                      if (providerStep > s.num) setProviderStep(s.num);
-                    }}
-                    disabled={!isCompleted && !isCurrent}
-                    className={`flex items-center space-x-2.5 p-2 sm:p-3 rounded-xl border text-left transition-all ${
-                      isCurrent
-                        ? "bg-purple-50/70 border-purple-300 ring-1 ring-purple-400/30 text-purple-900"
-                        : isCompleted
-                        ? "bg-white border-emerald-200 text-emerald-800 hover:bg-emerald-50/40 cursor-pointer"
-                        : "bg-slate-50/60 border-slate-200 text-slate-400 cursor-not-allowed"
-                    }`}
-                  >
-                    <div
-                      className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 transition-colors ${
-                        isCompleted
-                          ? "bg-emerald-600 text-white"
-                          : isCurrent
-                          ? "bg-purple-600 text-white"
-                          : "bg-slate-200 text-slate-500"
-                      }`}
-                    >
-                      {isCompleted ? <CheckCircle2 className="w-4 h-4" /> : <StepIcon className="w-4 h-4" />}
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-xs sm:text-sm font-semibold truncate leading-tight">
-                        {s.title}
-                      </p>
-                      <p className="text-[10px] sm:text-xs text-slate-500 truncate hidden sm:block">
-                        {s.subtitle}
-                      </p>
-                    </div>
-                  </button>
-                );
-              })}
+            {/* Bottom Proof Pill */}
+            <div className="relative z-10 pt-4 border-t border-white/10 flex items-center space-x-2.5">
+              <div className="text-[11px] text-indigo-100">
+                <span className="font-bold">500+</span> ជាងជំនាញកំពុងប្រតិបត្តិការ
+              </div>
             </div>
           </div>
-        )}
 
-        {/* Global Error Banner */}
-        {error && (
-          <div className="max-w-3xl mx-auto mb-6 flex items-start space-x-2.5 p-3.5 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs sm:text-sm leading-relaxed">
-            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-600" />
-            <span>{error}</span>
-          </div>
-        )}
-
-        {/* Form Container */}
-        <form onSubmit={handleSubmit} className="max-w-3xl mx-auto">
-          {/* ========================================================
-              CUSTOMER REGISTRATION FORM
-              Clean Two-Column Grid on Desktop
-              ======================================================== */}
-          {role === "CUSTOMER" && (
-            <div className="space-y-6">
-              {/* Account Credentials Group */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                {/* Full Name */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                    ឈ្មោះពេញ <span className="text-slate-400 font-normal">(Full Name)</span> <span className="text-rose-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      required
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      onBlur={() => handleBlur("fullName")}
-                      placeholder="បញ្ចូលឈ្មោះពេញ"
-                      className="w-full h-12 pl-10 pr-4 text-sm bg-white rounded-xl border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600 transition hover:border-slate-300"
-                    />
-                    <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                  </div>
-                </div>
-
-                {/* Phone Number */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                    លេខទូរស័ព្ទ <span className="text-slate-400 font-normal">(Phone)</span>
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="tel"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      placeholder="បញ្ចូលលេខទូរស័ព្ទ"
-                      className="w-full h-12 pl-10 pr-4 text-sm bg-white rounded-xl border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600 transition hover:border-slate-300"
-                    />
-                    <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                  </div>
-                </div>
-
-                {/* Email Address */}
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                    អ៊ីមែល <span className="text-slate-400 font-normal">(Email)</span> <span className="text-rose-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      onBlur={() => handleBlur("email")}
-                      placeholder="បញ្ចូលអ៊ីមែល"
-                      className="w-full h-12 pl-10 pr-4 text-sm bg-white rounded-xl border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600 transition hover:border-slate-300"
-                    />
-                    <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                  </div>
-                </div>
-
-                {/* Password */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                    ពាក្យសម្ងាត់ <span className="text-slate-400 font-normal">(Password)</span> <span className="text-rose-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      onBlur={() => handleBlur("password")}
-                      placeholder="បញ្ចូលពាក្យសម្ងាត់"
-                      className={`w-full h-12 pl-10 pr-11 text-sm bg-white rounded-xl border text-slate-900 focus:outline-none transition ${
-                        touchedFields.password && password && password.length < 6
-                          ? "border-rose-300 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20"
-                          : "border-slate-200 focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600 hover:border-slate-300"
-                      }`}
-                    />
-                    <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1 rounded-md transition"
-                      aria-label={showPassword ? "Hide password" : "Show password"}
-                    >
-                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
-                  {touchedFields.password && password && password.length < 6 && (
-                    <p className="text-xs text-rose-600 mt-1">ពាក្យសម្ងាត់ត្រូវមានយ៉ាងតិច ៦ តួអក្សរ</p>
-                  )}
-                </div>
-
-                {/* Confirm Password */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                    បញ្ជាក់ពាក្យសម្ងាត់ <span className="text-slate-400 font-normal">(Confirm Password)</span> <span className="text-rose-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showConfirmPassword ? "text" : "password"}
-                      required
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      onBlur={() => handleBlur("confirmPassword")}
-                      placeholder="បញ្ជាក់ពាក្យសម្ងាត់"
-                      className={`w-full h-12 pl-10 pr-11 text-sm bg-white rounded-xl border text-slate-900 focus:outline-none transition ${
-                        touchedFields.confirmPassword && !passwordsMatch
-                          ? "border-rose-300 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20"
-                          : "border-slate-200 focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600 hover:border-slate-300"
-                      }`}
-                    />
-                    <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                    <button
-                      type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1 rounded-md transition"
-                      aria-label={showConfirmPassword ? "Hide password" : "Show password"}
-                    >
-                      {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
-                  {touchedFields.confirmPassword && !passwordsMatch && (
-                    <p className="text-xs text-rose-600 mt-1">ពាក្យសម្ងាត់ផ្ទៀងផ្ទាត់មិនត្រូវគ្នាទេ</p>
-                  )}
-                </div>
-              </div>
-
-              {/* Location Section */}
-              <div className="pt-4 border-t border-slate-100">
-                <div className="mb-4">
-                  <h2 className="text-base font-bold text-slate-900 leading-tight">
-                    ទីតាំង
-                  </h2>
-                  <p className="text-xs text-slate-500">Location</p>
-                </div>
-
-                <LocationPicker
-                  value={location}
-                  onChange={(loc) => setLocation(loc)}
-                  theme="purple"
+          {/* Right Form Column */}
+          <div className="lg:col-span-7 p-6 sm:p-7 flex flex-col justify-center">
+            <div className="max-w-sm w-full mx-auto space-y-3.5">
+              {/* Mobile Brand */}
+              <div className="lg:hidden flex items-center space-x-2.5 mb-1">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/logo.png"
+                  alt="សេវាខ្មែរ Logo"
+                  className="w-8 h-8 object-contain"
                 />
+                <span className="font-bold text-sm text-slate-900">សេវាខ្មែរ</span>
               </div>
 
-              {/* Primary Register CTA */}
-              <div className="pt-2">
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full h-[52px] bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 active:from-purple-800 active:to-indigo-800 text-white font-semibold text-sm rounded-xl shadow-xs transition duration-150 flex items-center justify-center space-x-2 disabled:opacity-60 cursor-pointer"
+              {/* Top Mode Switcher: Login / Register */}
+              <div className="grid grid-cols-2 p-1 bg-slate-100 rounded-xl">
+                <Link
+                  href="/login"
+                  className="py-1.5 px-3 text-center text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition"
                 >
-                  {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
-                  <span>{isLoading ? "កំពុងបង្កើតគណនី..." : "បង្កើតគណនី"}</span>
+                  {t("login") || "ចូលគណនី"}
+                </Link>
+                <div className="py-1.5 px-3 text-center text-xs font-bold rounded-lg bg-white text-indigo-600 shadow-2xs">
+                  {t("register") || "បង្កើតគណនី"}
+                </div>
+              </div>
+
+              {/* Role Switcher Pills */}
+              <div className="grid grid-cols-2 gap-1.5 p-1 bg-slate-50 border border-slate-200/80 rounded-xl">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setRole("CUSTOMER");
+                    setError(null);
+                  }}
+                  className={`py-1.5 px-2 text-xs font-semibold rounded-lg transition-all ${
+                    role === "CUSTOMER"
+                      ? "bg-white text-indigo-600 shadow-2xs border border-indigo-100"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  សម្រាប់អតិថិជន
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setRole("PROVIDER");
+                    setError(null);
+                  }}
+                  className={`py-1.5 px-2 text-xs font-semibold rounded-lg transition-all ${
+                    role === "PROVIDER"
+                      ? "bg-white text-indigo-600 shadow-2xs border border-indigo-100"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  សម្រាប់អ្នកផ្តល់សេវា
                 </button>
               </div>
-            </div>
-          )}
 
-          {/* ========================================================
-              PROVIDER REGISTRATION FORM (Multi-Step SaaS Flow)
-              ======================================================== */}
-          {role === "PROVIDER" && (
-            <div className="space-y-6">
-              {/* STEP 1: Account Credentials */}
-              {providerStep === 1 && (
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+              {/* Provider Wizard Step Indicator */}
+              {role === "PROVIDER" && (
+                <div className="flex items-center justify-between px-1 py-1">
+                  <span className="text-[11px] font-bold text-slate-700">
+                    ជំហានទី {providerStep}/៣៖{" "}
+                    {providerStep === 1
+                      ? "គណនី"
+                      : providerStep === 2
+                      ? "អាជីវកម្ម"
+                      : "ទីតាំង"}
+                  </span>
+                  <div className="flex gap-1">
+                    {[1, 2, 3].map((s) => (
+                      <div
+                        key={s}
+                        className={`h-1.5 rounded-full transition-all ${
+                          s === providerStep
+                            ? "w-5 bg-indigo-600"
+                            : s < providerStep
+                            ? "w-2 bg-emerald-500"
+                            : "w-2 bg-slate-200"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Error Banner */}
+              {error && (
+                <div className="flex items-start space-x-2 p-2.5 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs leading-tight">
+                  <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-rose-600" />
+                  <span>{error}</span>
+                </div>
+              )}
+
+              {/* Form Body */}
+              <form onSubmit={handleSubmit} className="space-y-3">
+                {/* ================= CUSTOMER REGISTRATION ================= */}
+                {role === "CUSTOMER" && (
+                  <>
                     {/* Full Name */}
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                        ឈ្មោះពេញ <span className="text-slate-400 font-normal">(Full Name)</span> <span className="text-rose-500">*</span>
+                      <label className="block text-xs font-medium text-slate-700 mb-1">
+                        ឈ្មោះពេញ <span className="text-rose-500">*</span>
                       </label>
                       <div className="relative">
                         <input
@@ -535,36 +380,17 @@ function RegisterContent() {
                           required
                           value={fullName}
                           onChange={(e) => setFullName(e.target.value)}
-                          onBlur={() => handleBlur("fullName")}
                           placeholder="បញ្ចូលឈ្មោះពេញ"
-                          className="w-full h-12 pl-10 pr-4 text-sm bg-white rounded-xl border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600 transition hover:border-slate-300"
+                          className="w-full h-10 pl-9 pr-3 text-xs bg-slate-50/50 rounded-xl border border-slate-200 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition"
                         />
-                        <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                        <User className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                       </div>
                     </div>
 
-                    {/* Phone Number */}
+                    {/* Email */}
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                        លេខទូរស័ព្ទ <span className="text-slate-400 font-normal">(Phone)</span> <span className="text-rose-500">*</span>
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="tel"
-                          required
-                          value={phone}
-                          onChange={(e) => setPhone(e.target.value)}
-                          placeholder="បញ្ចូលលេខទូរស័ព្ទ"
-                          className="w-full h-12 pl-10 pr-4 text-sm bg-white rounded-xl border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600 transition hover:border-slate-300"
-                        />
-                        <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                      </div>
-                    </div>
-
-                    {/* Email Address */}
-                    <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                        អ៊ីមែល <span className="text-slate-400 font-normal">(Email)</span> <span className="text-rose-500">*</span>
+                      <label className="block text-xs font-medium text-slate-700 mb-1">
+                        អ៊ីមែល <span className="text-rose-500">*</span>
                       </label>
                       <div className="relative">
                         <input
@@ -572,241 +398,330 @@ function RegisterContent() {
                           required
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
-                          onBlur={() => handleBlur("email")}
                           placeholder="បញ្ចូលអ៊ីមែល"
-                          className="w-full h-12 pl-10 pr-4 text-sm bg-white rounded-xl border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600 transition hover:border-slate-300"
+                          className="w-full h-10 pl-9 pr-3 text-xs bg-slate-50/50 rounded-xl border border-slate-200 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition"
                         />
-                        <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                        <Mail className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                       </div>
                     </div>
 
-                    {/* Password */}
+                    {/* Phone (Optional) */}
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                        ពាក្យសម្ងាត់ <span className="text-slate-400 font-normal">(Password)</span> <span className="text-rose-500">*</span>
+                      <label className="block text-xs font-medium text-slate-700 mb-1">
+                        លេខទូរស័ព្ទ <span className="text-slate-400 font-normal">(ស្រេចចិត្ត)</span>
                       </label>
                       <div className="relative">
                         <input
-                          type={showPassword ? "text" : "password"}
-                          required
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          onBlur={() => handleBlur("password")}
-                          placeholder="បញ្ចូលពាក្យសម្ងាត់"
-                          className={`w-full h-12 pl-10 pr-11 text-sm bg-white rounded-xl border text-slate-900 focus:outline-none transition ${
-                            touchedFields.password && password && password.length < 6
-                              ? "border-rose-300 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20"
-                              : "border-slate-200 focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600 hover:border-slate-300"
-                          }`}
+                          type="tel"
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                          placeholder="បញ្ចូលលេខទូរស័ព្ទ"
+                          className="w-full h-10 pl-9 pr-3 text-xs bg-slate-50/50 rounded-xl border border-slate-200 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition"
                         />
-                        <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1 rounded-md transition"
-                          aria-label={showPassword ? "Hide password" : "Show password"}
-                        >
-                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                        </button>
+                        <Phone className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                       </div>
-                      {touchedFields.password && password && password.length < 6 && (
-                        <p className="text-xs text-rose-600 mt-1">ពាក្យសម្ងាត់ត្រូវមានយ៉ាងតិច ៦ តួអក្សរ</p>
+                    </div>
+
+                    {/* Password & Confirm Password */}
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-xs font-medium text-slate-700 mb-1">
+                          ពាក្យសម្ងាត់ <span className="text-rose-500">*</span>
+                        </label>
+                        <div className="relative">
+                          <input
+                            type={showPassword ? "text" : "password"}
+                            required
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            onBlur={() => handleBlur("password")}
+                            placeholder="ពាក្យសម្ងាត់"
+                            className="w-full h-10 pl-8 pr-7 text-xs bg-slate-50/50 rounded-xl border border-slate-200 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition"
+                          />
+                          <Lock className="w-3 h-3 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                          >
+                            {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                          </button>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-medium text-slate-700 mb-1">
+                          បញ្ជាក់ <span className="text-rose-500">*</span>
+                        </label>
+                        <div className="relative">
+                          <input
+                            type={showConfirmPassword ? "text" : "password"}
+                            required
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            onBlur={() => handleBlur("confirmPassword")}
+                            placeholder="បញ្ជាក់"
+                            className="w-full h-10 pl-8 pr-7 text-xs bg-slate-50/50 rounded-xl border border-slate-200 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition"
+                          />
+                          <Lock className="w-3 h-3 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                          <button
+                            type="button"
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                          >
+                            {showConfirmPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Optional Location Toggle */}
+                    <div className="pt-1">
+                      <button
+                        type="button"
+                        onClick={() => setShowCustomerLocation(!showCustomerLocation)}
+                        className="inline-flex items-center space-x-1.5 text-[11px] font-semibold text-indigo-600 hover:text-indigo-700 transition"
+                      >
+                        <MapPin className="w-3 h-3" />
+                        <span>{showCustomerLocation ? "លាក់ទីតាំង" : "+ បន្ថែមទីតាំង (ស្រេចចិត្ត)"}</span>
+                      </button>
+
+                      {showCustomerLocation && (
+                        <div className="mt-2 p-2 bg-slate-50 border border-slate-200 rounded-xl max-h-48 overflow-y-auto">
+                          <LocationPicker
+                            value={location}
+                            onChange={(loc) => setLocation(loc)}
+                            theme="blue"
+                          />
+                        </div>
                       )}
                     </div>
+                  </>
+                )}
 
-                    {/* Confirm Password */}
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                        បញ្ជាក់ពាក្យសម្ងាត់ <span className="text-slate-400 font-normal">(Confirm Password)</span> <span className="text-rose-500">*</span>
-                      </label>
-                      <div className="relative">
-                        <input
-                          type={showConfirmPassword ? "text" : "password"}
-                          required
-                          value={confirmPassword}
-                          onChange={(e) => setConfirmPassword(e.target.value)}
-                          onBlur={() => handleBlur("confirmPassword")}
-                          placeholder="បញ្ជាក់ពាក្យសម្ងាត់"
-                          className={`w-full h-12 pl-10 pr-11 text-sm bg-white rounded-xl border text-slate-900 focus:outline-none transition ${
-                            touchedFields.confirmPassword && !passwordsMatch
-                              ? "border-rose-300 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20"
-                              : "border-slate-200 focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600 hover:border-slate-300"
-                          }`}
-                        />
-                        <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                {/* ================= PROVIDER REGISTRATION WIZARD ================= */}
+                {role === "PROVIDER" && (
+                  <>
+                    {/* Step 1: Account Credentials */}
+                    {providerStep === 1 && (
+                      <div className="space-y-2.5">
+                        <div>
+                          <label className="block text-xs font-medium text-slate-700 mb-1">
+                            ឈ្មោះពេញ <span className="text-rose-500">*</span>
+                          </label>
+                          <div className="relative">
+                            <input
+                              type="text"
+                              required
+                              value={fullName}
+                              onChange={(e) => setFullName(e.target.value)}
+                              placeholder="បញ្ចូលឈ្មោះពេញ"
+                              className="w-full h-10 pl-9 pr-3 text-xs bg-slate-50/50 rounded-xl border border-slate-200 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition"
+                            />
+                            <User className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-medium text-slate-700 mb-1">
+                            លេខទូរស័ព្ទ <span className="text-rose-500">*</span>
+                          </label>
+                          <div className="relative">
+                            <input
+                              type="tel"
+                              required
+                              value={phone}
+                              onChange={(e) => setPhone(e.target.value)}
+                              placeholder="បញ្ចូលលេខទូរស័ព្ទ"
+                              className="w-full h-10 pl-9 pr-3 text-xs bg-slate-50/50 rounded-xl border border-slate-200 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition"
+                            />
+                            <Phone className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-medium text-slate-700 mb-1">
+                            អ៊ីមែល <span className="text-rose-500">*</span>
+                          </label>
+                          <div className="relative">
+                            <input
+                              type="email"
+                              required
+                              value={email}
+                              onChange={(e) => setEmail(e.target.value)}
+                              placeholder="បញ្ចូលអ៊ីមែល"
+                              className="w-full h-10 pl-9 pr-3 text-xs bg-slate-50/50 rounded-xl border border-slate-200 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition"
+                            />
+                            <Mail className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="block text-xs font-medium text-slate-700 mb-1">
+                              ពាក្យសម្ងាត់ <span className="text-rose-500">*</span>
+                            </label>
+                            <input
+                              type="password"
+                              required
+                              value={password}
+                              onChange={(e) => setPassword(e.target.value)}
+                              placeholder="ពាក្យសម្ងាត់"
+                              className="w-full h-10 px-3 text-xs bg-slate-50/50 rounded-xl border border-slate-200 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-medium text-slate-700 mb-1">
+                              បញ្ជាក់ <span className="text-rose-500">*</span>
+                            </label>
+                            <input
+                              type="password"
+                              required
+                              value={confirmPassword}
+                              onChange={(e) => setConfirmPassword(e.target.value)}
+                              placeholder="បញ្ជាក់"
+                              className="w-full h-10 px-3 text-xs bg-slate-50/50 rounded-xl border border-slate-200 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Step 2: Business Profile */}
+                    {providerStep === 2 && (
+                      <div className="space-y-2.5">
+                        <div>
+                          <label className="block text-xs font-medium text-slate-700 mb-1">
+                            ឈ្មោះអាជីវកម្ម / យីហោ <span className="text-rose-500">*</span>
+                          </label>
+                          <div className="relative">
+                            <input
+                              type="text"
+                              required
+                              value={businessName}
+                              onChange={(e) => setBusinessName(e.target.value)}
+                              placeholder="ឧ. ជាងជួសជុលម៉ាស៊ីនត្រជាក់ រក្សា"
+                              className="w-full h-10 pl-9 pr-3 text-xs bg-slate-50/50 rounded-xl border border-slate-200 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition"
+                            />
+                            <Briefcase className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-medium text-slate-700 mb-1">
+                            បទពិសោធន៍ (ឆ្នាំ) <span className="text-rose-500">*</span>
+                          </label>
+                          <input
+                            type="number"
+                            min="0"
+                            max="50"
+                            required
+                            value={experienceYears}
+                            onChange={(e) => setExperienceYears(Number(e.target.value))}
+                            className="w-full h-10 px-3 text-xs bg-slate-50/50 rounded-xl border border-slate-200 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-medium text-slate-700 mb-1">
+                            អំពីសេវាកម្មរបស់អ្នក (Bio)
+                          </label>
+                          <textarea
+                            rows={3}
+                            value={bio}
+                            onChange={(e) => setBio(e.target.value)}
+                            placeholder="រៀបរាប់សង្ខេបអំពីជំនាញ និងសេវាកម្ម..."
+                            className="w-full p-2.5 text-xs bg-slate-50/50 rounded-xl border border-slate-200 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition resize-none"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Step 3: Operating Location */}
+                    {providerStep === 3 && (
+                      <div className="space-y-2">
+                        <label className="block text-xs font-medium text-slate-700">
+                          ទីតាំងប្រតិបត្តិការ <span className="text-rose-500">*</span>
+                        </label>
+                        <div className="p-2 bg-slate-50 border border-slate-200 rounded-xl max-h-56 overflow-y-auto">
+                          <LocationPicker
+                            value={location}
+                            onChange={(loc) => setLocation(loc)}
+                            theme="blue"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Provider Step Actions */}
+                    <div className="flex gap-2 pt-1">
+                      {providerStep > 1 && (
                         <button
                           type="button"
-                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1 rounded-md transition"
-                          aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                          onClick={handlePrevStep}
+                          className="h-10 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition flex items-center gap-1"
                         >
-                          {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          <ChevronLeft className="w-3.5 h-3.5" />
+                          <span>ថយ</span>
                         </button>
-                      </div>
-                      {touchedFields.confirmPassword && !passwordsMatch && (
-                        <p className="text-xs text-rose-600 mt-1">ពាក្យសម្ងាត់ផ្ទៀងផ្ទាត់មិនត្រូវគ្នាទេ</p>
+                      )}
+
+                      {providerStep < 3 ? (
+                        <button
+                          type="button"
+                          onClick={handleNextStep}
+                          className="flex-1 h-10 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl shadow-xs transition flex items-center justify-center gap-1"
+                        >
+                          <span>បន្តទៅមុខ</span>
+                          <ChevronRight className="w-3.5 h-3.5" />
+                        </button>
+                      ) : (
+                        <button
+                          type="submit"
+                          disabled={isLoading}
+                          className="flex-1 h-10 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl shadow-xs transition flex items-center justify-center gap-1 disabled:opacity-60"
+                        >
+                          {isLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                          <span>{isLoading ? "កំពុងបង្កើត..." : "បង្កើតគណនីអ្នកផ្តល់សេវា"}</span>
+                        </button>
                       )}
                     </div>
-                  </div>
-                </div>
-              )}
+                  </>
+                )}
 
-              {/* STEP 2: Business & Skills Profile */}
-              {providerStep === 2 && (
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                    {/* Business Name */}
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                        ឈ្មោះអាជីវកម្ម ឬ យីហោ <span className="text-slate-400 font-normal">(Business Name)</span> <span className="text-rose-500">*</span>
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          required
-                          value={businessName}
-                          onChange={(e) => setBusinessName(e.target.value)}
-                          placeholder="ឧ. ជាងជួសជុលអគ្គិសនី វ៉ាន់ដា"
-                          className="w-full h-12 pl-10 pr-4 text-sm bg-white rounded-xl border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600 transition hover:border-slate-300"
-                        />
-                        <Briefcase className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                      </div>
-                    </div>
-
-                    {/* Experience Years */}
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                        បទពិសោធន៍ ឆ្នាំ <span className="text-slate-400 font-normal">(Experience Years)</span> <span className="text-rose-500">*</span>
-                      </label>
-                      <input
-                        type="number"
-                        min="0"
-                        max="50"
-                        required
-                        value={experienceYears}
-                        onChange={(e) => setExperienceYears(Number(e.target.value))}
-                        className="w-full h-12 px-4 text-sm bg-white rounded-xl border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600 transition hover:border-slate-300"
-                      />
-                    </div>
-
-                    {/* Service Area */}
-                    <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                        តំបន់ផ្តល់សេវា <span className="text-slate-400 font-normal">(Service Area)</span>
-                      </label>
-                      <input
-                        type="text"
-                        value={serviceArea}
-                        onChange={(e) => setServiceArea(e.target.value)}
-                        placeholder="ឧ. ទូទាំងភ្នំពេញ, ខណ្ឌទួលគោក, ដូនពេញ..."
-                        className="w-full h-12 px-4 text-sm bg-white rounded-xl border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600 transition hover:border-slate-300"
-                      />
-                    </div>
-
-                    {/* Bio */}
-                    <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                        ការពិពណ៌នាអំពីជំនាញ <span className="text-slate-400 font-normal">(Bio)</span>
-                      </label>
-                      <textarea
-                        rows={3}
-                        value={bio}
-                        onChange={(e) => setBio(e.target.value)}
-                        placeholder="រៀបរាប់សង្ខេបអំពីជំនាញ និងសេវាកម្មរបស់អ្នក..."
-                        className="w-full p-3.5 text-sm bg-white rounded-xl border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600 transition hover:border-slate-300 resize-none leading-relaxed"
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* STEP 3: Operating Location */}
-              {providerStep === 3 && (
-                <div className="space-y-4">
+                {/* Customer Submit Button */}
+                {role === "CUSTOMER" && (
                   <div className="pt-2">
-                    <div className="mb-4">
-                      <h2 className="text-base font-bold text-slate-900 leading-tight">
-                        ទីតាំងប្រតិបត្តិការ
-                      </h2>
-                      <p className="text-xs text-slate-500">Operating Location</p>
-                    </div>
-
-                    <LocationPicker
-                      value={location}
-                      onChange={(loc) => setLocation(loc)}
-                      theme="purple"
-                    />
+                    <button
+                      type="submit"
+                      disabled={isLoading}
+                      className="w-full h-10 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold text-xs sm:text-sm rounded-xl shadow-xs transition duration-150 flex items-center justify-center space-x-1.5 disabled:opacity-60 cursor-pointer"
+                    >
+                      {isLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                      <span>{isLoading ? "កំពុងបង្កើតគណនី..." : "បង្កើតគណនី"}</span>
+                    </button>
                   </div>
-
-                  {/* Status Note: Pending Approval */}
-                  <div className="flex items-start space-x-3 p-3.5 bg-amber-50/80 border border-amber-200/80 rounded-xl text-amber-900 text-xs sm:text-sm leading-relaxed mt-4">
-                    <Clock className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-                    <div>
-                      <p className="font-semibold text-amber-900">
-                        ស្ថានភាពដំបូងពេលចុះឈ្មោះ៖ រង់ចាំការអនុម័ត (PENDING)
-                      </p>
-                      <p className="text-amber-800/90 text-xs mt-0.5">
-                        បន្ទាប់ពីចុះឈ្មោះរួច គណនីរបស់អ្នកនឹងមានស្ថានភាព PENDING រង់ចាំការត្រួតពិនិត្យ និងអនុម័តពី Admin មុនពេលបង្ហាញជាផ្លូវការនៅលើផ្សារសេវាកម្ម។
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Provider Wizard Action Buttons */}
-              <div className="flex items-center justify-between pt-4 border-t border-slate-100 gap-3">
-                {providerStep > 1 ? (
-                  <button
-                    type="button"
-                    onClick={handlePrevStep}
-                    className="inline-flex items-center space-x-1.5 h-12 px-5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-sm font-semibold transition"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                    <span>ថយក្រោយ</span>
-                  </button>
-                ) : (
-                  <div />
                 )}
+              </form>
 
-                {providerStep < 3 ? (
-                  <button
-                    type="button"
-                    onClick={handleNextStep}
-                    className="inline-flex items-center space-x-2 h-12 px-6 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold transition shadow-xs cursor-pointer"
-                  >
-                    <span>បន្ត</span>
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                ) : (
-                  <button
-                    type="submit"
-                    disabled={isLoading}
-                    className="inline-flex items-center space-x-2 h-12 px-6 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-sm font-semibold transition shadow-xs disabled:opacity-60 cursor-pointer"
-                  >
-                    {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
-                    <span>{isLoading ? "កំពុងបង្កើតគណនី..." : "បង្កើតគណនី"}</span>
-                  </button>
-                )}
+              {/* Bottom Login Link */}
+              <div className="pt-2 text-center text-xs text-slate-500 border-t border-slate-100">
+                <span>មានគណនីរួចហើយ? </span>
+                <Link
+                  href="/login"
+                  className="font-bold text-indigo-600 hover:text-indigo-700 hover:underline"
+                >
+                  ចូលគណនី
+                </Link>
               </div>
             </div>
-          )}
-        </form>
-
-        {/* Login Link Section */}
-        <div className="pt-6 mt-8 border-t border-slate-100 text-center text-xs sm:text-sm text-slate-600">
-          <span>មានគណនីរួចហើយ? </span>
-          <Link
-            href={email ? `/login?email=${encodeURIComponent(email)}` : "/login"}
-            className="font-semibold text-purple-600 hover:text-purple-700 hover:underline transition"
-          >
-            ចូលគណនី
-          </Link>
+          </div>
         </div>
-      </main>
+      </div>
 
       {/* Subtle Copyright Footer */}
-      <footer className="w-full text-center py-4 text-xs text-slate-400">
-        © {new Date().getFullYear()} សេវាខ្មែរ (Khmer Service Marketplace). រក្សាសិទ្ធិគ្រប់យ៉ាង។
+      <footer className="w-full max-w-3xl mx-auto py-1 text-center text-[10px] text-slate-400">
+        © 2026 ខ្មែរ សេវា. រក្សាសិទ្ធិគ្រប់យ៉ាង។
       </footer>
     </div>
   );
@@ -816,8 +731,8 @@ export default function RegisterPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center text-xs text-slate-400">
-          <Loader2 className="w-6 h-6 animate-spin text-purple-600" />
+        <div className="min-h-screen flex items-center justify-center bg-slate-50">
+          <Loader2 className="w-6 h-6 animate-spin text-indigo-600" />
         </div>
       }
     >

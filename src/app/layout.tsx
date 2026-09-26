@@ -36,14 +36,15 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
-    default: `${siteConfig.khmerName} | ${siteConfig.tagline} - ${siteConfig.name}`,
-    template: `%s | ${siteConfig.khmerName} - ${siteConfig.name}`,
+    default: "ខ្មែរ សេវា | វេទិកាស្វែងរកជាង និងសេវាកម្មនៅកម្ពុជា",
+    template: "%s | ខ្មែរ សេវា - Khmer Service",
   },
-  description: siteConfig.description,
+  description:
+    "ខ្មែរ សេវា (Khmer Service) គឺជាវេទិកាសម្រាប់ស្វែងរក និងភ្ជាប់អ្នកប្រើប្រាស់ជាមួយជាង និងអ្នកផ្តល់សេវាកម្មដែលមានជំនាញនៅកម្ពុជា។ ជួសជុលម៉ាស៊ីនត្រជាក់ កុំព្យូទ័រ អគ្គិសនី ទឹក សម្អាត និងសេវាកម្មជាច្រើនទៀត។",
   keywords: siteConfig.keywords,
-  authors: [{ name: siteConfig.name, url: siteConfig.url }],
-  creator: siteConfig.name,
-  publisher: siteConfig.name,
+  authors: [{ name: "ខ្មែរ សេវា", url: siteConfig.url }],
+  creator: "ខ្មែរ សេវា",
+  publisher: "ខ្មែរ សេវា",
   alternates: {
     canonical: siteConfig.url,
     languages: {
@@ -63,27 +64,29 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: `${siteConfig.khmerName} | ${siteConfig.tagline}`,
-    description: siteConfig.description,
+    title: "ខ្មែរ សេវា | វេទិកាស្វែងរកជាង និងសេវាកម្មនៅកម្ពុជា",
+    description:
+      "ខ្មែរ សេវា (Khmer Service) គឺជាវេទិកាសម្រាប់ស្វែងរក និងភ្ជាប់អ្នកប្រើប្រាស់ជាមួយជាង និងអ្នកផ្តល់សេវាកម្មដែលមានជំនាញនៅកម្ពុជា។ ជួសជុលម៉ាស៊ីនត្រជាក់ កុំព្យូទ័រ អគ្គិសនី ទឹក សម្អាត និងសេវាកម្មជាច្រើនទៀត។",
     url: siteConfig.url,
-    siteName: `${siteConfig.khmerName} (${siteConfig.name})`,
+    siteName: "ខ្មែរ សេវា (Khmer Service)",
     locale: siteConfig.locale,
     alternateLocale: [siteConfig.alternateLocale],
     type: "website",
     images: [
       {
-        url: `${siteConfig.url}${siteConfig.defaultOgImage}`,
-        width: 1200,
-        height: 630,
-        alt: `${siteConfig.khmerName} - ${siteConfig.name}`,
+        url: `${siteConfig.url}/logo.png`,
+        width: 800,
+        height: 800,
+        alt: "ខ្មែរ សេវា - Khmer Service",
       },
     ],
   },
   twitter: {
-    card: "summary_large_image",
-    title: `${siteConfig.khmerName} | ${siteConfig.tagline}`,
-    description: siteConfig.description,
-    images: [`${siteConfig.url}${siteConfig.defaultOgImage}`],
+    card: "summary",
+    title: "ខ្មែរ សេវា | វេទិកាស្វែងរកជាង និងសេវាកម្មនៅកម្ពុជា",
+    description:
+      "ខ្មែរ សេវា (Khmer Service) គឺជាវេទិកាសម្រាប់ស្វែងរក និងភ្ជាប់អ្នកប្រើប្រាស់ជាមួយជាង និងអ្នកផ្តល់សេវាកម្មដែលមានជំនាញនៅកម្ពុជា។",
+    images: [`${siteConfig.url}/logo.png`],
     creator: siteConfig.twitterHandle,
   },
 };
