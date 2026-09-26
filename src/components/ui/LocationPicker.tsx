@@ -16,22 +16,24 @@ interface LocationPickerProps {
   value: Partial<LocationData>;
   onChange: (data: LocationData) => void;
   compact?: boolean;
+  theme?: "purple" | "blue";
+  showSectionHeading?: boolean;
 }
 
 // Cambodian administrative hierarchy with coordinates
-interface DistrictDetail {
+export interface DistrictDetail {
   khmer: string;
   lat: number;
   lng: number;
   sangkats: string[];
 }
 
-interface ProvinceDetail {
+export interface ProvinceDetail {
   khmer: string;
   districts: Record<string, DistrictDetail>;
 }
 
-const CAMBODIA_LOCATIONS: Record<string, ProvinceDetail> = {
+export const CAMBODIA_LOCATIONS: Record<string, ProvinceDetail> = {
   "Phnom Penh": {
     khmer: "រាជធានីភ្នំពេញ",
     districts: {
@@ -164,6 +166,8 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
   value,
   onChange,
   compact = false,
+  theme = "purple",
+  showSectionHeading = false,
 }) => {
   const { t } = useLanguage();
   const [isLocating, setIsLocating] = useState(false);
@@ -194,7 +198,6 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
     const lat = customLat ?? distDetail?.lat ?? 11.5435;
     const lng = customLng ?? distDetail?.lng ?? 104.8997;
 
-    // Build standard natural address: e.g. "ផ្ទះលេខ 12, ផ្លូវ 271, សង្កាត់បឹងទំពុន, ខណ្ឌមានជ័យ, រាជធានីភ្នំពេញ"
     const parts = [
       streetVal.trim(),
       sangkatVal ? `សង្កាត់${sangkatVal}` : "",
@@ -240,8 +243,8 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
 
   const confirmGpsAccess = () => {
     setShowPrompt(false);
-    if (!navigator.geolocation) {
-      setGpsError(t("locationDenied"));
+    if (typeof window === "undefined" || !navigator.geolocation) {
+      setGpsError(t("locationDenied") || "កម្មវិធីរុករករបស់អ្នកមិនគាំទ្រ GPS ទេ។");
       return;
     }
 
@@ -257,38 +260,57 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
       },
       () => {
         setIsLocating(false);
-        setGpsError(t("locationDenied"));
+        setGpsError(t("locationDenied") || "មិនអាចទាញយកទីតាំង GPS បានទេ។");
       },
       { timeout: 10000, enableHighAccuracy: true }
     );
   };
 
+  const focusRing =
+    theme === "purple"
+      ? "focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600"
+      : "focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500";
+
+  const inputHeight = compact ? "h-10 text-xs px-3" : "h-12 text-sm px-3.5";
+  const labelClass = compact
+    ? "block text-xs font-medium text-slate-700 mb-1"
+    : "block text-sm font-medium text-slate-700 mb-1.5";
+
   return (
-    <div className={compact ? "space-y-2" : "space-y-3"}>
-      {/* GPS Dialog */}
+    <div className={compact ? "space-y-3" : "space-y-4"}>
+      {showSectionHeading && (
+        <div className="pt-2">
+          <h3 className="text-base font-bold text-slate-900 leading-tight">ទីតាំង</h3>
+          <p className="text-xs text-slate-500">Location</p>
+        </div>
+      )}
+
+      {/* GPS Confirmation Prompt */}
       {showPrompt && (
-        <div className="p-2.5 bg-blue-50 border border-blue-200 rounded-xl space-y-1.5">
-          <div className="flex items-start space-x-2">
-            <Navigation className="w-3.5 h-3.5 text-blue-600 mt-0.5 shrink-0" />
+        <div className="p-3 bg-purple-50/70 border border-purple-100 rounded-xl space-y-2">
+          <div className="flex items-start space-x-2.5">
+            <Navigation className="w-4 h-4 text-purple-600 mt-0.5 shrink-0" />
             <div>
-              <h4 className="text-xs font-bold text-blue-900">{t("locationPrompt")}</h4>
-              <p className="text-[10px] sm:text-[11px] text-blue-700/90 mt-0.5 leading-relaxed">
+              <h4 className="text-xs font-semibold text-purple-900">
+                {t("locationPrompt") || "ស្វែងរកទីតាំងរបស់អ្នក"}
+              </h4>
+              <p className="text-xs text-purple-800/80 mt-0.5 leading-relaxed">
                 ប្រព័ន្ធនឹងស្វែងរកអ្នកផ្តល់សេវាដែលនៅជិតអ្នកបំផុតដោយផ្អែកលើកូអរដោនេ GPS។
               </p>
             </div>
           </div>
-          <div className="flex items-center space-x-2 pt-0.5">
+          <div className="flex items-center space-x-2 pt-1">
             <button
               type="button"
               onClick={confirmGpsAccess}
-              className="px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold rounded-lg transition"
+              className="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white text-xs font-medium rounded-lg transition shadow-xs"
             >
               អនុញ្ញាតទីតាំង (Allow)
             </button>
             <button
               type="button"
               onClick={() => setShowPrompt(false)}
-              className="px-2.5 py-1 bg-white hover:bg-slate-100 text-slate-700 text-[11px] font-semibold rounded-lg border border-slate-200 transition"
+              className="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium rounded-lg border border-slate-200 transition"
             >
               បោះបង់
             </button>
@@ -297,22 +319,22 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
       )}
 
       {gpsError && (
-        <div className="flex items-center space-x-2 p-2 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-[11px]">
-          <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+        <div className="flex items-center space-x-2 p-2.5 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs">
+          <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{gpsError}</span>
         </div>
       )}
 
-      {/* Cambodian Cascading Selectors: City/Province + District/Khan */}
-      <div className={`grid grid-cols-1 sm:grid-cols-2 ${compact ? "gap-2" : "gap-2.5"}`}>
+      {/* Cambodian Cascading Selectors: Province/City + District */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         <div>
-          <label className={`block font-semibold text-slate-700 ${compact ? "text-[11px] mb-0.5" : "text-xs mb-1"}`}>
-            រាជធានី/ខេត្ត
+          <label className={labelClass}>
+            រាជធានី/ខេត្ត <span className="text-slate-400 font-normal">(Province/City)</span>
           </label>
           <select
             value={selectedCity}
             onChange={(e) => handleCityChange(e.target.value)}
-            className={`w-full px-2.5 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition text-xs ${compact ? "py-1.5" : "py-2"}`}
+            className={`w-full ${inputHeight} rounded-xl border border-slate-200 bg-white text-slate-900 focus:outline-none ${focusRing} transition hover:border-slate-300`}
           >
             {Object.entries(CAMBODIA_LOCATIONS).map(([key, prov]) => (
               <option key={key} value={key}>
@@ -323,13 +345,13 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
         </div>
 
         <div>
-          <label className={`block font-semibold text-slate-700 ${compact ? "text-[11px] mb-0.5" : "text-xs mb-1"}`}>
-            ខណ្ឌ/ស្រុក
+          <label className={labelClass}>
+            ខណ្ឌ/ស្រុក <span className="text-slate-400 font-normal">(District)</span>
           </label>
           <select
             value={selectedDistrict}
             onChange={(e) => handleDistrictChange(e.target.value)}
-            className={`w-full px-2.5 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition text-xs ${compact ? "py-1.5" : "py-2"}`}
+            className={`w-full ${inputHeight} rounded-xl border border-slate-200 bg-white text-slate-900 focus:outline-none ${focusRing} transition hover:border-slate-300`}
           >
             {Object.entries(availableDistricts).map(([key, d]) => (
               <option key={key} value={key}>
@@ -340,16 +362,17 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
         </div>
       </div>
 
-      {/* Sangkat / Commune Selector */}
-      {availableSangkats.length > 0 && (
+      {/* Sangkat/Commune + Street Address & GPS Button */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        {/* Sangkat / Commune */}
         <div>
-          <label className={`block font-semibold text-slate-700 ${compact ? "text-[11px] mb-0.5" : "text-xs mb-1"}`}>
-            សង្កាត់/ឃុំ (ជម្រើស)
+          <label className={labelClass}>
+            សង្កាត់/ឃុំ <span className="text-slate-400 font-normal">(Sangkat/Commune)</span>
           </label>
           <select
             value={selectedSangkat}
             onChange={(e) => handleSangkatChange(e.target.value)}
-            className={`w-full px-2.5 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition text-xs ${compact ? "py-1.5" : "py-2"}`}
+            className={`w-full ${inputHeight} rounded-xl border border-slate-200 bg-white text-slate-900 focus:outline-none ${focusRing} transition hover:border-slate-300`}
           >
             <option value="">-- ជ្រើសរើសសង្កាត់ --</option>
             {availableSangkats.map((s) => (
@@ -359,44 +382,43 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
             ))}
           </select>
         </div>
-      )}
 
-      {/* Detailed Street Address / House number */}
-      <div>
-        <div className={`flex justify-between items-center ${compact ? "mb-0.5" : "mb-1"}`}>
-          <label className={`block font-semibold text-slate-700 ${compact ? "text-[11px]" : "text-xs"}`}>
-            ផ្ទះលេខ / ផ្លូវ (Street & House)
-          </label>
-          <button
-            type="button"
-            onClick={() => setShowPrompt(true)}
-            disabled={isLocating}
-            className="inline-flex items-center space-x-1 text-[11px] font-semibold text-blue-600 hover:text-blue-700 transition"
-          >
-            <Navigation className={`w-3 h-3 ${isLocating ? "animate-spin text-blue-600" : ""}`} />
-            <span>{isLocating ? "កំពុងកំណត់..." : "ប្រើទីតាំងបច្ចុប្បន្ន (GPS)"}</span>
-          </button>
-        </div>
-        <div className="relative">
-          <input
-            type="text"
-            value={streetAddress}
-            onChange={(e) => handleStreetChange(e.target.value)}
-            placeholder="ឧ. ផ្ទះលេខ 12, ផ្លូវ 271..."
-            className={`w-full pl-8 pr-3 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition ${compact ? "py-1.5" : "py-2"}`}
-          />
-          <MapPin className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2" />
+        {/* Street & House with GPS button */}
+        <div>
+          <div className="flex justify-between items-center mb-1.5">
+            <label className="text-sm font-medium text-slate-700">
+              ផ្ទះលេខ / ផ្លូវ <span className="text-slate-400 font-normal">(Street & House)</span>
+            </label>
+            <button
+              type="button"
+              onClick={() => setShowPrompt(true)}
+              disabled={isLocating}
+              className="inline-flex items-center space-x-1.5 text-xs font-medium text-purple-700 hover:text-purple-800 bg-white hover:bg-purple-50/60 border border-purple-200 hover:border-purple-300 rounded-lg px-2 py-0.5 transition shadow-2xs"
+            >
+              <Navigation className={`w-3 h-3 text-purple-600 ${isLocating ? "animate-spin" : ""}`} />
+              <span>{isLocating ? "កំពុងកំណត់..." : "ប្រើទីតាំងបច្ចុប្បន្ន (GPS)"}</span>
+            </button>
+          </div>
+          <div className="relative">
+            <input
+              type="text"
+              value={streetAddress}
+              onChange={(e) => handleStreetChange(e.target.value)}
+              placeholder="ឧ. ផ្ទះលេខ 12, ផ្លូវ 271..."
+              className={`w-full ${inputHeight} pl-9 pr-3 rounded-xl border border-slate-200 bg-white text-slate-900 focus:outline-none ${focusRing} transition hover:border-slate-300`}
+            />
+            <MapPin className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+          </div>
         </div>
       </div>
 
-      {/* Coordinates confirmed */}
-      {value.latitude && value.longitude ? (
-        <div className={`flex items-center space-x-1.5 text-emerald-700 bg-emerald-50 rounded-xl border border-emerald-200 ${compact ? "px-2.5 py-1 text-[11px]" : "px-3 py-1.5 text-xs"}`}>
+      {/* Address Validation / Status Message */}
+      {(value.address?.trim() || (value.latitude && value.longitude)) && (
+        <div className="flex items-center space-x-2 text-emerald-700 bg-emerald-50/90 rounded-xl border border-emerald-200/80 px-3.5 py-2 text-xs">
           <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-          <span>បានកំណត់ទីតាំងត្រឹមត្រូវ</span>
+          <span className="font-medium">✓ ទីតាំងរបស់អ្នកត្រូវបានកំណត់</span>
         </div>
-      ) : null}
+      )}
     </div>
   );
 };
-
