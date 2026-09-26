@@ -4,12 +4,12 @@ import { ServiceCategory } from "@/types/service-request";
 export const siteConfig = {
   name: "Khmer Service",
   khmerName: "ខ្មែរ សេវា",
-  tagline: "វេទិកាស្វែងរក និងផ្គូផ្គងអ្នកផ្តល់សេវាកម្មនៅកម្ពុជា",
-  url: (process.env.NEXT_PUBLIC_SITE_URL || "https://servicemarketplacefront.vercel.app").replace(/\/+$/, ""),
+  tagline: "វេទិកាស្វែងរក និងផ្គូផ្គងជាងជំនាញនៅកម្ពុជា",
+  url: (process.env.NEXT_PUBLIC_SITE_URL || "https://servicemaketplacefront.vercel.app").replace(/\/+$/, ""),
   description:
-    "ស្វែងរកជាង និងអ្នកផ្តល់សេវាកម្មដែលមានបទពិសោធន៍នៅកម្ពុជា។ ស្វែងរកសេវាជួសជុលម៉ាស៊ីនត្រជាក់ កុំព្យូទ័រ អគ្គិសនី ទឹក សម្អាត និងសេវាកម្មផ្សេងៗបានយ៉ាងងាយស្រួល និងរហ័សទាន់ចិត្ត។",
+    "ខ្មែរ សេវា (Khmer Service) — ថ្នាលសេវាកម្មឈានមុខគេនៅកម្ពុជា សម្រាប់ស្វែងរកជាង និងអ្នកផ្តល់សេវាកម្ម។ ជួសជុលម៉ាស៊ីនត្រជាក់ ជាងភ្លើង ជាងទឹក ជាងកុំព្យូទ័រ សេវាសម្អាត និងជាងជំនាញជាច្រើនទៀត។",
   englishDescription:
-    "Find trusted local service providers and certified repair technicians across Cambodia. Compare quotes and book AC repair, plumbing, electrical, cleaning, and more.",
+    "Khmer Service — Leading service marketplace in Cambodia. Connect with verified service providers for AC repair, electrical, plumbing, cleaning, computer repair, and more.",
   locale: "km_KH",
   alternateLocale: "en_US",
   defaultOgImage: "/logo.png",
@@ -626,7 +626,9 @@ export function generateSeoMetadata({
   type?: "website" | "article" | "profile";
 }): Metadata {
   const canonicalUrl = `${siteConfig.url}${path.startsWith("/") ? path : `/${path}`}`;
-  const ogTitle = title ? `${title} | ${siteConfig.khmerName}` : `${siteConfig.khmerName} | ${siteConfig.tagline}`;
+  const ogTitle = title
+    ? (title.includes(siteConfig.khmerName) ? title : `${title} | ${siteConfig.khmerName}`)
+    : `${siteConfig.khmerName} | ${siteConfig.tagline}`;
   const ogDesc = description || siteConfig.description;
   const ogImg = image?.startsWith("http") ? image : `${siteConfig.url}${image || siteConfig.defaultOgImage}`;
 

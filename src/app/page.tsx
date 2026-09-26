@@ -4,9 +4,9 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import HomeClient from "@/components/home/HomeClient";
 
 export const metadata: Metadata = generateSeoMetadata({
-  title: `${siteConfig.khmerName} | ស្វែងរកជាង និងសេវាកម្មនៅកម្ពុជា`,
+  title: "ខ្មែរ សេវា (Khmer Service) | ស្វែងរកជាង និងសេវាកម្មនៅកម្ពុជា",
   description:
-    "ស្វែងរកជាង និងអ្នកផ្តល់សេវាកម្មដែលមានបទពិសោធន៍នៅកម្ពុជា។ ស្វែងរកសេវាជួសជុលម៉ាស៊ីនត្រជាក់ កុំព្យូទ័រ អគ្គិសនី ទឹក សម្អាត និងសេវាកម្មផ្សេងៗបានយ៉ាងងាយស្រួល។",
+    "ខ្មែរ សេវា (Khmer Service) — ថ្នាលសេវាកម្មឈានមុខគេនៅកម្ពុជា សម្រាប់ស្វែងរកជាង និងអ្នកផ្តល់សេវាកម្ម។ ជួសជុលម៉ាស៊ីនត្រជាក់ ជាងភ្លើង ជាងទឹក ជាងកុំព្យូទ័រ សេវាសម្អាត និងជាងជំនាញជាច្រើនទៀត។",
   path: "/",
 });
 
