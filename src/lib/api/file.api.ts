@@ -1,7 +1,9 @@
 import api from "./client";
 import { FileUploadResponse, UploadFileType } from "@/types/file";
 
-const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080").replace(/\/+$/, "");
+const BASE_URL = (
+  process.env.NEXT_PUBLIC_API_URL || "https://servicemaketplaceapi-production.up.railway.app"
+).replace(/\/+$/, "");
 
 export const fileApi = {
   upload: (file: File, fileType: UploadFileType = "OTHER") => {

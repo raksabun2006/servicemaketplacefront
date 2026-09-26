@@ -1,6 +1,8 @@
 import { ApiError } from "@/types/api";
 
-const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080").replace(/\/+$/, "");
+const BASE_URL = (
+  process.env.NEXT_PUBLIC_API_URL || "https://servicemaketplaceapi-production.up.railway.app"
+).replace(/\/+$/, "");
 
 class ApiClient {
   private token: string | null = null;

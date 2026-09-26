@@ -621,55 +621,46 @@ export default function HomePage() {
                   </div>
                 </div>
               ))
-            ) : (
-              /* Fallback Mock Request Cards if database is empty */
-              [
-                {
-                  title: "លាងសម្អាតម៉ាស៊ីនត្រជាក់ ២ គ្រឿង និងបញ្ចូលហ្គាស",
-                  category: "ម៉ាស៊ីនត្រជាក់",
-                  budget: "$30",
-                  location: "ខណ្ឌទួលគោក, រាជធានីភ្នំពេញ",
-                },
-                {
-                  title: "ជួសជុលទុយោទឹកលិចនៅក្រោមឡាបូលាងចាន",
-                  category: "ទឹក និងបំពង់",
-                  budget: "$15",
-                  location: "ខណ្ឌចំការមន, រាជធានីភ្នំពេញ",
-                },
-                {
-                  title: "ឆ្លងភ្លើងដាច់ឌីសង់ទ័រ និងដំឡើងកង្ហារពិដានថ្មី",
-                  category: "អគ្គិសនី",
-                  budget: "$25",
-                  location: "ខណ្ឌសែនសុខ, រាជធានីភ្នំពេញ",
-                },
-              ].map((item, idx) => (
+            ) : loadingRequests ? (
+              /* Loading Skeleton */
+              Array.from({ length: 3 }).map((_, idx) => (
                 <div
                   key={idx}
-                  className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
+                  className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs animate-pulse space-y-4"
                 >
-                  <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-full">
-                        {item.category}
-                      </span>
-                      <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full">
-                        {item.budget}
-                      </span>
-                    </div>
-                    <h3 className="text-base font-bold text-slate-900 mb-2">{item.title}</h3>
-                    <div className="flex items-center gap-1.5 text-xs text-slate-500 mb-4">
-                      <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                      <span>{item.location}</span>
-                    </div>
+                  <div className="flex justify-between items-center">
+                    <div className="h-6 w-24 bg-slate-200 rounded-full" />
+                    <div className="h-5 w-16 bg-slate-200 rounded-full" />
                   </div>
-                  <Link
-                    href="/services"
-                    className="w-full text-center py-2.5 rounded-lg bg-[#104ccb] hover:bg-[#0a3ca8] text-white text-xs font-bold transition"
-                  >
-                    {isKm ? "មើលសេវាកម្មទាំងអស់" : "View All Services"}
-                  </Link>
+                  <div className="h-5 w-4/5 bg-slate-200 rounded" />
+                  <div className="h-4 w-3/5 bg-slate-200 rounded" />
+                  <div className="pt-4 border-t border-slate-100 flex justify-between items-center">
+                    <div className="h-4 w-28 bg-slate-200 rounded" />
+                    <div className="h-8 w-28 bg-slate-200 rounded-lg" />
+                  </div>
                 </div>
               ))
+            ) : (
+              /* Empty State when API returns no requests */
+              <div className="col-span-full py-12 px-6 bg-white rounded-2xl border border-dashed border-slate-200 text-center">
+                <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mx-auto mb-3">
+                  <Wrench className="w-6 h-6" />
+                </div>
+                <h3 className="text-base font-bold text-slate-800">
+                  {isKm ? "មិនទាន់មានសំណើសេវាកម្មនៅឡើយទេ" : "No active service requests yet"}
+                </h3>
+                <p className="text-xs text-slate-500 max-w-md mx-auto mt-1 mb-4 leading-relaxed">
+                  {isKm
+                    ? "សំណើដែលអតិថិជនបង្ហោះនឹងបង្ហាញនៅទីនេះផ្ទាល់ពីប្រព័ន្ធ។ សូមបង្ហោះបញ្ហារបស់អ្នកឥឡូវនេះ!"
+                    : "Requests posted by customers will appear here directly from the API. Post your problem now!"}
+                </p>
+                <Link
+                  href="/customer/requests/create"
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#104ccb] hover:bg-[#0a3ca8] text-white text-xs font-bold transition shadow-xs"
+                >
+                  <span>{isKm ? "+ បង្ហោះបញ្ហារបស់អ្នក" : "+ Post Your Problem"}</span>
+                </Link>
+              </div>
             )}
           </div>
         </div>
