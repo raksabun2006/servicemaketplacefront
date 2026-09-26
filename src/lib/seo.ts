@@ -703,6 +703,14 @@ export function generateSeoMetadata({
       images: [ogImg],
       creator: siteConfig.twitterHandle,
     },
+    icons: {
+      icon: [
+        { url: "/favicon.ico", sizes: "any" },
+        { url: "/logo.png", type: "image/png" },
+      ],
+      shortcut: "/favicon.ico",
+      apple: "/apple-touch-icon.png",
+    },
   };
 }
 
