@@ -16,6 +16,8 @@ import {
   Tag,
   LogIn,
   Users,
+  Bell,
+  Clock,
 } from "lucide-react";
 
 export const MobileNavigation: React.FC = () => {
@@ -86,7 +88,7 @@ export const MobileNavigation: React.FC = () => {
     );
   }
 
-  // Customer Mobile Navigation (5 equal tabs)
+  // Customer Mobile Navigation (Section 16: ទំព័រដើម, សំណើ, សារ, ជូនដំណឹង, គណនី)
   if (isCustomer) {
     return (
       <nav
@@ -94,15 +96,15 @@ export const MobileNavigation: React.FC = () => {
         className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] px-1 pt-1.5 pb-[max(0.75rem,env(safe-area-inset-bottom))] grid grid-cols-5 items-center"
       >
         {renderTab("/", Home, t("home"))}
-        {renderTab("/providers", Search, t("findHelper"))}
-        {renderTab("/customer/requests", Wrench, t("jobs"))}
+        {renderTab("/customer/requests", Wrench, t("myRequests"))}
         {renderTab("/customer/messages", MessageSquare, t("messages"))}
+        {renderTab("/customer/notifications", Bell, t("notifications"))}
         {renderTab("/customer/profile", User, t("account"))}
       </nav>
     );
   }
 
-  // Provider Mobile Navigation (5 equal tabs)
+  // Provider Mobile Navigation (Section 16: ទំព័រដើម, ការងារ, ការផ្តល់តម្លៃ, សារ, គណនី)
   if (isProvider) {
     return (
       <nav
@@ -110,8 +112,8 @@ export const MobileNavigation: React.FC = () => {
         className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] px-1 pt-1.5 pb-[max(0.75rem,env(safe-area-inset-bottom))] grid grid-cols-5 items-center"
       >
         {renderTab("/provider/dashboard", Home, t("home"))}
-        {renderTab("/provider/requests", Search, t("findJobs"))}
         {renderTab("/provider/bookings", Wrench, t("jobs"))}
+        {renderTab("/provider/offers", Clock, t("offers"))}
         {renderTab("/provider/messages", MessageSquare, t("messages"))}
         {renderTab("/provider/profile", User, t("account"))}
       </nav>

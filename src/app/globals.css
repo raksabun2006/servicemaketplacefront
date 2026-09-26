@@ -18,7 +18,7 @@ body {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-kantumruy), var(--font-khmer), "Kantumruy Pro", "Noto Sans Khmer", "Khmer OS Siemreap", var(--font-sans), system-ui, sans-serif;
+  font-family: "Khmer OS Siemreap", "Noto Sans Khmer", var(--font-kantumruy), "Kantumruy Pro", var(--font-khmer), var(--font-sans), system-ui, sans-serif;
   font-size: 15px;
   line-height: 1.75;
   letter-spacing: 0.01em;

@@ -116,7 +116,7 @@ export default function ProviderRequestDetailPage() {
 
   if (isLoading) {
     return (
-      <ProtectedRoute allowedRoles={["PROVIDER"]}>
+      <ProtectedRoute allowedRoles={["PROVIDER", "ADMIN"]}>
         <div className="flex w-full min-w-0">
           <Sidebar />
           <div className="flex-1 min-w-0 min-h-[60vh] flex flex-col items-center justify-center space-y-3">
@@ -130,7 +130,7 @@ export default function ProviderRequestDetailPage() {
 
   if (!request) {
     return (
-      <ProtectedRoute allowedRoles={["PROVIDER"]}>
+      <ProtectedRoute allowedRoles={["PROVIDER", "ADMIN"]}>
         <div className="flex w-full min-w-0">
           <Sidebar />
           <div className="flex-1 min-w-0 max-w-4xl mx-auto px-4 py-12">
@@ -151,7 +151,7 @@ export default function ProviderRequestDetailPage() {
   const isOpen = request.status === "OPEN";
 
   return (
-    <ProtectedRoute allowedRoles={["PROVIDER"]}>
+    <ProtectedRoute allowedRoles={["PROVIDER", "ADMIN"]}>
       <div className="flex w-full min-w-0">
         <Sidebar />
 

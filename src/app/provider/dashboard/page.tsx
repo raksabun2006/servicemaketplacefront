@@ -23,6 +23,8 @@ import {
   ArrowRight,
   SlidersHorizontal,
   CircleDot,
+  ShieldAlert,
+  AlertCircle,
 } from "lucide-react";
 
 export default function ProviderDashboardPage() {
@@ -128,6 +130,39 @@ export default function ProviderDashboardPage() {
               </div>
             </div>
           </div>
+
+          {/* Pending Approval / Verification Alert Banner */}
+          {profile && !profile.isVerified && profile.verificationStatus !== "VERIFIED" && (
+            <div className="bg-gradient-to-r from-amber-500/10 via-amber-50 to-orange-500/10 border-2 border-amber-300/80 rounded-2xl p-5 sm:p-6 shadow-xs relative overflow-hidden">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex items-start space-x-3.5">
+                  <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 mt-0.5 border border-amber-200 shadow-2xs">
+                    <Clock className="w-5 h-5 text-amber-600 animate-pulse" />
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h3 className="text-sm sm:text-base font-bold text-amber-900">
+                        ស្ថានភាពគណនី៖ កំពុងរង់ចាំការអនុម័តពី Admin (Pending Approval)
+                      </h3>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-200 text-amber-900 uppercase tracking-wide">
+                        {profile.verificationStatus || "PENDING"}
+                      </span>
+                    </div>
+                    <p className="text-xs text-amber-800/90 max-w-2xl leading-relaxed">
+                      គណនីរបស់អ្នកត្រូវបានបង្កើតដោយជោគជ័យ និងកំពុងស្ថិតក្នុងការត្រួតពិនិត្យដោយអ្នកគ្រប់គ្រងប្រព័ន្ធ (Admin)។ នៅពេល Admin ពិនិត្យអនុម័តរួចរាល់ គណនីរបស់អ្នកនឹងទទួលបានផ្លាកសញ្ញា <strong>«បានផ្ទៀងផ្ទាត់»</strong> និងត្រូវបានបង្ហាញជាផ្លូវការនៅលើទីផ្សារសេវាកម្ម។
+                    </p>
+                  </div>
+                </div>
+
+                <Link
+                  href="/provider/profile"
+                  className="shrink-0 px-4 py-2 bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white text-xs font-bold rounded-xl shadow-2xs transition"
+                >
+                  ពិនិត្យប្រវត្តិរូប
+                </Link>
+              </div>
+            </div>
+          )}
 
           {/* Metric Stats Cards — Focus on Earning Opportunities */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

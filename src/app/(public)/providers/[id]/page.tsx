@@ -173,10 +173,15 @@ export default function ProviderDetailPage() {
             <div className="space-y-1">
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="text-xl sm:text-2xl font-bold text-slate-900">{displayName}</h1>
-                {isVerified && (
+                {isVerified ? (
                   <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                     <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span>បានផ្ទៀងផ្ទាត់</span>
+                    <span>បានផ្ទៀងផ្ទាត់ (Verified)</span>
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+                    <Clock className="w-3.5 h-3.5 text-amber-600" />
+                    <span>រង់ចាំការអនុម័ត (Pending Admin Approval)</span>
                   </span>
                 )}
               </div>
@@ -238,6 +243,21 @@ export default function ProviderDetailPage() {
             )}
           </div>
         </div>
+
+        {/* Pending Approval Notice */}
+        {!isVerified && (
+          <div className="flex items-start space-x-2.5 p-3.5 bg-amber-50 border border-amber-200 rounded-2xl text-amber-900 text-xs">
+            <Clock className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+            <div className="space-y-0.5">
+              <p className="font-bold text-amber-900">
+                គណនីកំពុងរង់ចាំការអនុម័តពី Admin (Pending Admin Approval)
+              </p>
+              <p className="text-amber-800/90 text-[11px]">
+                ព័ត៌មានរបស់អ្នកផ្តល់សេវានេះត្រូវបានចុះឈ្មោះ និងកំពុងស្ថិតក្រោមការត្រួតពិនិត្យឯកសារដោយអ្នកគ្រប់គ្រងប្រព័ន្ធ។
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Bio */}
         {provider.bio && (

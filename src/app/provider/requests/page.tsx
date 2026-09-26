@@ -84,7 +84,7 @@ export default function ProviderRequestsPage() {
   ];
 
   return (
-    <ProtectedRoute allowedRoles={["PROVIDER"]}>
+    <ProtectedRoute allowedRoles={["PROVIDER", "ADMIN"]}>
       <div className="flex w-full min-w-0">
         <Sidebar />
 
@@ -167,7 +167,6 @@ export default function ProviderRequestsPage() {
                 <Compass className="w-4 h-4 text-emerald-600" />
                 <span>
                   ទីតាំងស្វែងរក៖ {location.district || location.city || "រាជធានីភ្នំពេញ"}
-                  {location.latitude && ` (${location.latitude.toFixed(2)}, ${location.longitude?.toFixed(2)})`}
                 </span>
               </div>
 

@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { fileApi } from "@/lib/api/file.api";
 import { LanguageSelector } from "@/components/ui/LanguageSelector";
+import { CambodiaFlag, EnglishFlag } from "@/components/ui/FlagIcons";
 
 export const Navbar: React.FC = () => {
   const { user, isAuthenticated, isCustomer, isProvider, isAdmin, logout, refreshUserProfile } = useAuth();
@@ -61,99 +62,133 @@ export const Navbar: React.FC = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Brand Logo */}
-          <div className="flex items-center space-x-4 md:space-x-6 min-w-0">
-            <Link href="/" className="flex items-center space-x-2 group shrink-0">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/logo.png"
-                alt="Khmer Service Logo"
-                className="w-8 h-8 sm:w-10 sm:h-10 object-contain group-hover:scale-105 transition-transform"
-              />
-              <span className="font-bold text-base sm:text-lg text-slate-900 leading-tight whitespace-nowrap">
-                Khmer Service
-              </span>
+    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md shadow-xs border-b border-slate-100">
+      <div className="max-w-[1440px] mx-auto px-3 sm:px-5 lg:px-6">
+        <div className="flex items-center justify-between h-16 sm:h-18">
+          {/* Brand Logo & Title */}
+          <div className="flex items-center space-x-3 lg:space-x-5 xl:space-x-7 shrink-0">
+            <Link href="/" className="flex items-center space-x-2.5 sm:space-x-3 group shrink-0">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 relative flex items-center justify-center shrink-0">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/logo.png"
+                  alt="Khmer Service Logo"
+                  className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-200 drop-shadow-xs"
+                />
+              </div>
+              <div className="flex flex-col">
+                <span className="font-black text-sm lg:text-[15px] xl:text-base text-slate-900 leading-tight whitespace-nowrap group-hover:text-blue-700 transition">
+                  {language === "km" ? "ថ្នាលសេវាកម្មកម្ពុជា" : "Khmer Service"}
+                </span>
+                <span className="text-[10px] text-blue-700 font-bold tracking-wider uppercase hidden xl:block whitespace-nowrap">
+                  {language === "km" ? "សេវាកម្ម និងជាងជំនាញ" : "Service Marketplace"}
+                </span>
+              </div>
             </Link>
 
             {/* Desktop Primary Navigation */}
-            <nav className="hidden md:flex items-center space-x-1">
-              <Link
-                href="/"
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition ${
-                  pathname === "/" ? "text-blue-600 bg-blue-50" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
-                }`}
-              >
-                {t("home")}
-              </Link>
+            <nav className="hidden lg:flex items-center space-x-1 lg:space-x-1.5 xl:space-x-3 2xl:space-x-4 text-xs lg:text-[13px] xl:text-sm font-bold text-slate-800 shrink-0">
               <Link
                 href="/services"
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition ${
-                  pathname.startsWith("/services") ? "text-blue-600 bg-blue-50" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
-                }`}
+                className="px-2.5 py-1.5 rounded-lg hover:text-blue-700 hover:bg-blue-50/60 transition whitespace-nowrap shrink-0"
               >
-                {t("services")}
+                {language === "km" ? "ប្រភេទសេវាកម្ម" : "Services"}
               </Link>
-              <Link
-                href="/providers"
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition ${
-                  pathname.startsWith("/providers") ? "text-blue-600 bg-blue-50" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
-                }`}
-              >
-                {t("providers")}
-              </Link>
+              <div className="relative group cursor-pointer shrink-0">
+                <button
+                  type="button"
+                  className="flex items-center space-x-1 px-2.5 py-1.5 rounded-lg hover:text-blue-700 hover:bg-blue-50/60 transition whitespace-nowrap shrink-0"
+                >
+                  <span>{language === "km" ? "ជាងជំនាញ" : "Technicians"}</span>
+                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-600 transition-transform group-hover:rotate-180" />
+                </button>
+                <div className="absolute top-full left-0 w-60 bg-white rounded-xl shadow-xl border border-slate-100 py-2 hidden group-hover:block z-50">
+                  <Link href="/providers?category=AC_REPAIR" className="block px-4 py-2 text-xs text-slate-700 hover:bg-blue-50 hover:text-blue-700 font-medium">
+                    {language === "km" ? "ជាងម៉ាស៊ីនត្រជាក់ & ទូរទឹកកក" : "AC & Refrigeration"}
+                  </Link>
+                  <Link href="/providers?category=PLUMBING" className="block px-4 py-2 text-xs text-slate-700 hover:bg-blue-50 hover:text-blue-700 font-medium">
+                    {language === "km" ? "ជាងទឹក និងបំពង់ទុយោ" : "Plumbing & Pipes"}
+                  </Link>
+                  <Link href="/providers?category=ELECTRICAL" className="block px-4 py-2 text-xs text-slate-700 hover:bg-blue-50 hover:text-blue-700 font-medium">
+                    {language === "km" ? "ជាងអគ្គិសនី និងខ្សែភ្លើង" : "Electrical & Wiring"}
+                  </Link>
+                  <Link href="/providers?category=CLEANING" className="block px-4 py-2 text-xs text-slate-700 hover:bg-blue-50 hover:text-blue-700 font-medium">
+                    {language === "km" ? "សេវាសម្អាតគេហដ្ឋាន" : "Cleaning Services"}
+                  </Link>
+                  <Link href="/providers" className="block px-4 py-2 text-xs text-blue-700 bg-blue-50/50 hover:bg-blue-100 font-bold border-t border-slate-100 mt-1">
+                    {language === "km" ? "មើលជាងជំនាញទាំងអស់ →" : "All Technicians →"}
+                  </Link>
+                </div>
+              </div>
               <Link
                 href="/about"
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition ${
-                  pathname === "/about" ? "text-blue-600 bg-blue-50" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
-                }`}
+                className="px-2.5 py-1.5 rounded-lg hover:text-blue-700 hover:bg-blue-50/60 transition whitespace-nowrap shrink-0"
               >
-                {t("about")}
+                {language === "km" ? "អំពីយើង" : "About Us"}
               </Link>
             </nav>
           </div>
 
           {/* Right Section Actions */}
-          <div className="flex items-center space-x-1 sm:space-x-2.5 shrink-0">
-            {/* Language Switcher with Flags */}
-            <LanguageSelector />
+          <div className="flex items-center space-x-2 sm:space-x-2.5 shrink-0">
+            {/* Help Button (Shown on 2xl to preserve horizontal space) */}
+            <Link
+              href="/about"
+              className="hidden 2xl:inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-full border border-blue-600 text-blue-600 hover:bg-blue-50 text-xs font-bold transition shadow-2xs whitespace-nowrap shrink-0"
+            >
+              <MessageSquare className="w-3.5 h-3.5 text-blue-600" />
+              <span>{language === "km" ? "ជំនួយបន្ថែម" : "Support"}</span>
+            </Link>
 
-            {isAuthenticated ? (
-              <>
-                {/* Customer Post Job CTA */}
-                {isCustomer && (
-                  <Link
-                    href="/customer/requests/create"
-                    className="hidden sm:inline-flex items-center space-x-1.5 px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl shadow-sm transition"
-                  >
-                    <PlusCircle className="w-4 h-4" />
-                    <span>{t("postProblem")}</span>
-                  </Link>
-                )}
+            {/* Login Button (Shown only when unauthenticated to prevent duplicate buttons) */}
+            {!isAuthenticated ? (
+              <Link
+                href="/login"
+                className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-full bg-[#1254d8] hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-600/25 transition whitespace-nowrap shrink-0"
+              >
+                <User className="w-3.5 h-3.5 text-white" />
+                <span>{language === "km" ? "ចូលប្រើប្រាស់" : "Login"}</span>
+              </Link>
+            ) : null}
 
-                {/* Provider Find Jobs CTA */}
-                {isProvider && (
-                  <Link
-                    href="/provider/requests"
-                    className="hidden sm:inline-flex items-center space-x-1.5 px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl shadow-sm transition"
-                  >
-                    <Search className="w-4 h-4" />
-                    <span>{t("findJobs")}</span>
-                  </Link>
-                )}
-
-                {/* Notifications Bell - Desktop only on header, mobile has bottom nav & drawer */}
+            {/* 1-Click Language Switcher (Real Official Cambodia & UK Flags) */}
+            <button
+              type="button"
+              onClick={toggleLanguage}
+              title={
+                language === "km"
+                  ? "ប្តូរទៅភាសាអង់គ្លេស / Switch to English"
+                  : "Switch to Khmer / ប្តូរទៅភាសាខ្មែរ"
+              }
+              aria-label="Toggle language"
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden border-2 border-slate-200/90 shadow-xs hover:border-blue-600 hover:scale-105 active:scale-95 transition-all duration-150 cursor-pointer flex items-center justify-center p-0 bg-white group shrink-0"
+            >
+              {language === "km" ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  src="/flags/kh-1x1.svg"
+                  alt="ភាសាខ្មែរ"
+                  className="w-full h-full object-cover select-none pointer-events-none group-hover:brightness-105 transition"
+                  loading="eager"
+                  draggable={false}
+                />
+              ) : (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  src="/flags/gb-1x1.svg"
+                  alt="English"
+                  className="w-full h-full object-cover select-none pointer-events-none group-hover:brightness-105 transition"
+                  loading="eager"
+                  draggable={false}
+                />
+              )}
+            </button>
+            {/* If Authenticated: User Avatar Dropdown & Notifications */}
+            {isAuthenticated && (
+              <div className="flex items-center space-x-2 pl-2 border-l border-slate-200">
                 <Link
-                  href={
-                    isCustomer
-                      ? "/customer/notifications"
-                      : isProvider
-                      ? "/provider/messages"
-                      : "/admin/dashboard"
-                  }
-                  className="hidden md:inline-flex relative p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition"
+                  href={isCustomer ? "/customer/notifications" : isProvider ? "/provider/messages" : "/admin/dashboard"}
+                  className="relative p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition"
                 >
                   <Bell className="w-5 h-5" />
                   {unreadNotifications > 0 && (
@@ -162,16 +197,6 @@ export const Navbar: React.FC = () => {
                     </span>
                   )}
                 </Link>
-
-                {/* Messages Icon - Desktop only on header, mobile has bottom nav */}
-                <Link
-                  href={isCustomer ? "/customer/messages" : isProvider ? "/provider/messages" : "/admin/dashboard"}
-                  className="hidden md:inline-flex p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition"
-                >
-                  <MessageSquare className="w-5 h-5" />
-                </Link>
-
-                {/* User Dropdown */}
                 <div className="relative">
                   <button
                     onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
@@ -368,22 +393,6 @@ export const Navbar: React.FC = () => {
                     </div>
                   )}
                 </div>
-              </>
-            ) : (
-              <div className="flex items-center space-x-1 sm:space-x-2">
-                <Link
-                  href="/login"
-                  className="flex items-center space-x-1 px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs font-semibold text-slate-700 hover:text-slate-900 rounded-lg hover:bg-slate-50 transition"
-                >
-                  <LogIn className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                  <span>{t("login")}</span>
-                </Link>
-                <Link
-                  href="/register"
-                  className="hidden sm:inline-flex items-center space-x-1 px-3 sm:px-3.5 py-1.5 sm:py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl shadow-sm transition whitespace-nowrap"
-                >
-                  <span>{t("register")}</span>
-                </Link>
               </div>
             )}
 

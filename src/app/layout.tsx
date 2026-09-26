@@ -26,8 +26,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "សេវាខ្មែរ - ទីផ្សារសេវាកម្មកម្ពុជា | Khmer Service Marketplace",
-  description: "ស្វែងរកអ្នកផ្តល់សេវាដែលអ្នកអាចទុកចិត្តបាន បង្ហោះបញ្ហារបស់អ្នក និងស្វែងរកអ្នកផ្តល់សេវានៅជិតអ្នក។",
+  title: "ថ្នាលបរិវត្តកម្មឌីជីថលសហគ្រាស | Enterprises Go Digital (EGD)",
+  description: "ថ្នាលបរិវត្តកម្មឌីជីថលសហគ្រាស (Enterprises Go Digital - EGD) ជំរុញការចាប់យកឌីជីថលរបស់សហគ្រាសគ្រប់កម្រិត និងគ្រប់វិស័យ ដើម្បីពង្រឹងប្រសិទ្ធភាព និងចីរភាពអាជីវកម្ម។",
 };
 
 export default function RootLayout({

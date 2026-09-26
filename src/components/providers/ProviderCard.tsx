@@ -9,7 +9,7 @@ import { favoriteApi } from "@/lib/api/favorite.api";
 import { StarRating } from "@/components/ui/StarRating";
 import { StatusBadge } from "@/components/ui/Badge";
 import { fileApi } from "@/lib/api/file.api";
-import { MapPin, CheckCircle2, Heart, Briefcase } from "lucide-react";
+import { MapPin, CheckCircle2, Heart, Briefcase, Clock } from "lucide-react";
 
 interface ProviderCardProps {
   provider: ProviderProfileResponse | NearbyProviderResponse;
@@ -98,10 +98,15 @@ export const ProviderCard: React.FC<ProviderCardProps> = ({ provider, initialFav
             {businessName && fullName && (
               <p className="text-xs text-slate-500 truncate">ជាង៖ {fullName}</p>
             )}
-            {isVerified && (
+            {isVerified ? (
               <div className="inline-flex items-center space-x-1 text-[11px] font-semibold text-emerald-600 mt-0.5">
                 <CheckCircle2 className="w-3.5 h-3.5" />
                 <span>បានផ្ទៀងផ្ទាត់អត្តសញ្ញាណ</span>
+              </div>
+            ) : (
+              <div className="inline-flex items-center space-x-1 text-[11px] font-semibold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md mt-0.5 border border-amber-200">
+                <Clock className="w-3 h-3 text-amber-500" />
+                <span>រង់ចាំការអនុម័ត (Pending)</span>
               </div>
             )}
           </div>

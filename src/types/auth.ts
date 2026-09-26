@@ -7,6 +7,8 @@ export interface UserResponse {
   phone?: string;
   role: UserRole;
   avatarUrl?: string;
+  verificationStatus?: string;
+  isVerified?: boolean;
 }
 
 export interface AuthResponse {

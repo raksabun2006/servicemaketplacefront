@@ -48,6 +48,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             fullName: prov.fullName || parsedUser.fullName,
             avatarUrl: prov.avatarUrl || parsedUser.avatarUrl,
             phone: prov.phone || parsedUser.phone,
+            verificationStatus: prov.verificationStatus,
+            isVerified: prov.isVerified,
           };
           setUser(updated);
           localStorage.setItem("user", JSON.stringify(updated));

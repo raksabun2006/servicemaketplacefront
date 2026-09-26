@@ -248,7 +248,7 @@ function CreateServiceRequestContent() {
   // Section 20: Success Celebration Screen
   if (isSuccess) {
     return (
-      <ProtectedRoute allowedRoles={["CUSTOMER", "PROVIDER"]}>
+      <ProtectedRoute allowedRoles={["CUSTOMER", "PROVIDER", "ADMIN"]}>
         <div className="flex">
           <Sidebar />
 
@@ -317,7 +317,7 @@ function CreateServiceRequestContent() {
   }
 
   return (
-    <ProtectedRoute allowedRoles={["CUSTOMER", "PROVIDER"]}>
+    <ProtectedRoute allowedRoles={["CUSTOMER", "PROVIDER", "ADMIN"]}>
       <div className="flex">
         <Sidebar />
 
@@ -474,7 +474,7 @@ function CreateServiceRequestContent() {
               <div className="space-y-2 pt-2 border-t border-slate-100">
                 <div className="flex items-center justify-between">
                   <label className="block text-xs font-bold text-slate-800">
-                    បន្ថែមរូបភាពបញ្ហា <span className="text-slate-400 font-normal">(មិនចាំបាច់បញ្ចូលក៏បាន)</span>
+                    រូបភាព <span className="text-slate-400 font-normal">(ជាជម្រើស)</span>
                   </label>
                   <span className="text-[11px] text-slate-400">អតិបរមា 5 រូប</span>
                 </div>
@@ -750,7 +750,7 @@ function CreateServiceRequestContent() {
                 ) : (
                   <>
                     <CheckCircle2 className="w-4 h-4" />
-                    <span>ស្វែងរកអ្នកជួយ</span>
+                    <span>ស្វែងរកអ្នកជំនាញ</span>
                   </>
                 )}
               </button>

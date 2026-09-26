@@ -49,7 +49,7 @@ export default function CustomerRequestsPage() {
   ];
 
   return (
-    <ProtectedRoute allowedRoles={["CUSTOMER", "PROVIDER"]}>
+    <ProtectedRoute allowedRoles={["CUSTOMER", "PROVIDER", "ADMIN"]}>
       <div className="flex w-full min-w-0">
         <Sidebar />
 

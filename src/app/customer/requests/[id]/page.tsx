@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import { ProtectedRoute } from "@/components/guards/ProtectedRoute";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { useAuth } from "@/lib/auth/AuthContext";
@@ -27,13 +28,14 @@ import {
   CheckCircle2,
   Eye,
   ExternalLink,
+  Shield,
 } from "lucide-react";
 
 export default function CustomerRequestDetailPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
-  const { user, isProvider } = useAuth();
-  const { t } = useLanguage();
+  const { user, isProvider, isAdmin } = useAuth();
+  const { language, t } = useLanguage();
 
   const [request, setRequest] = useState<ServiceRequestResponse | null>(null);
   const [offers, setOffers] = useState<ServiceRequestOfferResponse[]>([]);
@@ -112,7 +114,7 @@ export default function CustomerRequestDetailPage() {
 
   if (isLoading) {
     return (
-      <ProtectedRoute allowedRoles={["CUSTOMER", "PROVIDER"]}>
+      <ProtectedRoute allowedRoles={["CUSTOMER", "PROVIDER", "ADMIN"]}>
         <div className="flex">
           <Sidebar />
           <div className="flex-1 min-h-[60vh] flex flex-col items-center justify-center space-y-3">
@@ -126,7 +128,7 @@ export default function CustomerRequestDetailPage() {
 
   if (!request) {
     return (
-      <ProtectedRoute allowedRoles={["CUSTOMER", "PROVIDER"]}>
+      <ProtectedRoute allowedRoles={["CUSTOMER", "PROVIDER", "ADMIN"]}>
         <div className="flex">
           <Sidebar />
           <div className="flex-1 max-w-4xl mx-auto px-4 py-12">
@@ -144,14 +146,46 @@ export default function CustomerRequestDetailPage() {
 
   const categoryKey = `cat_${request.category}` as keyof typeof translations.km;
   const categoryLabel = t(categoryKey) || request.category;
-  const canCancel = request.status === "OPEN" || request.status === "ACCEPTED";
+  const isOwner = user?.id === request.customerId;
+  const canCancel = (isOwner || isAdmin) && (request.status === "OPEN" || request.status === "ACCEPTED");
 
   return (
-    <ProtectedRoute allowedRoles={["CUSTOMER", "PROVIDER"]}>
+    <ProtectedRoute allowedRoles={["CUSTOMER", "PROVIDER", "ADMIN"]}>
       <div className="flex">
         <Sidebar />
 
         <div className="flex-1 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+          {/* Admin Mode Inspection Banner */}
+          {isAdmin && (
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-purple-50/90 border border-purple-200/90 rounded-2xl text-purple-900 shadow-2xs">
+              <div className="flex items-center space-x-3">
+                <div className="w-9 h-9 rounded-xl bg-purple-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                  <Shield className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-xs sm:text-sm font-bold text-purple-950">
+                      {language === "km" ? "ផ្ទាំងត្រួតពិនិត្យរបស់អ្នកគ្រប់គ្រង" : "Administrator Inspection View"}
+                    </span>
+                    <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-purple-200/80 text-purple-800 uppercase tracking-wider">
+                      Admin
+                    </span>
+                  </div>
+                  <p className="text-xs text-purple-700 mt-0.5">
+                    {language === "km"
+                      ? "អ្នកកំពុងមើលព័ត៌មានលម្អិតនៃសំណើសេវាកម្មនេះក្នុងនាមជាអ្នកគ្រប់គ្រងប្រព័ន្ធ"
+                      : "You are inspecting this service request and submitted offers with system administrator privileges."}
+                  </p>
+                </div>
+              </div>
+              <Link
+                href="/admin/dashboard"
+                className="inline-flex items-center space-x-1 px-3.5 py-1.5 bg-white hover:bg-purple-100/70 text-purple-700 text-xs font-semibold rounded-xl border border-purple-200 shadow-2xs transition shrink-0"
+              >
+                <span>{language === "km" ? "ផ្ទាំងគ្រប់គ្រង Admin" : "Admin Dashboard"}</span>
+              </Link>
+            </div>
+          )}
           {/* Notifications / Alerts */}
           {error && (
             <div className="flex items-center space-x-2 p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs">

@@ -124,20 +124,27 @@ export const DashboardNavbar: React.FC = () => {
           {/* Left: Logo + Role Tag */}
           <div className="flex items-center space-x-3 sm:space-x-4">
             {/* Brand Logo */}
-            <Link href={dashboardHomeLink} className="flex items-center space-x-2 group shrink-0">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/logo.png"
-                alt="Khmer Service Logo"
-                className="w-8 h-8 sm:w-9 sm:h-9 object-contain group-hover:scale-105 transition-transform"
-              />
-              <span className="font-bold text-base sm:text-lg text-slate-900 leading-tight whitespace-nowrap">
-                Khmer Service
-              </span>
+            <Link href={dashboardHomeLink} className="flex items-center space-x-2.5 group shrink-0">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 relative flex items-center justify-center shrink-0">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/logo.png"
+                  alt="Khmer Service Logo"
+                  className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-200 drop-shadow-xs"
+                />
+              </div>
+              <div className="flex flex-col">
+                <span className="font-extrabold text-sm sm:text-base text-slate-900 leading-tight whitespace-nowrap group-hover:text-blue-700 transition">
+                  {language === "km" ? "ថ្នាលសេវាកម្មកម្ពុជា" : "Khmer Service"}
+                </span>
+                <span className="text-[10px] text-blue-700 font-bold tracking-wider uppercase hidden sm:block">
+                  {language === "km" ? "សេវាកម្ម និងជាងជំនាញ" : "Service Marketplace"}
+                </span>
+              </div>
             </Link>
 
             {/* Role Badge on Desktop */}
-            <div className="hidden sm:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 whitespace-nowrap">
+            <div className="hidden md:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 whitespace-nowrap">
               {isCustomer ? "អតិថិជន" : isProvider ? "អ្នកផ្តល់សេវា" : "អ្នកគ្រប់គ្រង"}
             </div>
 
