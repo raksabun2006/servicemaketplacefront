@@ -202,8 +202,8 @@ export default function HomeClient() {
   return (
     <div className="bg-white text-slate-800 font-sans">
       {/* 1. HERO SECTION WITH ACCESSIBLE H1 */}
-      <section className="relative overflow-hidden bg-white pt-8 sm:pt-12 pb-16 lg:pb-24 border-b border-slate-100">
-        <div className="absolute inset-0 pointer-events-none opacity-25">
+      <section className="relative overflow-hidden bg-white pt-5 sm:pt-12 pb-10 sm:pb-20 border-b border-slate-100">
+        <div className="absolute inset-0 pointer-events-none opacity-20 sm:opacity-25">
           <svg className="w-full h-full" viewBox="0 0 1440 600" fill="none">
             <path
               d="M-50 200 L 250 200 L 320 280 L 520 280 M 180 200 L 240 140 L 400 140 M 350 280 L 350 360 L 480 360"
@@ -217,26 +217,26 @@ export default function HomeClient() {
         </div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10 items-center">
             {/* Left Content */}
-            <div className="lg:col-span-6 space-y-4 sm:space-y-6 text-left">
-              <span className="text-sm sm:text-base font-semibold text-blue-600 block tracking-wide">
+            <div className="lg:col-span-6 space-y-3 sm:space-y-6 text-left">
+              <span className="text-xs sm:text-base font-semibold text-blue-600 block tracking-wide">
                 {heroSlides[currentSlide].category}
               </span>
 
               {/* Primary SEO H1 Heading */}
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#104ccb] tracking-tight leading-tight">
+              <h1 className="text-2xl sm:text-4xl md:text-5xl font-black text-[#104ccb] tracking-tight leading-snug sm:leading-tight">
                 {heroSlides[currentSlide].title}
               </h1>
 
-              <p className="text-xs sm:text-sm md:text-base text-slate-700 leading-relaxed font-normal max-w-xl">
+              <p className="text-xs sm:text-sm md:text-base text-slate-600 sm:text-slate-700 leading-relaxed font-normal max-w-xl">
                 {heroSlides[currentSlide].description}
               </p>
 
-              <div className="pt-2 flex flex-wrap items-center gap-3">
+              <div className="pt-1 sm:pt-2 grid grid-cols-2 gap-2.5 sm:flex sm:flex-row sm:items-center sm:gap-3">
                 <Link
                   href={heroSlides[currentSlide].link}
-                  className="inline-flex items-center justify-center px-6 sm:px-8 py-3 rounded-xl bg-[#104ccb] hover:bg-[#0a3ca8] text-white font-bold text-xs sm:text-sm shadow-md transition-all cursor-pointer"
+                  className="inline-flex items-center justify-center px-3 sm:px-8 py-2.5 sm:py-3 rounded-xl bg-[#104ccb] hover:bg-[#0a3ca8] text-white font-bold text-xs sm:text-sm shadow-md shadow-blue-600/20 active:scale-[0.98] transition cursor-pointer text-center"
                 >
                   {heroSlides[currentSlide].buttonText}
                 </Link>
@@ -244,18 +244,18 @@ export default function HomeClient() {
                 <button
                   type="button"
                   onClick={() => setQuickPostModalOpen(true)}
-                  className="inline-flex items-center justify-center px-5 py-3 rounded-xl bg-blue-50 hover:bg-blue-100 text-[#104ccb] font-bold text-xs sm:text-sm border border-blue-200 transition cursor-pointer gap-1.5"
+                  className="inline-flex items-center justify-center px-3 sm:px-5 py-2.5 sm:py-3 rounded-xl bg-blue-50/90 hover:bg-blue-100 text-[#104ccb] font-bold text-xs sm:text-sm border border-blue-200/80 active:scale-[0.98] transition cursor-pointer gap-1 sm:gap-1.5 text-center"
                 >
-                  <Search className="w-4 h-4" />
-                  <span>ស្វែងរកសេវាកម្មរហ័ស</span>
+                  <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                  <span className="truncate">ស្វែងរកសេវារហ័ស</span>
                 </button>
               </div>
             </div>
 
             {/* Right Hero Image Card */}
             <div className="lg:col-span-6">
-              <div className="relative bg-white rounded-3xl p-3 sm:p-5 shadow-xl border border-slate-200">
-                <div className="relative h-64 sm:h-80 md:h-96 w-full rounded-2xl overflow-hidden">
+              <div className="relative bg-white rounded-2xl sm:rounded-3xl p-2.5 sm:p-5 shadow-lg sm:shadow-xl border border-slate-200">
+                <div className="relative aspect-16/10 sm:h-80 md:h-96 w-full rounded-xl sm:rounded-2xl overflow-hidden">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={heroSlides[currentSlide].image}
@@ -263,44 +263,44 @@ export default function HomeClient() {
                     className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent" />
-                  <div className="absolute bottom-4 left-4 right-4 text-white">
-                    <p className="text-xs font-semibold text-blue-200">ខ្មែរ សេវា (Khmer Service)</p>
-                    <p className="text-sm sm:text-base font-bold">ជាងជំនាញមានការផ្ទៀងផ្ទាត់ត្រឹមត្រូវទូទាំងប្រទេស</p>
+                  <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 text-white">
+                    <p className="text-[11px] sm:text-xs font-semibold text-blue-200">ខ្មែរ សេវា (Khmer Service)</p>
+                    <p className="text-xs sm:text-base font-bold line-clamp-1">ជាងជំនាញមានការផ្ទៀងផ្ទាត់ត្រឹមត្រូវទូទាំងប្រទេស</p>
                   </div>
                 </div>
 
                 {/* Hero Slide Controls */}
-                <div className="flex items-center justify-between mt-4 px-2">
-                  <div className="flex gap-2">
+                <div className="flex items-center justify-between mt-3 sm:mt-4 px-1 sm:px-2">
+                  <div className="flex gap-1.5 sm:gap-2">
                     {heroSlides.map((_, idx) => (
                       <button
                         key={idx}
                         type="button"
                         onClick={() => setCurrentSlide(idx)}
-                        className={`h-2 rounded-full transition-all cursor-pointer ${
-                          currentSlide === idx ? "w-8 bg-[#104ccb]" : "w-2 bg-slate-200"
+                        className={`h-1.5 sm:h-2 rounded-full transition-all cursor-pointer ${
+                          currentSlide === idx ? "w-6 sm:w-8 bg-[#104ccb]" : "w-1.5 sm:w-2 bg-slate-200"
                         }`}
                         aria-label={`Slide ${idx + 1}`}
                       />
                     ))}
                   </div>
 
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1 sm:gap-1.5">
                     <button
                       type="button"
                       onClick={() => setCurrentSlide((prev) => (prev === 0 ? heroSlides.length - 1 : prev - 1))}
-                      className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 transition"
+                      className="p-1 sm:p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 transition"
                       aria-label="Previous slide"
                     >
-                      <ChevronLeft className="w-4 h-4" />
+                      <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </button>
                     <button
                       type="button"
                       onClick={() => setCurrentSlide((prev) => (prev + 1) % heroSlides.length)}
-                      className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 transition"
+                      className="p-1 sm:p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 transition"
                       aria-label="Next slide"
                     >
-                      <ChevronRight className="w-4 h-4" />
+                      <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </button>
                   </div>
                 </div>
@@ -311,55 +311,55 @@ export default function HomeClient() {
       </section>
 
       {/* 2. SEO-FRIENDLY POPULAR CATEGORIES SECTION */}
-      <section className="py-16 sm:py-20 bg-slate-50/60 border-b border-slate-200">
+      <section className="py-10 sm:py-18 bg-slate-50/60 border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 sm:mb-10 gap-3 sm:gap-4">
             <div>
               <span className="text-xs font-bold text-[#104ccb] uppercase tracking-widest">
                 ប្រភេទសេវាកម្មពេញនិយម
               </span>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-[#104ccb] mt-1">
+              <h2 className="text-xl sm:text-3xl font-extrabold text-[#104ccb] mt-1">
                 សេវាកម្មជួសជុល និងថែទាំគេហដ្ឋាន
               </h2>
-              <p className="text-xs sm:text-sm text-slate-600 mt-2">
+              <p className="text-xs sm:text-sm text-slate-600 mt-1 sm:mt-2">
                 ស្វែងរកជាងជំនាញ និងសេវាកម្មតាមតម្រូវការជាក់ស្តែងរបស់អ្នក
               </p>
             </div>
 
             <Link
               href="/services"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-slate-200 text-[#104ccb] font-bold text-xs hover:bg-blue-50 transition shrink-0"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-white border border-slate-200 text-[#104ccb] font-bold text-xs hover:bg-blue-50 transition shrink-0 self-start sm:self-auto"
             >
               <span>មើលសេវាកម្មទាំងអស់</span>
               <ChevronRight className="w-4 h-4" />
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-6">
             {pillarsData.map((item) => (
               <div
                 key={item.id}
-                className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs hover:shadow-lg transition-all duration-200 flex flex-col justify-between group"
+                className="bg-white rounded-2xl p-4 sm:p-6 border border-slate-200 shadow-xs hover:shadow-lg transition-all duration-200 flex flex-col justify-between group"
               >
                 <div>
-                  <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-4 group-hover:bg-[#104ccb] group-hover:text-white transition-colors">
-                    {item.iconType === "ac" && <Snowflake className="w-6 h-6" />}
-                    {item.iconType === "plumbing" && <Droplets className="w-6 h-6" />}
-                    {item.iconType === "electrical" && <Zap className="w-6 h-6" />}
-                    {item.iconType === "cleaning" && <Sparkles className="w-6 h-6" />}
-                    {item.iconType === "appliance" && <Laptop className="w-6 h-6" />}
-                    {item.iconType === "carpentry" && <Wrench className="w-6 h-6" />}
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-3 sm:mb-4 group-hover:bg-[#104ccb] group-hover:text-white transition-colors">
+                    {item.iconType === "ac" && <Snowflake className="w-5 h-5 sm:w-6 sm:h-6" />}
+                    {item.iconType === "plumbing" && <Droplets className="w-5 h-5 sm:w-6 sm:h-6" />}
+                    {item.iconType === "electrical" && <Zap className="w-5 h-5 sm:w-6 sm:h-6" />}
+                    {item.iconType === "cleaning" && <Sparkles className="w-5 h-5 sm:w-6 sm:h-6" />}
+                    {item.iconType === "appliance" && <Laptop className="w-5 h-5 sm:w-6 sm:h-6" />}
+                    {item.iconType === "carpentry" && <Wrench className="w-5 h-5 sm:w-6 sm:h-6" />}
                   </div>
 
-                  <h3 className="text-lg font-bold text-slate-900 group-hover:text-[#104ccb] transition-colors mb-2">
+                  <h3 className="text-base sm:text-lg font-bold text-slate-900 group-hover:text-[#104ccb] transition-colors mb-1.5 sm:mb-2">
                     {item.title}
                   </h3>
-                  <p className="text-xs text-slate-600 leading-relaxed mb-6">
+                  <p className="text-xs text-slate-600 leading-relaxed mb-4 sm:mb-6">
                     {item.description}
                   </p>
                 </div>
 
-                <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+                <div className="pt-3 sm:pt-4 border-t border-slate-100 flex items-center justify-between">
                   <span className="text-xs font-semibold text-slate-500">ស្វែងរកជាងជំនាញ</span>
                   <Link
                     href={item.link}
@@ -376,51 +376,51 @@ export default function HomeClient() {
       </section>
 
       {/* 3. CAMBODIAN SERVICE LOCATIONS HUB */}
-      <section className="py-16 sm:py-20 bg-white border-b border-slate-200">
+      <section className="py-10 sm:py-18 bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 sm:mb-10 gap-3 sm:gap-4">
             <div>
               <span className="text-xs font-bold text-[#104ccb] uppercase tracking-widest">
                 តំបន់គ្របដណ្តប់សេវាកម្ម
               </span>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-[#104ccb] mt-1">
+              <h2 className="text-xl sm:text-3xl font-extrabold text-[#104ccb] mt-1">
                 ស្វែងរកជាងជំនាញតាមរាជធានី និងខេត្ត
               </h2>
-              <p className="text-xs sm:text-sm text-slate-600 mt-2">
+              <p className="text-xs sm:text-sm text-slate-600 mt-1 sm:mt-2">
                 ស្វែងរកជាងជួសជុលដែលនៅជិតអ្នកបំផុតតាមបណ្តារាជធានី និងខេត្តនានាក្នុងប្រទេសកម្ពុជា
               </p>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-4">
             {Object.values(LOCATIONS_SEO).map((loc) => (
               <Link
                 key={loc.slug}
                 href={`/locations/${loc.slug}`}
-                className="p-4 rounded-2xl border border-slate-200 bg-slate-50/60 hover:bg-blue-50/50 hover:border-blue-300 transition-all text-center group"
+                className="p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200 bg-slate-50/60 hover:bg-blue-50/50 hover:border-blue-300 transition-all text-center group"
               >
-                <div className="w-10 h-10 rounded-full bg-white shadow-2xs text-[#104ccb] flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
-                  <MapPin className="w-5 h-5" />
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white shadow-2xs text-[#104ccb] flex items-center justify-center mx-auto mb-1.5 sm:mb-2 group-hover:scale-110 transition-transform">
+                  <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
                 <h3 className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-[#104ccb] transition-colors leading-tight">
                   {loc.nameKm}
                 </h3>
-                <p className="text-[11px] text-slate-500 mt-0.5">{loc.nameEn}</p>
+                <p className="text-[10px] sm:text-[11px] text-slate-500 mt-0.5">{loc.nameEn}</p>
               </Link>
             ))}
           </div>
 
           {/* Phnom Penh Districts Quick Links */}
-          <div className="mt-8 p-5 bg-slate-50 rounded-2xl border border-slate-200">
-            <p className="text-xs font-bold text-slate-700 mb-3">
+          <div className="mt-6 sm:mt-8 p-3.5 sm:p-5 bg-slate-50 rounded-xl sm:rounded-2xl border border-slate-200">
+            <p className="text-xs font-bold text-slate-700 mb-2 sm:mb-3">
               ខណ្ឌពេញនិយមក្នុងរាជធានីភ្នំពេញ៖
             </p>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5 sm:gap-2">
               {LOCATIONS_SEO["phnom-penh"].districts?.map((d) => (
                 <Link
                   key={d.slug}
                   href={`/locations/phnom-penh?district=${encodeURIComponent(d.nameEn)}`}
-                  className="px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs text-slate-700 hover:text-blue-600 hover:border-blue-300 transition"
+                  className="px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg bg-white border border-slate-200 text-[11px] sm:text-xs text-slate-700 hover:text-blue-600 hover:border-blue-300 transition"
                 >
                   {d.nameKm} ({d.nameEn})
                 </Link>
@@ -431,36 +431,36 @@ export default function HomeClient() {
       </section>
 
       {/* 4. RECENT REAL SERVICE REQUESTS (Live API) */}
-      <section className="py-16 sm:py-20 bg-[#f8fafc] border-b border-slate-200">
+      <section className="py-10 sm:py-18 bg-[#f8fafc] border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 sm:mb-10 gap-3 sm:gap-4">
             <div>
               <span className="text-xs font-bold text-[#104ccb] uppercase tracking-widest">
                 សំណើការងារផ្ទាល់
               </span>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-[#104ccb] mt-1">
+              <h2 className="text-xl sm:text-3xl font-extrabold text-[#104ccb] mt-1">
                 សេវាកម្មដែលកំពុងត្រូវការជាងជំនាញ
               </h2>
-              <p className="text-xs sm:text-sm text-slate-600 mt-2">
+              <p className="text-xs sm:text-sm text-slate-600 mt-1 sm:mt-2">
                 អតិថិជនទើបតែបានបង្ហោះបញ្ហានៅថ្ងៃនេះ — ជាងជំនាញអាចផ្តល់តម្លៃ និងទទួលការងារបានភ្លាមៗ
               </p>
             </div>
 
             <Link
               href="/services"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-slate-200 text-[#104ccb] font-bold text-xs hover:bg-blue-50 transition shrink-0"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-white border border-slate-200 text-[#104ccb] font-bold text-xs hover:bg-blue-50 transition shrink-0 self-start sm:self-auto"
             >
               <span>{isKm ? `មើលសំណើទាំងអស់ (${requests.length})` : `View All Requests (${requests.length})`}</span>
               <ChevronRight className="w-4 h-4" />
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-6">
             {requests.length > 0 ? (
               requests.slice(0, 6).map((req) => (
                 <div
                   key={req.id}
-                  className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
+                  className="bg-white rounded-2xl p-4 sm:p-6 border border-slate-200 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
                 >
                   <div>
                     <div className="flex items-center justify-between mb-3">
@@ -500,7 +500,7 @@ export default function HomeClient() {
               Array.from({ length: 3 }).map((_, idx) => (
                 <div
                   key={idx}
-                  className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs animate-pulse space-y-4"
+                  className="bg-white rounded-2xl p-4 sm:p-6 border border-slate-200 shadow-xs animate-pulse space-y-4"
                 >
                   <div className="flex justify-between items-center">
                     <div className="h-6 w-24 bg-slate-200 rounded-full" />
@@ -515,7 +515,7 @@ export default function HomeClient() {
                 </div>
               ))
             ) : (
-              <div className="col-span-full py-12 px-6 bg-white rounded-2xl border border-dashed border-slate-200 text-center">
+              <div className="col-span-full py-8 sm:py-12 px-4 sm:px-6 bg-white rounded-2xl border border-dashed border-slate-200 text-center">
                 <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mx-auto mb-3">
                   <Wrench className="w-6 h-6" />
                 </div>
@@ -540,13 +540,13 @@ export default function HomeClient() {
       </section>
 
       {/* 5. FAQ SECTION */}
-      <section className="py-16 sm:py-20 bg-white">
+      <section className="py-10 sm:py-18 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#104ccb]">
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-xl sm:text-3xl font-extrabold text-[#104ccb]">
               តើលោកអ្នកមានចម្ងល់ទាក់ទងនឹងថ្នាលសេវាខ្មែរឬទេ?
             </h2>
-            <p className="text-xs sm:text-sm text-slate-500 mt-2">
+            <p className="text-xs sm:text-sm text-slate-500 mt-1 sm:mt-2">
               សំណួរ និងចម្លើយផ្លូវការអំពីដំណើរការជួសជុល ការទូទាត់ និងការធានាសុវត្ថិភាព
             </p>
           </div>

@@ -140,11 +140,11 @@ export const Navbar: React.FC = () => {
               <span>{language === "km" ? "ជំនួយបន្ថែម" : "Support"}</span>
             </Link>
 
-            {/* Login Button (Shown only when unauthenticated to prevent duplicate buttons) */}
+            {/* Login Button (Shown on sm+ to prevent header cramping on mobile screens, where bottom nav already has Login) */}
             {!isAuthenticated ? (
               <Link
                 href="/login"
-                className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-full bg-[#1254d8] hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-600/25 transition whitespace-nowrap shrink-0"
+                className="hidden sm:inline-flex items-center space-x-1.5 px-4 py-2 rounded-full bg-[#1254d8] hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-600/25 transition whitespace-nowrap shrink-0"
               >
                 <User className="w-3.5 h-3.5 text-white" />
                 <span>{language === "km" ? "ចូលប្រើប្រាស់" : "Login"}</span>
