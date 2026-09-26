@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Kantumruy_Pro, Noto_Sans_Khmer, Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth/AuthContext";
@@ -25,9 +25,67 @@ const inter = Inter({
   display: "swap",
 });
 
+import { siteConfig } from "@/lib/seo";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+};
+
 export const metadata: Metadata = {
-  title: "ថ្នាលបរិវត្តកម្មឌីជីថលសហគ្រាស | Enterprises Go Digital (EGD)",
-  description: "ថ្នាលបរិវត្តកម្មឌីជីថលសហគ្រាស (Enterprises Go Digital - EGD) ជំរុញការចាប់យកឌីជីថលរបស់សហគ្រាសគ្រប់កម្រិត និងគ្រប់វិស័យ ដើម្បីពង្រឹងប្រសិទ្ធភាព និងចីរភាពអាជីវកម្ម។",
+  metadataBase: new URL(siteConfig.url),
+  title: {
+    default: `${siteConfig.khmerName} | ${siteConfig.tagline} - ${siteConfig.name}`,
+    template: `%s | ${siteConfig.khmerName} - ${siteConfig.name}`,
+  },
+  description: siteConfig.description,
+  keywords: siteConfig.keywords,
+  authors: [{ name: siteConfig.name, url: siteConfig.url }],
+  creator: siteConfig.name,
+  publisher: siteConfig.name,
+  alternates: {
+    canonical: siteConfig.url,
+    languages: {
+      "km-KH": siteConfig.url,
+      "en-US": siteConfig.url,
+    },
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  openGraph: {
+    title: `${siteConfig.khmerName} | ${siteConfig.tagline}`,
+    description: siteConfig.description,
+    url: siteConfig.url,
+    siteName: `${siteConfig.khmerName} (${siteConfig.name})`,
+    locale: siteConfig.locale,
+    alternateLocale: [siteConfig.alternateLocale],
+    type: "website",
+    images: [
+      {
+        url: `${siteConfig.url}${siteConfig.defaultOgImage}`,
+        width: 1200,
+        height: 630,
+        alt: `${siteConfig.khmerName} - ${siteConfig.name}`,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${siteConfig.khmerName} | ${siteConfig.tagline}`,
+    description: siteConfig.description,
+    images: [`${siteConfig.url}${siteConfig.defaultOgImage}`],
+    creator: siteConfig.twitterHandle,
+  },
 };
 
 export default function RootLayout({

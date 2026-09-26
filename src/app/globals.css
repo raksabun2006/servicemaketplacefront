@@ -61,6 +61,24 @@ button, input, select, textarea {
   font-family: inherit;
 }
 
+/* Prevent auto-zooming when tapping/focusing inputs on iOS Safari and mobile browsers */
+@media screen and (max-width: 768px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Eliminate tap delay and unwanted pinch-zoom interference on interactive controls */
+button,
+input,
+select,
+textarea,
+a {
+  touch-action: manipulation;
+}
+
 /* Custom subtle scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
