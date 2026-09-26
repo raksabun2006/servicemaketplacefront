@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Kantumruy_Pro, Noto_Sans_Khmer, Inter } from "next/font/google";
+import { Kantumruy_Pro, Noto_Sans_Khmer } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth/AuthContext";
 import { LanguageProvider } from "@/lib/i18n/LanguageContext";
@@ -7,7 +7,7 @@ import { AppShell } from "@/components/layout/AppShell";
 
 const kantumruyPro = Kantumruy_Pro({
   variable: "--font-kantumruy",
-  subsets: ["khmer"],
+  subsets: ["khmer", "latin"],
   weight: ["300", "400", "500", "600", "700"],
   display: "swap",
 });
@@ -16,12 +16,6 @@ const notoSansKhmer = Noto_Sans_Khmer({
   variable: "--font-khmer",
   subsets: ["khmer"],
   weight: ["300", "400", "500", "600", "700"],
-  display: "swap",
-});
-
-const inter = Inter({
-  variable: "--font-sans",
-  subsets: ["latin"],
   display: "swap",
 });
 
@@ -104,7 +98,7 @@ export default function RootLayout({
   return (
     <html
       lang="km"
-      className={`${kantumruyPro.variable} ${notoSansKhmer.variable} ${inter.variable} h-full antialiased`}
+      className={`${kantumruyPro.variable} ${notoSansKhmer.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans bg-slate-50 text-slate-900">
         <LanguageProvider>
