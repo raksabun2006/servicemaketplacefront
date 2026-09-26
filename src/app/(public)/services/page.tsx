@@ -39,20 +39,6 @@ import {
   Loader2,
 } from "lucide-react";
 
-// Reliable fallback imagery when a customer service request has no photos attached in API
-const CATEGORY_FALLBACK_IMAGES: Record<string, string> = {
-  AC_REPAIR: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=800&q=80",
-  PLUMBING: "https://images.unsplash.com/photo-1585704032915-c3400ca199e7?auto=format&fit=crop&w=800&q=80",
-  ELECTRICAL: "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&w=800&q=80",
-  CLEANING: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80",
-  APPLIANCE_REPAIR: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80",
-  CARPENTRY: "https://images.unsplash.com/photo-1517646287270-a5a9ca602e5c?auto=format&fit=crop&w=800&q=80",
-  PAINTING: "https://images.unsplash.com/photo-1562259949-e8e7689d7828?auto=format&fit=crop&w=800&q=80",
-  PEST_CONTROL: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80",
-  TUTORING: "https://images.unsplash.com/photo-1577495508048-b635879837f1?auto=format&fit=crop&w=800&q=80",
-  BEAUTY: "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80",
-  OTHER: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80",
-};
 
 const toKhmerDigits = (num: number | string): string => {
   const khmerDigits = ["០", "១", "២", "៣", "៤", "៥", "៦", "៧", "៨", "៩"];
@@ -152,9 +138,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ request, categoryLabel }) => 
 
   const realImageUrls = images.map((img) => fileApi.getFileUrl(img)).filter(Boolean);
   const hasRealPhoto = realImageUrls.length > 0 && !imgError;
-  const firstImageUrl = hasRealPhoto
-    ? realImageUrls[0]
-    : CATEGORY_FALLBACK_IMAGES[request.category] || CATEGORY_FALLBACK_IMAGES.OTHER;
+  const firstImageUrl = hasRealPhoto ? realImageUrls[0] : null;
 
   const formattedDate = formatKhmerDate(request.createdAt);
 
@@ -184,38 +168,32 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ request, categoryLabel }) => 
         className="group bg-white rounded-2xl border border-slate-200/90 hover:border-blue-500/80 shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-200 flex flex-col overflow-hidden"
         title="ចុចដើម្បីមើលព័ត៌មានលម្អិតនៃបញ្ហា (Click to view problem details)"
       >
-        {/* Card Photo (Clean, modern, edge-to-edge) */}
-        <div
-          onClick={(e) => hasRealPhoto && handleOpenPhoto(e, 0)}
-          className={`relative aspect-16/10 w-full overflow-hidden bg-slate-900 ${
-            hasRealPhoto ? "cursor-pointer" : ""
-          }`}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={firstImageUrl}
-            alt={request.title}
-            onError={() => {
-              if (hasRealPhoto) {
+        {/* Card Photo (Clean, modern, edge-to-edge) - ONLY for real photos */}
+        {hasRealPhoto && firstImageUrl && (
+          <div
+            onClick={(e) => handleOpenPhoto(e, 0)}
+            className="relative aspect-16/10 w-full overflow-hidden bg-slate-900 cursor-pointer"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={firstImageUrl}
+              alt={request.title}
+              onError={() => {
                 setImgError(true);
-              }
-            }}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            loading="lazy"
-          />
+              }}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              loading="lazy"
+            />
 
-          {/* Hover overlay hint when real photo exists */}
-          {hasRealPhoto && (
+            {/* Hover overlay hint when real photo exists */}
             <div className="absolute inset-0 bg-slate-900/35 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900/80 text-white text-[11px] font-semibold backdrop-blur-xs">
                 <Eye className="w-3.5 h-3.5" />
                 <span>{language === "km" ? `មើលរូបភាព (${realImageUrls.length})` : `View Photos (${realImageUrls.length})`}</span>
               </span>
             </div>
-          )}
 
-          {/* Real Photo Indicator Badge (matches Homepage screenshot) */}
-          {hasRealPhoto && (
+            {/* Real Photo Indicator Badge */}
             <div className="absolute bottom-2.5 right-2 flex items-center space-x-1.5 pointer-events-none">
               <div className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-md bg-emerald-600/90 text-white text-[10px] font-bold backdrop-blur-xs shadow-xs">
                 <Camera className="w-3.5 h-3.5" />
@@ -228,37 +206,58 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ request, categoryLabel }) => 
                 </div>
               )}
             </div>
-          )}
 
-          {/* Brand Logo Badge in bottom-left corner */}
-          <div className="absolute bottom-2 left-2 w-6 h-6 rounded-full bg-white/95 p-0.5 shadow-md flex items-center justify-center overflow-hidden">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/logo.png"
-              alt="Logo"
-              className="w-full h-full object-contain"
-            />
-          </div>
-
-          {/* Category tag pill top-right */}
-          <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-slate-900/75 backdrop-blur-xs text-[10px] font-bold text-white uppercase tracking-wider">
-            {categoryLabel}
-          </div>
-
-          {/* Urgent banner if applicable */}
-          {request.urgent && (
-            <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-red-600 text-white text-[10px] font-bold shadow-xs flex items-center space-x-1">
-              <AlertTriangle className="w-2.5 h-2.5" />
-              <span>{language === "km" ? "បន្ទាន់" : "Urgent"}</span>
+            {/* Brand Logo Badge in bottom-left corner */}
+            <div className="absolute bottom-2 left-2 w-6 h-6 rounded-full bg-white/95 p-0.5 shadow-md flex items-center justify-center overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logo.png"
+                alt="Logo"
+                className="w-full h-full object-contain"
+              />
             </div>
-          )}
-        </div>
+
+            {/* Category tag pill top-right */}
+            <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-slate-900/75 backdrop-blur-xs text-[10px] font-bold text-white uppercase tracking-wider">
+              {categoryLabel}
+            </div>
+
+            {/* Urgent banner if applicable */}
+            {request.urgent && (
+              <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-red-600 text-white text-[10px] font-bold shadow-xs flex items-center space-x-1">
+                <AlertTriangle className="w-2.5 h-2.5" />
+                <span>{language === "km" ? "បន្ទាន់" : "Urgent"}</span>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Card Body with Real Request Information */}
         <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between space-y-4 bg-white">
           <div>
+            {/* Header badges when no photo is attached */}
+            {!hasRealPhoto && (
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <div className="flex items-center space-x-1.5">
+                  <div className="w-5 h-5 rounded-full bg-slate-100 p-0.5 flex items-center justify-center overflow-hidden shrink-0">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
+                  </div>
+                  <span className="inline-block px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-blue-50 text-blue-700">
+                    {categoryLabel}
+                  </span>
+                </div>
+                {request.urgent && (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-red-50 text-red-600 border border-red-200 text-[10px] font-bold">
+                    <AlertTriangle className="w-2.5 h-2.5" />
+                    <span>{language === "km" ? "បន្ទាន់" : "Urgent"}</span>
+                  </span>
+                )}
+              </div>
+            )}
+
             {/* Real Title from API */}
-            <h3 className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-blue-700 transition-colors line-clamp-2 leading-snug">
+            <h3 className="text-sm sm:text-base font-bold text-slate-800 group-hover:text-blue-700 transition-colors line-clamp-2 leading-snug">
               {request.title}
             </h3>
 

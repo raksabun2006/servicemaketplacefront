@@ -34,20 +34,6 @@ import {
   Sparkles,
 } from "lucide-react";
 
-// Fallback images if customer didn't attach any photos
-const CATEGORY_FALLBACK_IMAGES: Record<string, string> = {
-  AC_REPAIR: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=1200&q=80",
-  PLUMBING: "https://images.unsplash.com/photo-1585704032915-c3400ca199e7?auto=format&fit=crop&w=1200&q=80",
-  ELECTRICAL: "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&w=1200&q=80",
-  CLEANING: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1200&q=80",
-  APPLIANCE_REPAIR: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1200&q=80",
-  CARPENTRY: "https://images.unsplash.com/photo-1517646287270-a5a9ca602e5c?auto=format&fit=crop&w=1200&q=80",
-  PAINTING: "https://images.unsplash.com/photo-1562259949-e8e7689d7828?auto=format&fit=crop&w=1200&q=80",
-  PEST_CONTROL: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1200&q=80",
-  TUTORING: "https://images.unsplash.com/photo-1577495508048-b635879837f1?auto=format&fit=crop&w=1200&q=80",
-  BEAUTY: "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1200&q=80",
-  OTHER: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1200&q=80",
-};
 
 const toKhmerDigits = (num: number | string): string => {
   const khmerDigits = ["០", "១", "២", "៣", "៤", "៥", "៦", "៧", "៨", "៩"];
@@ -218,7 +204,7 @@ export function ServiceDetailClient({ id }: ServiceDetailClientProps) {
   const hasRealPhoto = realImageUrls.length > 0 && !imgError;
   const currentPhoto = hasRealPhoto
     ? realImageUrls[activePhotoIdx] || realImageUrls[0]
-    : CATEGORY_FALLBACK_IMAGES[request.category] || CATEGORY_FALLBACK_IMAGES.OTHER;
+    : null;
 
   const categoryKey = `cat_${request.category}` as keyof typeof translations.km;
   const categoryLabel = translations[language]?.[categoryKey] || request.category;
@@ -296,37 +282,35 @@ export function ServiceDetailClient({ id }: ServiceDetailClientProps) {
               </div>
             )}
 
-            {/* Photo Gallery Card */}
-            <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-xs">
-              <div
-                onClick={() => hasRealPhoto && setLightboxOpen(true)}
-                className={`relative aspect-16/10 sm:aspect-16/9 w-full bg-slate-950 group ${
-                  hasRealPhoto ? "cursor-pointer" : ""
-                }`}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={currentPhoto}
-                  alt={request.title}
-                  onError={() => {
-                    if (hasRealPhoto) setImgError(true);
-                  }}
-                  className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300"
-                />
+            {/* Photo Gallery Card - only if real photos exist */}
+            {hasRealPhoto && currentPhoto && (
+              <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-xs">
+                <div
+                  onClick={() => setLightboxOpen(true)}
+                  className="relative aspect-16/10 sm:aspect-16/9 w-full bg-slate-950 group cursor-pointer"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={currentPhoto}
+                    alt={request.title}
+                    onError={() => {
+                      setImgError(true);
+                    }}
+                    className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300"
+                  />
 
-                <div className="absolute top-3 left-3 flex items-center space-x-2">
-                  <span className="px-3 py-1 rounded-full bg-blue-700 text-white text-xs font-bold shadow-md">
-                    {categoryLabel}
-                  </span>
-                  {request.urgent && (
-                    <span className="px-2.5 py-1 rounded-full bg-red-600 text-white text-xs font-bold shadow-md flex items-center space-x-1">
-                      <AlertTriangle className="w-3 h-3" />
-                      <span>{language === "km" ? "បន្ទាន់" : "Urgent"}</span>
+                  <div className="absolute top-3 left-3 flex items-center space-x-2">
+                    <span className="px-3 py-1 rounded-full bg-blue-700 text-white text-xs font-bold shadow-md">
+                      {categoryLabel}
                     </span>
-                  )}
-                </div>
+                    {request.urgent && (
+                      <span className="px-2.5 py-1 rounded-full bg-red-600 text-white text-xs font-bold shadow-md flex items-center space-x-1">
+                        <AlertTriangle className="w-3 h-3" />
+                        <span>{language === "km" ? "បន្ទាន់" : "Urgent"}</span>
+                      </span>
+                    )}
+                  </div>
 
-                {hasRealPhoto && (
                   <div className="absolute bottom-3 left-3 flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-emerald-600/90 text-white text-xs font-bold backdrop-blur-xs shadow-md">
                     <Camera className="w-4 h-4" />
                     <span>
@@ -335,33 +319,47 @@ export function ServiceDetailClient({ id }: ServiceDetailClientProps) {
                         : `Real Customer Photos (${realImageUrls.length})`}
                     </span>
                   </div>
+                </div>
+
+                {realImageUrls.length > 1 && (
+                  <div className="flex items-center space-x-3 p-4 bg-slate-50 border-t border-slate-100 overflow-x-auto">
+                    {realImageUrls.map((url, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => setActivePhotoIdx(i)}
+                        className={`relative w-20 h-16 rounded-xl overflow-hidden border-2 shrink-0 transition ${
+                          activePhotoIdx === i
+                            ? "border-blue-600 ring-2 ring-blue-500/20 shadow-xs"
+                            : "border-slate-200 opacity-70 hover:opacity-100"
+                        }`}
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={url} alt={`Thumbnail ${i + 1}`} className="w-full h-full object-cover" />
+                      </button>
+                    ))}
+                  </div>
                 )}
               </div>
-
-              {hasRealPhoto && realImageUrls.length > 1 && (
-                <div className="flex items-center space-x-3 p-4 bg-slate-50 border-t border-slate-100 overflow-x-auto">
-                  {realImageUrls.map((url, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      onClick={() => setActivePhotoIdx(i)}
-                      className={`relative w-20 h-16 rounded-xl overflow-hidden border-2 shrink-0 transition ${
-                        activePhotoIdx === i
-                          ? "border-blue-600 ring-2 ring-blue-500/20 shadow-xs"
-                          : "border-slate-200 opacity-70 hover:opacity-100"
-                      }`}
-                    >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={url} alt={`Thumbnail ${i + 1}`} className="w-full h-full object-cover" />
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+            )}
 
             {/* Problem Details Card */}
             <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-6">
               <div className="space-y-3 pb-6 border-b border-slate-100">
+                {!hasRealPhoto && (
+                  <div className="flex flex-wrap items-center gap-2 mb-2">
+                    <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-bold">
+                      {categoryLabel}
+                    </span>
+                    {request.urgent && (
+                      <span className="px-2.5 py-1 rounded-full bg-red-100 text-red-700 text-xs font-bold flex items-center space-x-1">
+                        <AlertTriangle className="w-3 h-3" />
+                        <span>{language === "km" ? "បន្ទាន់" : "Urgent"}</span>
+                      </span>
+                    )}
+                  </div>
+                )}
+
                 <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 leading-tight">
                   {request.title}
                 </h1>
