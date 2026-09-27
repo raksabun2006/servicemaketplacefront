@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { providerApi } from "@/lib/api/provider.api";
+import { fileApi } from "@/lib/api/file.api";
 import {
   generateSeoMetadata,
   generateLocalBusinessJsonLd,
@@ -33,10 +34,15 @@ export async function generateMetadata({
       ? provider.bio.slice(0, 160)
       : `ស្វែងរកព័ត៌មាន និងទាក់ទងជាង ${displayName} នៅ${location}។ សេវាកម្មជួសជុល និងថែទាំគេហដ្ឋានតាមរយៈ ខ្មែរ សេវា (Khmer Service)។`;
 
+    const providerImage = provider.avatarUrl
+      ? fileApi.getFileUrl(provider.avatarUrl)
+      : `/api/og?title=${encodeURIComponent(displayName)}&category=${encodeURIComponent("ជាងជំនាញ")}&city=${encodeURIComponent(location)}`;
+
     return generateSeoMetadata({
       title,
       description,
       path: `/providers/${id}`,
+      image: providerImage,
       type: "profile",
       keywords: [
         displayName,

@@ -5,7 +5,10 @@ const getPublicApiPrefix = (): string => {
   if (process.env.NEXT_PUBLIC_API_URL) {
     return process.env.NEXT_PUBLIC_API_URL.replace(/\/+$/, "");
   }
-  return "";
+  if (process.env.BACKEND_API_URL) {
+    return process.env.BACKEND_API_URL.replace(/\/+$/, "");
+  }
+  return "https://servicemaketplaceapi-production.up.railway.app";
 };
 
 export const fileApi = {

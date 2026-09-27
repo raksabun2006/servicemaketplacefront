@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 const backendUrl = (
   process.env.BACKEND_API_URL ||
   process.env.NEXT_PUBLIC_API_URL ||
-  "http://localhost:8080"
+  "https://servicemaketplaceapi-production.up.railway.app"
 ).replace(/\/+$/, "");
 
 let backendHost = "localhost";
