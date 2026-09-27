@@ -112,42 +112,44 @@ export const Navbar: React.FC = () => {
             </Link>
 
             {/* Desktop Primary Navigation */}
-            <nav className="hidden lg:flex items-center space-x-1 lg:space-x-1.5 xl:space-x-3 2xl:space-x-4 text-xs lg:text-[13px] xl:text-sm font-bold text-slate-800 shrink-0">
+            <nav className="hidden lg:flex items-center space-x-1 lg:space-x-1.5 xl:space-x-2 text-xs lg:text-[13px] xl:text-sm font-bold text-slate-800 shrink-0">
+              <Link
+                href="/"
+                className={`px-3 py-2 rounded-xl transition whitespace-nowrap ${
+                  pathname === "/"
+                    ? "bg-blue-50 text-blue-700 font-bold"
+                    : "text-slate-700 hover:text-blue-700 hover:bg-slate-50"
+                }`}
+              >
+                {language === "km" ? "ទំព័រដើម" : "Home"}
+              </Link>
               <Link
                 href="/services"
-                className="px-2.5 py-1.5 rounded-lg hover:text-blue-700 hover:bg-blue-50/60 transition whitespace-nowrap shrink-0"
+                className={`px-3 py-2 rounded-xl transition whitespace-nowrap ${
+                  pathname.startsWith("/services")
+                    ? "bg-blue-50 text-blue-700 font-bold shadow-2xs border border-blue-100/60"
+                    : "text-slate-700 hover:text-blue-700 hover:bg-slate-50"
+                }`}
               >
-                {language === "km" ? "ប្រភេទសេវាកម្ម" : "Services"}
+                {language === "km" ? "សេវាកម្ម" : "Services"}
               </Link>
-              <div className="relative group cursor-pointer shrink-0">
-                <button
-                  type="button"
-                  className="flex items-center space-x-1 px-2.5 py-1.5 rounded-lg hover:text-blue-700 hover:bg-blue-50/60 transition whitespace-nowrap shrink-0"
-                >
-                  <span>{language === "km" ? "ជាងជំនាញ" : "Technicians"}</span>
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-600 transition-transform group-hover:rotate-180" />
-                </button>
-                <div className="absolute top-full left-0 w-60 bg-white rounded-xl shadow-xl border border-slate-100 py-2 hidden group-hover:block z-50">
-                  <Link href="/providers?category=AC_REPAIR" className="block px-4 py-2 text-xs text-slate-700 hover:bg-blue-50 hover:text-blue-700 font-medium">
-                    {language === "km" ? "ជាងម៉ាស៊ីនត្រជាក់ & ទូរទឹកកក" : "AC & Refrigeration"}
-                  </Link>
-                  <Link href="/providers?category=PLUMBING" className="block px-4 py-2 text-xs text-slate-700 hover:bg-blue-50 hover:text-blue-700 font-medium">
-                    {language === "km" ? "ជាងទឹក និងបំពង់ទុយោ" : "Plumbing & Pipes"}
-                  </Link>
-                  <Link href="/providers?category=ELECTRICAL" className="block px-4 py-2 text-xs text-slate-700 hover:bg-blue-50 hover:text-blue-700 font-medium">
-                    {language === "km" ? "ជាងអគ្គិសនី និងខ្សែភ្លើង" : "Electrical & Wiring"}
-                  </Link>
-                  <Link href="/providers?category=CLEANING" className="block px-4 py-2 text-xs text-slate-700 hover:bg-blue-50 hover:text-blue-700 font-medium">
-                    {language === "km" ? "សេវាសម្អាតគេហដ្ឋាន" : "Cleaning Services"}
-                  </Link>
-                  <Link href="/providers" className="block px-4 py-2 text-xs text-blue-700 bg-blue-50/50 hover:bg-blue-100 font-bold border-t border-slate-100 mt-1">
-                    {language === "km" ? "មើលជាងជំនាញទាំងអស់ →" : "All Technicians →"}
-                  </Link>
-                </div>
-              </div>
+              <Link
+                href="/providers"
+                className={`px-3 py-2 rounded-xl transition whitespace-nowrap ${
+                  pathname.startsWith("/providers")
+                    ? "bg-blue-50 text-blue-700 font-bold shadow-2xs border border-blue-100/60"
+                    : "text-slate-700 hover:text-blue-700 hover:bg-slate-50"
+                }`}
+              >
+                {language === "km" ? "ជាងជំនាញ" : "Technicians"}
+              </Link>
               <Link
                 href="/about"
-                className="px-2.5 py-1.5 rounded-lg hover:text-blue-700 hover:bg-blue-50/60 transition whitespace-nowrap shrink-0"
+                className={`px-3 py-2 rounded-xl transition whitespace-nowrap ${
+                  pathname.startsWith("/about")
+                    ? "bg-blue-50 text-blue-700 font-bold shadow-2xs border border-blue-100/60"
+                    : "text-slate-700 hover:text-blue-700 hover:bg-slate-50"
+                }`}
               >
                 {language === "km" ? "អំពីយើង" : "About Us"}
               </Link>
@@ -156,23 +158,23 @@ export const Navbar: React.FC = () => {
 
           {/* Right Section Actions */}
           <div className="flex items-center space-x-2 sm:space-x-2.5 shrink-0">
-            {/* Help Button (Shown on 2xl to preserve horizontal space) */}
+            {/* Primary CTA: ស្នើសុំសេវាកម្ម */}
             <Link
-              href="/about"
-              className="hidden 2xl:inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-full border border-blue-600 text-blue-600 hover:bg-blue-50 text-xs font-bold transition shadow-2xs whitespace-nowrap shrink-0"
+              href={isAuthenticated ? "/customer/requests/create" : "/customer/requests/create"}
+              className="hidden sm:inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm shadow-blue-600/20 active:scale-98 transition whitespace-nowrap shrink-0"
             >
-              <MessageSquare className="w-3.5 h-3.5 text-blue-600" />
-              <span>{language === "km" ? "ជំនួយបន្ថែម" : "Support"}</span>
+              <PlusCircle className="w-4 h-4 text-white" />
+              <span>{language === "km" ? "ស្នើសុំសេវាកម្ម" : "Request Service"}</span>
             </Link>
 
-            {/* Login Button (Shown on sm+ to prevent header cramping on mobile screens, where bottom nav already has Login) */}
+            {/* Login Button (when not authenticated) */}
             {!isAuthenticated ? (
               <Link
                 href="/login"
-                className="hidden sm:inline-flex items-center space-x-1.5 px-4 py-2 rounded-full bg-[#1254d8] hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-600/25 transition whitespace-nowrap shrink-0"
+                className="inline-flex items-center space-x-1 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl border border-slate-200 hover:border-blue-400 bg-white hover:bg-slate-50 text-slate-700 hover:text-blue-700 text-xs font-semibold transition whitespace-nowrap shrink-0 shadow-2xs"
               >
-                <User className="w-3.5 h-3.5 text-white" />
-                <span>{language === "km" ? "ចូលប្រើប្រាស់" : "Login"}</span>
+                <User className="w-3.5 h-3.5 text-slate-500" />
+                <span>{language === "km" ? "ចូលគណនី" : "Login"}</span>
               </Link>
             ) : null}
 
