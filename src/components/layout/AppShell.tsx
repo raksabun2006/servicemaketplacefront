@@ -25,9 +25,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   if (isDashboardPage) {
     return (
-      <div className="min-h-screen flex flex-col bg-slate-50 w-full overflow-x-hidden">
+      <div className="min-h-screen flex flex-col bg-slate-50 w-full overflow-x-clip">
         <DashboardNavbar />
-        <main className="flex-1 pb-28 md:pb-0 flex flex-col w-full min-w-0 overflow-x-hidden">{children}</main>
+        <main className="flex-1 pb-28 md:pb-0 flex flex-col w-full min-w-0">{children}</main>
         <DashboardFooter />
         <MobileNavigation />
       </div>
@@ -35,9 +35,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col w-full overflow-x-hidden">
+    <div className="min-h-screen flex flex-col w-full overflow-x-clip">
       <Navbar />
-      <main className="flex-1 pb-28 md:pb-0 w-full min-w-0 overflow-x-hidden">{children}</main>
+      <main className="flex-1 pb-28 md:pb-0 w-full min-w-0">{children}</main>
       <Footer />
       <MobileNavigation />
     </div>
