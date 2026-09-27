@@ -1,5 +1,11 @@
 import api from "./client";
-import { AuthResponse, LoginRequest, RegisterRequest } from "@/types/auth";
+import {
+  AuthResponse,
+  LoginRequest,
+  RegisterRequest,
+  ResetPasswordRequest,
+  MessageResponse,
+} from "@/types/auth";
 
 export const authApi = {
   login: async (data: LoginRequest): Promise<AuthResponse> => {
@@ -78,6 +84,20 @@ export const authApi = {
     }
 
     throw lastError;
+  },
+
+  forgotPassword: async (email: string): Promise<MessageResponse> => {
+    return await api.post<MessageResponse>("/api/v1/auth/forgot-password", {
+      email: email.trim().toLowerCase(),
+    });
+  },
+
+  resetPassword: async (data: ResetPasswordRequest): Promise<MessageResponse> => {
+    return await api.post<MessageResponse>("/api/v1/auth/reset-password", {
+      token: data.token.trim(),
+      newPassword: data.newPassword,
+      confirmPassword: data.confirmPassword,
+    });
   },
 
   logout: () => {

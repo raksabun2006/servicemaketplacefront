@@ -20,6 +20,8 @@ interface AuthContextType {
   login: (data: LoginRequest) => Promise<AuthResponse>;
   register: (data: RegisterRequest) => Promise<AuthResponse>;
   googleLogin: (idToken: string) => Promise<AuthResponse>;
+  forgotPassword: (email: string) => Promise<{ message: string }>;
+  resetPassword: (data: { token: string; newPassword: string; confirmPassword: string }) => Promise<{ message: string }>;
   logout: () => void;
   updateUser: (user: UserResponse) => void;
   refreshUserProfile: () => Promise<void>;
@@ -168,6 +170,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem("user", JSON.stringify(newUser));
   };
 
+  const forgotPassword = async (email: string) => {
+    return await authApi.forgotPassword(email);
+  };
+
+  const resetPassword = async (data: { token: string; newPassword: string; confirmPassword: string }) => {
+    return await authApi.resetPassword(data);
+  };
+
   const role = user?.role || null;
   const isAuthenticated = !!token && !!user;
   const isCustomer = role === "CUSTOMER";
@@ -188,6 +198,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         login,
         register,
         googleLogin,
+        forgotPassword,
+        resetPassword,
         logout,
         updateUser,
         refreshUserProfile,

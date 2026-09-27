@@ -47,3 +47,20 @@ export interface RegisterRequest {
   identityDocumentFileId?: string;
   profilePhotoFileId?: string;
 }
+
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ResetPasswordRequest {
+  token: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+export interface MessageResponse {
+  message: string;
+  timestamp?: string;
+  status?: number;
+  error?: string;
+}

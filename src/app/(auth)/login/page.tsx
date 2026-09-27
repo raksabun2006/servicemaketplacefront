@@ -6,7 +6,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import {
-  Wrench,
   Lock,
   Mail,
   Loader2,
@@ -14,20 +13,23 @@ import {
   Eye,
   EyeOff,
   ArrowLeft,
-  Globe,
   ShieldCheck,
   Star,
   CheckCircle2,
+  X,
+  KeyRound,
+  Send,
 } from "lucide-react";
 import { LanguageSelector } from "@/components/ui/LanguageSelector";
 import { GoogleLoginButton } from "@/components/auth/GoogleLoginButton";
 import { AuthResponse } from "@/types/auth";
+import { mapPasswordResetError } from "@/lib/auth/password-reset-errors";
 
 function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { login } = useAuth();
-  const { language, setLanguage, t } = useLanguage();
+  const { login, forgotPassword } = useAuth();
+  const { language, t } = useLanguage();
 
   const initialEmail = searchParams.get("email") || "";
   const [email, setEmail] = useState(initialEmail);
@@ -35,6 +37,65 @@ function LoginContent() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // In-Place Forgot Password Modal State
+  const [showForgotModal, setShowForgotModal] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [isSendingForgot, setIsSendingForgot] = useState(false);
+  const [forgotError, setForgotError] = useState<string | null>(null);
+  const [forgotSuccess, setForgotSuccess] = useState(false);
+
+  const handleSendForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isSendingForgot) return;
+
+    const trimmed = forgotEmail.trim();
+    if (!trimmed) {
+      setForgotError(language === "km" ? "សូមបញ្ចូលអ៊ីមែល" : "Please enter your email");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmed)) {
+      setForgotError(
+        language === "km"
+          ? "សូមបញ្ចូលអ៊ីមែលដែលត្រឹមត្រូវ"
+          : "Please enter a valid email address"
+      );
+      return;
+    }
+
+    try {
+      setIsSendingForgot(true);
+      setForgotError(null);
+      await forgotPassword(trimmed);
+      setForgotSuccess(true);
+    } catch (err: unknown) {
+      const mapped = mapPasswordResetError(err, { isResetPassword: false });
+      if (mapped.isRateLimited) {
+        setForgotError(mapped.message);
+      } else {
+        const status = (err as { status?: number })?.status;
+        if (status && status >= 500) {
+          setForgotError(
+            language === "km"
+              ? "មានបញ្ហាក្នុងប្រព័ន្ធ សូមព្យាយាមម្តងទៀតនៅពេលក្រោយ។"
+              : "System error. Please try again later."
+          );
+        } else if (!status) {
+          setForgotError(
+            language === "km"
+              ? "មានបញ្ហាក្នុងការភ្ជាប់ទៅកាន់ប្រព័ន្ធ។ សូមព្យាយាមម្តងទៀត។"
+              : "Network connection error. Please try again."
+          );
+        } else {
+          setForgotSuccess(true);
+        }
+      }
+    } finally {
+      setIsSendingForgot(false);
+    }
+  };
 
   const handleAuthSuccess = (res: AuthResponse) => {
     const redirectUrl = searchParams.get("redirect");
@@ -215,9 +276,23 @@ function LoginContent() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    ពាក្យសម្ងាត់ (Password)
-                  </label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-bold text-slate-700">
+                      ពាក្យសម្ងាត់ (Password)
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setForgotEmail("");
+                        setForgotError(null);
+                        setForgotSuccess(false);
+                        setShowForgotModal(true);
+                      }}
+                      className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 transition cursor-pointer"
+                    >
+                      {t("forgotPassword")}
+                    </button>
+                  </div>
                   <div className="relative">
                     <input
                       type={showPassword ? "text" : "password"}
@@ -291,6 +366,149 @@ function LoginContent() {
       <footer className="w-full text-center py-4 text-xs text-slate-400">
         © {new Date().getFullYear()} សេវាខ្មែរ (Khmer Service Marketplace). រក្សាសិទ្ធិគ្រប់យ៉ាង។
       </footer>
+
+      {/* In-Place Forgot Password Modal */}
+      {showForgotModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200"
+          onClick={() => {
+            if (!isSendingForgot) setShowForgotModal(false);
+          }}
+        >
+          <div
+            className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl space-y-4 relative border border-slate-100"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close Button */}
+            <button
+              type="button"
+              onClick={() => setShowForgotModal(false)}
+              disabled={isSendingForgot}
+              className="absolute top-5 right-5 p-1 text-slate-400 hover:text-slate-700 rounded-full hover:bg-slate-100 transition cursor-pointer disabled:opacity-50"
+              aria-label="Close"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {!forgotSuccess ? (
+              <>
+                <div className="space-y-1.5 pr-8">
+                  <div className="inline-flex p-2 bg-indigo-50 text-indigo-600 rounded-xl mb-1">
+                    <KeyRound className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-xl font-black text-slate-900 tracking-tight">
+                    {language === "km" ? "ភ្លេចពាក្យសម្ងាត់?" : "Forgot Password?"}
+                  </h3>
+                  <p className="text-xs text-slate-500 leading-relaxed">
+                    {language === "km"
+                      ? "បញ្ចូលអ៊ីមែលរបស់អ្នក ហើយយើងនឹងផ្ញើតំណសម្រាប់កំណត់ពាក្យសម្ងាត់ថ្មី។"
+                      : "Enter your email address and we'll send you a password reset link."}
+                  </p>
+                </div>
+
+                {forgotError && (
+                  <div className="flex items-start space-x-2.5 p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs animate-shake">
+                    <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                    <span className="leading-relaxed">{forgotError}</span>
+                  </div>
+                )}
+
+                <form onSubmit={handleSendForgotPassword} className="space-y-3.5">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      {language === "km" ? "អ៊ីមែល" : "Email"}
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="email"
+                        required
+                        value={forgotEmail}
+                        onChange={(e) => {
+                          setForgotEmail(e.target.value);
+                          if (forgotError) setForgotError(null);
+                        }}
+                        placeholder={
+                          language === "km" ? "បញ្ចូលអ៊ីមែលរបស់អ្នក" : "name@example.com"
+                        }
+                        disabled={isSendingForgot}
+                        autoFocus
+                        className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm bg-slate-50/70 rounded-xl border border-slate-200 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition disabled:opacity-60"
+                      />
+                      <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-2.5 sm:top-3" />
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isSendingForgot}
+                    className="w-full inline-flex items-center justify-center space-x-2 py-2.5 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+                  >
+                    {isSendingForgot ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>{language === "km" ? "កំពុងផ្ញើ..." : "Sending..."}</span>
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-3.5 h-3.5" />
+                        <span>
+                          {language === "km"
+                            ? "ផ្ញើតំណកំណត់ពាក្យសម្ងាត់"
+                            : "Send Password Reset Link"}
+                        </span>
+                      </>
+                    )}
+                  </button>
+                </form>
+
+                <div className="text-center pt-2 text-[11px] text-slate-400">
+                  <Link
+                    href="/forgot-password"
+                    onClick={() => setShowForgotModal(false)}
+                    className="hover:text-indigo-600 transition underline underline-offset-2"
+                  >
+                    {language === "km" ? "បើកក្នុងទំព័រពេញ" : "Open in full page"}
+                  </Link>
+                </div>
+              </>
+            ) : (
+              <div className="text-center py-4 space-y-4">
+                <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
+                  <CheckCircle2 className="w-7 h-7" />
+                </div>
+
+                <div className="space-y-2">
+                  <h3 className="text-lg font-black text-slate-900">
+                    {language === "km"
+                      ? "បានផ្ញើតំណកំណត់ពាក្យសម្ងាត់"
+                      : "Password Reset Link Sent"}
+                  </h3>
+                  <p className="text-xs text-slate-600 leading-relaxed max-w-xs mx-auto">
+                    {language === "km"
+                      ? "ប្រសិនបើអ៊ីមែលនេះមាននៅក្នុងប្រព័ន្ធ យើងបានផ្ញើតំណកំណត់ពាក្យសម្ងាត់ទៅកាន់អ៊ីមែលរបស់អ្នករួចហើយ។"
+                      : "If an account exists with this email, a password reset link has been sent."}
+                  </p>
+                  <p className="text-[11px] text-slate-400">
+                    {language === "km"
+                      ? "សូមពិនិត្យ Inbox និង Spam/Junk របស់អ្នក។"
+                      : "Please check your Inbox and Spam/Junk folders."}
+                  </p>
+                </div>
+
+                <div className="pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowForgotModal(false)}
+                    className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold rounded-xl transition cursor-pointer"
+                  >
+                    {language === "km" ? "យល់ព្រម" : "OK"}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
