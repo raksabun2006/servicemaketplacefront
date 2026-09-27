@@ -86,29 +86,34 @@ export default function HomeClient() {
   // Hero Slides Data
   const heroSlides = [
     {
-      category: "ថ្នាលសេវាកម្មកម្ពុជា",
-      title: "ស្វែងរកជាង និងសេវាកម្មដែលអ្នកត្រូវការ",
-      description:
-        "ស្វែងរកអ្នកផ្តល់សេវាកម្មនៅជិតអ្នក និងទាក់ទងជាងដែលសាកសមនឹងតម្រូវការរបស់អ្នក។ ជួសជុលម៉ាស៊ីនត្រជាក់ កុំព្យូទ័រ អគ្គិសនី ទឹក សម្អាត និងសេវាកម្មជាច្រើនទៀត។",
-      buttonText: "ស្វែងយល់បន្ថែម",
+      category: isKm ? "ថ្នាលសេវាកម្មកម្ពុជា" : "Cambodia Service Marketplace",
+      title: isKm
+        ? "ស្វែងរកជាង និងសេវាកម្មដែលអ្នកត្រូវការ"
+        : "Find the Technicians & Services You Need",
+      description: isKm
+        ? "ស្វែងរកអ្នកផ្តល់សេវាកម្មនៅជិតអ្នក និងទាក់ទងជាងដែលសាកសមនឹងតម្រូវការរបស់អ្នក។ ជួសជុលម៉ាស៊ីនត្រជាក់ កុំព្យូទ័រ អគ្គិសនី ទឹក សម្អាត និងសេវាកម្មជាច្រើនទៀត។"
+        : "Find service providers near you and connect with experienced technicians directly. AC repair, computers, electrical, plumbing, cleaning, and more.",
+      buttonText: isKm ? "ស្វែងយល់បន្ថែម" : "Learn More",
       link: "/services",
       image: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=800&q=80",
     },
     {
-      category: "សម្រាប់ជាងជំនាញ និងក្រុមហ៊ុនសេវាកម្ម",
-      title: "អ្នកផ្តល់សេវាកម្ម",
-      description:
-        "អ្នកជាជាងជំនាញ ឬក្រុមហ៊ុនសេវាកម្មដែលមានគុណវុឌ្ឍិគ្រប់គ្រាន់? ចុះឈ្មោះចូលរួមថ្នាលសេវាខ្មែរ ដើម្បីទទួលបានការងាររាល់ថ្ងៃ រកចំណូលបន្ថែម និងពង្រីកមូលដ្ឋានអតិថិជន។",
-      buttonText: "ចុះឈ្មោះជាអ្នកផ្តល់សេវា",
+      category: isKm ? "សម្រាប់ជាងជំនាញ និងក្រុមហ៊ុនសេវាកម្ម" : "For Technicians & Companies",
+      title: isKm ? "អ្នកផ្តល់សេវាកម្ម" : "Service Providers",
+      description: isKm
+        ? "អ្នកជាជាងជំនាញ ឬក្រុមហ៊ុនសេវាកម្មដែលមានគុណវុឌ្ឍិគ្រប់គ្រាន់? ចុះឈ្មោះចូលរួមថ្នាលសេវាខ្មែរ ដើម្បីទទួលបានការងាររាល់ថ្ងៃ រកចំណូលបន្ថែម និងពង្រីកមូលដ្ឋានអតិថិជន។"
+        : "Are you a skilled technician or qualified service company? Join Khmer Service to receive daily jobs, earn more income, and expand your customer base.",
+      buttonText: isKm ? "ចុះឈ្មោះជាអ្នកផ្តល់សេវា" : "Register as Provider",
       link: "/register?role=PROVIDER",
       image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80",
     },
     {
-      category: "សុវត្ថិភាពគេហដ្ឋាន និងតម្លាភាព",
-      title: "ការធានាគុណភាព ១០០%",
-      description:
-        "ជាងជំនាញទាំងអស់ត្រូវបានផ្ទៀងផ្ទាត់អត្តសញ្ញាណប័ណ្ណសញ្ជាតិខ្មែរ (National ID) តម្លៃមានតម្លាភាព គ្មានការលួចដំឡើងថ្លៃ និងមានការធានាជួសជុលឡើងវិញដោយឥតគិតថ្លៃ។",
-      buttonText: "ស្វែងយល់អំពីយើង",
+      category: isKm ? "សុវត្ថិភាពគេហដ្ឋាន និងតម្លាភាព" : "Home Safety & Transparency",
+      title: isKm ? "ការធានាគុណភាព ១០០%" : "100% Quality Guarantee",
+      description: isKm
+        ? "ជាងជំនាញទាំងអស់ត្រូវបានផ្ទៀងផ្ទាត់អត្តសញ្ញាណប័ណ្ណសញ្ជាតិខ្មែរ (National ID) តម្លៃមានតម្លាភាព គ្មានការលួចដំឡើងថ្លៃ និងមានការធានាជួសជុលឡើងវិញដោយឥតគិតថ្លៃ។"
+        : "All technicians are verified with Cambodian National ID. Transparent upfront pricing with no hidden charges and a free re-service guarantee.",
+      buttonText: isKm ? "ស្វែងយល់អំពីយើង" : "About Us",
       link: "/about",
       image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80",
     },
@@ -120,9 +125,10 @@ export default function HomeClient() {
       id: "p1",
       category: "AC_REPAIR",
       slug: "ac-repair",
-      title: "ម៉ាស៊ីនត្រជាក់ & ទូរទឹកកក",
-      description:
-        "លាងសម្អាត ជួសជុលម៉ាស៊ីនមិនត្រជាក់ បញ្ចូលហ្គាស ដោះដំឡើង និងថែទាំប្រព័ន្ធត្រជាក់គេហដ្ឋាន និងការិយាល័យ។",
+      title: isKm ? "ម៉ាស៊ីនត្រជាក់ & ទូរទឹកកក" : "AC & Refrigeration",
+      description: isKm
+        ? "លាងសម្អាត ជួសជុលម៉ាស៊ីនមិនត្រជាក់ បញ្ចូលហ្គាស ដោះដំឡើង និងថែទាំប្រព័ន្ធត្រជាក់គេហដ្ឋាន និងការិយាល័យ។"
+        : "Cleaning, repair, refrigerant refill, installation, and routine maintenance for residential and commercial AC systems.",
       iconType: "ac",
       link: "/services/ac-repair",
     },
@@ -130,9 +136,10 @@ export default function HomeClient() {
       id: "p2",
       category: "PLUMBING",
       slug: "plumbing",
-      title: "ប្រព័ន្ធទឹក & បំពង់ទុយោ",
-      description:
-        "ជួសជុលទុយោទឹកបែក លេចទឹក កកស្ទះលូ ដំឡើងម៉ូទ័រទឹក និងបរិក្ខារបន្ទប់ទឹកគ្រប់ប្រភេទយ៉ាងរហ័ស។",
+      title: isKm ? "ប្រព័ន្ធទឹក & បំពង់ទុយោ" : "Plumbing & Piping",
+      description: isKm
+        ? "ជួសជុលទុយោទឹកបែក លេចទឹក កកស្ទះលូ ដំឡើងម៉ូទ័រទឹក និងបរិក្ខារបន្ទប់ទឹកគ្រប់ប្រភេទយ៉ាងរហ័ស។"
+        : "Fast repairs for burst pipes, leaks, blocked drainage, water pumps, and all bathroom sanitary fixtures.",
       iconType: "plumbing",
       link: "/services/plumbing",
     },
@@ -140,9 +147,10 @@ export default function HomeClient() {
       id: "p3",
       category: "ELECTRICAL",
       slug: "electrical",
-      title: "ប្រព័ន្ធអគ្គិសនី & ភ្លើង",
-      description:
-        "ជួសជុលឆ្លងភ្លើង ដាច់ភ្លើង រៀបចំបណ្តាញខ្សែភ្លើង ដំឡើងកង្ហារ អំពូល និងប្រអប់សុវត្ថិភាពស្តង់ដារ។",
+      title: isKm ? "ប្រព័ន្ធអគ្គិសនី & ភ្លើង" : "Electrical & Lighting",
+      description: isKm
+        ? "ជួសជុលឆ្លងភ្លើង ដាច់ភ្លើង រៀបចំបណ្តាញខ្សែភ្លើង ដំឡើងកង្ហារ អំពូល និងប្រអប់សុវត្ថិភាពស្តង់ដារ។"
+        : "Troubleshoot short circuits, wiring installations, power outages, ceiling fans, lighting, and breaker panels.",
       iconType: "electrical",
       link: "/services/electrical",
     },
@@ -150,9 +158,10 @@ export default function HomeClient() {
       id: "p4",
       category: "CLEANING",
       slug: "cleaning",
-      title: "សេវាសម្អាត & បោកពូក",
-      description:
-        "សម្អាតគេហដ្ឋាន ខុនដូ ការិយាល័យ បោកពូក សាឡុង និងសម្អាតកម្ចាត់មេរោគដោយក្រុមការងារជំនាញ។",
+      title: isKm ? "សេវាសម្អាត & បោកពូក" : "Cleaning & Laundry",
+      description: isKm
+        ? "សម្អាតគេហដ្ឋាន ខុនដូ ការិយាល័យ បោកពូក សាឡុង និងសម្អាតកម្ចាត់មេរោគដោយក្រុមការងារជំនាញ។"
+        : "Deep cleaning for homes, condos, and offices, mattress & sofa washing, and professional disinfection services.",
       iconType: "cleaning",
       link: "/services/cleaning",
     },
@@ -160,9 +169,10 @@ export default function HomeClient() {
       id: "p5",
       category: "APPLIANCE_REPAIR",
       slug: "appliance-repair",
-      title: "ជួសជុលគ្រឿងអេឡិចត្រូនិក & កុំព្យូទ័រ",
-      description:
-        "ជួសជុលកុំព្យូទ័រ ម៉ាស៊ីនបោកខោអាវ ទូរទស្សន៍ឆ្លាតវៃ និងឧបករណ៍ប្រើប្រាស់អគ្គិសនីគ្រប់ប្រភេទ។",
+      title: isKm ? "ជួសជុលគ្រឿងអេឡិចត្រូនិក & កុំព្យូទ័រ" : "Electronics & Appliances",
+      description: isKm
+        ? "ជួសជុលកុំព្យូទ័រ ម៉ាស៊ីនបោកខោអាវ ទូរទស្សន៍ឆ្លាតវៃ និងឧបករណ៍ប្រើប្រាស់អគ្គិសនីគ្រប់ប្រភេទ។"
+        : "Repairs for laptops, desktop computers, washing machines, smart TVs, and major household electronics.",
       iconType: "appliance",
       link: "/services/appliance-repair",
     },
@@ -170,9 +180,10 @@ export default function HomeClient() {
       id: "p6",
       category: "CARPENTRY",
       slug: "carpentry",
-      title: "ជាងឈើ ទ្វារបង្អួច & សំណង់",
-      description:
-        "ដំឡើងគ្រឿងសង្ហារឹម តុ ទូ ជួសជុលសោទ្វារ បង្អួច ពិដាន និងការ៉ូបាក់បែកដោយជាងមានថ្វីដៃ។",
+      title: isKm ? "ជាងឈើ ទ្វារបង្អួច & សំណង់" : "Carpentry & Handyman",
+      description: isKm
+        ? "ដំឡើងគ្រឿងសង្ហារឹម តុ ទូ ជួសជុលសោទ្វារ បង្អួច ពិដាន និងការ៉ូបាក់បែកដោយជាងមានថ្វីដៃ។"
+        : "Custom furniture assembly, door locks, windows, drywall, ceiling repairs, and tile work by seasoned handymen.",
       iconType: "carpentry",
       link: "/services/carpentry",
     },
@@ -181,24 +192,44 @@ export default function HomeClient() {
   // Official FAQ Data
   const faqs = [
     {
-      q: "តើខ្ញុំអាចស្វែងរកជាង និងសេវាកម្មនៅកម្ពុជាដោយរបៀបណា?",
-      a: "លោកអ្នកគ្រាន់តែចុចលើប៊ូតុង «+ បង្ហោះបញ្ហារបស់អ្នក» ឬជ្រើសរើសប្រភេទសេវាកម្មដែលអ្នកត្រូវការ រួចបញ្ជាក់ពីទីតាំង និងភ្ជាប់រូបភាព។ ជាងជំនាញនៅក្បែរអ្នកនឹងផ្តល់តម្លៃជូនក្នុងរយៈពេល ១០ ទៅ ១៥ នាទី។",
+      q: isKm
+        ? "តើខ្ញុំអាចស្វែងរកជាង និងសេវាកម្មនៅកម្ពុជាដោយរបៀបណា?"
+        : "How do I find technicians and services in Cambodia?",
+      a: isKm
+        ? "លោកអ្នកគ្រាន់តែចុចលើប៊ូតុង «+ បង្ហោះបញ្ហារបស់អ្នក» ឬជ្រើសរើសប្រភេទសេវាកម្មដែលអ្នកត្រូវការ រួចបញ្ជាក់ពីទីតាំង និងភ្ជាប់រូបភាព។ ជាងជំនាញនៅក្បែរអ្នកនឹងផ្តល់តម្លៃជូនក្នុងរយៈពេល ១០ ទៅ ១៥ នាទី។"
+        : "Simply click '+ Post Your Problem' or browse service categories, specify your location, and attach pictures. Experienced technicians nearby will send competitive quotes within 10-15 minutes.",
     },
     {
-      q: "តើជាងជំនាញទាំងអស់ត្រូវបានផ្ទៀងផ្ទាត់ដោយរបៀបណា?",
-      a: "ជាងជំនាញទាំងអស់នៅលើថ្នាល Khmer Service (ខ្មែរ សេវា) ត្រូវឆ្លងកាត់ការផ្ទៀងផ្ទាត់អត្តសញ្ញាណប័ណ្ណសញ្ជាតិខ្មែរ (National ID) ពិនិត្យប្រវត្តិរូប និងទទួលបានការវាយតម្លៃពិតពីអតិថិជន។",
+      q: isKm
+        ? "តើជាងជំនាញទាំងអស់ត្រូវបានផ្ទៀងផ្ទាត់ដោយរបៀបណា?"
+        : "How are skilled technicians verified?",
+      a: isKm
+        ? "ជាងជំនាញទាំងអស់នៅលើថ្នាល Khmer Service (ខ្មែរ សេវា) ត្រូវឆ្លងកាត់ការផ្ទៀងផ្ទាត់អត្តសញ្ញាណប័ណ្ណសញ្ជាតិខ្មែរ (National ID) ពិនិត្យប្រវត្តិរូប និងទទួលបានការវាយតម្លៃពិតពីអតិថិជន។"
+        : "All technicians on Khmer Service undergo verified Cambodian National ID checks, profile reviews, and receive authentic customer reviews and ratings.",
     },
     {
-      q: "តើតម្លៃសេវាកម្មមានតម្លាភាពដែរឬទេ?",
-      a: "តម្លៃទាំងអស់គឺមានតម្លាភាព ១០០%! អ្នកនឹងទទួលបានការផ្តល់តម្លៃប្រកួតប្រជែងជាច្រើនជម្រើសមុនពេលសម្រេចចិត្តជួល គ្មានការគិតថ្លៃលាក់កំបាំងឡើយ។",
+      q: isKm
+        ? "តើតម្លៃសេវាកម្មមានតម្លាភាពដែរឬទេ?"
+        : "Is pricing transparent?",
+      a: isKm
+        ? "តម្លៃទាំងអស់គឺមានតម្លាភាព ១០០%! អ្នកនឹងទទួលបានការផ្តល់តម្លៃប្រកួតប្រជែងជាច្រើនជម្រើសមុនពេលសម្រេចចិត្តជួល គ្មានការគិតថ្លៃលាក់កំបាំងឡើយ។"
+        : "Pricing is 100% transparent! You receive multiple competitive offers to compare before deciding to hire, with zero hidden charges.",
     },
     {
-      q: "តើមានការធានាលើការជួសជុលដែរឬទេ ប្រសិនបើមិនពេញចិត្ត?",
-      a: "ថ្នាលសេវាខ្មែរមាន «គោលការណ៍ធានាគុណភាព»។ ប្រសិនបើបញ្ហាមិនទាន់ត្រូវបានដោះស្រាយបានល្អ ជាងជំនាញនឹងទទួលខុសត្រូវពិនិត្យជួសជុលឡើងវិញដោយឥតគិតថ្លៃ។",
+      q: isKm
+        ? "តើមានការធានាលើការជួសជុលដែរឬទេ ប្រសិនបើមិនពេញចិត្ត?"
+        : "Is there a repair guarantee if I am unsatisfied?",
+      a: isKm
+        ? "ថ្នាលសេវាខ្មែរមាន «គោលការណ៍ធានាគុណភាព»។ ប្រសិនបើបញ្ហាមិនទាន់ត្រូវបានដោះស្រាយបានល្អ ជាងជំនាញនឹងទទួលខុសត្រូវពិនិត្យជួសជុលឡើងវិញដោយឥតគិតថ្លៃ។"
+        : "Khmer Service adheres to a 'Quality Guarantee Policy'. If the work is not completed properly, the technician is committed to re-inspecting and fixing it free of charge.",
     },
     {
-      q: "តើការទូទាត់ប្រាក់ធ្វើឡើងតាមរបៀបណា?",
-      a: "លោកអ្នកអាចទូទាត់ប្រាក់យ៉ាងងាយស្រួល និងមានសុវត្ថិភាពតាមរយៈ Bakong KHQR ឬសាច់ប្រាក់សុទ្ធ ក្រោយពេលជាងបានជួសជុលរួចរាល់ និងលោកអ្នកពេញចិត្ត។",
+      q: isKm
+        ? "តើការទូទាត់ប្រាក់ធ្វើឡើងតាមរបៀបណា?"
+        : "How does payment work?",
+      a: isKm
+        ? "លោកអ្នកអាចទូទាត់ប្រាក់យ៉ាងងាយស្រួល និងមានសុវត្ថិភាពតាមរយៈ Bakong KHQR ឬសាច់ប្រាក់សុទ្ធ ក្រោយពេលជាងបានជួសជុលរួចរាល់ និងលោកអ្នកពេញចិត្ត។"
+        : "You can pay easily and securely via Bakong KHQR or cash once the technician has satisfactorily completed the service.",
     },
   ];
 
@@ -317,7 +348,7 @@ export default function HomeClient() {
                   className="inline-flex items-center justify-center px-3 sm:px-5 py-2.5 sm:py-3 rounded-xl bg-blue-50/90 hover:bg-blue-100 text-[#104ccb] font-bold text-xs sm:text-sm border border-blue-200/80 active:scale-[0.98] transition cursor-pointer gap-1 sm:gap-1.5 text-center"
                 >
                   <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-                  <span className="truncate">ស្វែងរកសេវារហ័ស</span>
+                  <span className="truncate">{isKm ? "ស្វែងរកសេវារហ័ស" : "Quick Search"}</span>
                 </button>
               </div>
             </div>
@@ -329,13 +360,15 @@ export default function HomeClient() {
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={heroSlides[currentSlide].image}
-                    alt="ជាងជំនាញផ្តល់សេវាកម្មនៅកម្ពុជា"
+                    alt={isKm ? "ជាងជំនាញផ្តល់សេវាកម្មនៅកម្ពុជា" : "Service technicians in Cambodia"}
                     className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent" />
                   <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 text-white">
                     <p className="text-[11px] sm:text-xs font-semibold text-blue-200">ខ្មែរ សេវា (Khmer Service)</p>
-                    <p className="text-xs sm:text-base font-bold line-clamp-1">ជាងជំនាញមានការផ្ទៀងផ្ទាត់ត្រឹមត្រូវទូទាំងប្រទេស</p>
+                    <p className="text-xs sm:text-base font-bold line-clamp-1">
+                      {isKm ? "ជាងជំនាញមានការផ្ទៀងផ្ទាត់ត្រឹមត្រូវទូទាំងប្រទេស" : "Verified skilled technicians nationwide"}
+                    </p>
                   </div>
                 </div>
 
@@ -386,13 +419,15 @@ export default function HomeClient() {
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 sm:mb-10 gap-3 sm:gap-4">
             <div>
               <span className="text-xs font-bold text-[#104ccb] uppercase tracking-widest">
-                ប្រភេទសេវាកម្មពេញនិយម
+                {isKm ? "ប្រភេទសេវាកម្មពេញនិយម" : "Popular Service Categories"}
               </span>
               <h2 className="text-xl sm:text-3xl font-extrabold text-[#104ccb] mt-1">
-                សេវាកម្មជួសជុល និងថែទាំគេហដ្ឋាន
+                {isKm ? "សេវាកម្មជួសជុល និងថែទាំគេហដ្ឋាន" : "Home Repair & Maintenance Services"}
               </h2>
               <p className="text-xs sm:text-sm text-slate-600 mt-1 sm:mt-2">
-                ស្វែងរកជាងជំនាញ និងសេវាកម្មតាមតម្រូវការជាក់ស្តែងរបស់អ្នក
+                {isKm
+                  ? "ស្វែងរកជាងជំនាញ និងសេវាកម្មតាមតម្រូវការជាក់ស្តែងរបស់អ្នក"
+                  : "Find skilled technicians and services tailored to your needs"}
               </p>
             </div>
 
@@ -400,7 +435,7 @@ export default function HomeClient() {
               href="/services"
               className="inline-flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-white border border-slate-200 text-[#104ccb] font-bold text-xs hover:bg-blue-50 transition shrink-0 self-start sm:self-auto"
             >
-              <span>មើលសេវាកម្មទាំងអស់</span>
+              <span>{isKm ? "មើលសេវាកម្មទាំងអស់" : "View All Services"}</span>
               <ChevronRight className="w-4 h-4" />
             </Link>
           </div>
@@ -430,12 +465,14 @@ export default function HomeClient() {
                 </div>
 
                 <div className="pt-3 sm:pt-4 border-t border-slate-100 flex items-center justify-between">
-                  <span className="text-xs font-semibold text-slate-500">ស្វែងរកជាងជំនាញ</span>
+                  <span className="text-xs font-semibold text-slate-500">
+                    {isKm ? "ស្វែងរកជាងជំនាញ" : "Skilled Technicians"}
+                  </span>
                   <Link
                     href={item.link}
                     className="inline-flex items-center gap-1 text-xs font-bold text-[#104ccb] group-hover:translate-x-0.5 transition-transform"
                   >
-                    <span>ស្វែងរក</span>
+                    <span>{isKm ? "ស្វែងរក" : "Explore"}</span>
                     <ChevronRight className="w-4 h-4" />
                   </Link>
                 </div>
@@ -451,13 +488,15 @@ export default function HomeClient() {
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 sm:mb-10 gap-3 sm:gap-4">
             <div>
               <span className="text-xs font-bold text-[#104ccb] uppercase tracking-widest">
-                តំបន់គ្របដណ្តប់សេវាកម្ម
+                {isKm ? "តំបន់គ្របដណ្តប់សេវាកម្ម" : "Service Coverage Areas"}
               </span>
               <h2 className="text-xl sm:text-3xl font-extrabold text-[#104ccb] mt-1">
-                ស្វែងរកជាងជំនាញតាមរាជធានី និងខេត្ត
+                {isKm ? "ស្វែងរកជាងជំនាញតាមរាជធានី និងខេត្ត" : "Find Technicians by City & Province"}
               </h2>
               <p className="text-xs sm:text-sm text-slate-600 mt-1 sm:mt-2">
-                ស្វែងរកជាងជួសជុលដែលនៅជិតអ្នកបំផុតតាមបណ្តារាជធានី និងខេត្តនានាក្នុងប្រទេសកម្ពុជា
+                {isKm
+                  ? "ស្វែងរកជាងជួសជុលដែលនៅជិតអ្នកបំផុតតាមបណ្តារាជធានី និងខេត្តនានាក្នុងប្រទេសកម្ពុជា"
+                  : "Find the nearest repair technicians across provinces and cities in Cambodia"}
               </p>
             </div>
           </div>
@@ -473,9 +512,11 @@ export default function HomeClient() {
                   <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
                 <h3 className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-[#104ccb] transition-colors leading-tight">
-                  {loc.nameKm}
+                  {isKm ? loc.nameKm : loc.nameEn}
                 </h3>
-                <p className="text-[10px] sm:text-[11px] text-slate-500 mt-0.5">{loc.nameEn}</p>
+                <p className="text-[10px] sm:text-[11px] text-slate-500 mt-0.5">
+                  {isKm ? loc.nameEn : loc.nameKm}
+                </p>
               </Link>
             ))}
           </div>
@@ -483,7 +524,7 @@ export default function HomeClient() {
           {/* Phnom Penh Districts Quick Links */}
           <div className="mt-6 sm:mt-8 p-3.5 sm:p-5 bg-slate-50 rounded-xl sm:rounded-2xl border border-slate-200">
             <p className="text-xs font-bold text-slate-700 mb-2 sm:mb-3">
-              ខណ្ឌពេញនិយមក្នុងរាជធានីភ្នំពេញ៖
+              {isKm ? "ខណ្ឌពេញនិយមក្នុងរាជធានីភ្នំពេញ៖" : "Popular Districts in Phnom Penh:"}
             </p>
             <div className="flex flex-wrap gap-1.5 sm:gap-2">
               {LOCATIONS_SEO["phnom-penh"].districts?.map((d) => (
@@ -492,7 +533,7 @@ export default function HomeClient() {
                   href={`/locations/phnom-penh?district=${encodeURIComponent(d.nameEn)}`}
                   className="px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg bg-white border border-slate-200 text-[11px] sm:text-xs text-slate-700 hover:text-blue-600 hover:border-blue-300 transition"
                 >
-                  {d.nameKm} ({d.nameEn})
+                  {isKm ? `${d.nameKm} (${d.nameEn})` : `${d.nameEn} (${d.nameKm})`}
                 </Link>
               ))}
             </div>
@@ -506,13 +547,15 @@ export default function HomeClient() {
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 sm:mb-10 gap-3 sm:gap-4">
             <div>
               <span className="text-xs font-bold text-[#104ccb] uppercase tracking-widest">
-                សំណើការងារផ្ទាល់
+                {isKm ? "សំណើការងារផ្ទាល់" : "Live Job Requests"}
               </span>
               <h2 className="text-xl sm:text-3xl font-extrabold text-[#104ccb] mt-1">
-                សេវាកម្មដែលកំពុងត្រូវការជាងជំនាញ
+                {isKm ? "សេវាកម្មដែលកំពុងត្រូវការជាងជំនាញ" : "Services Currently Needing Technicians"}
               </h2>
               <p className="text-xs sm:text-sm text-slate-600 mt-1 sm:mt-2">
-                អតិថិជនទើបតែបានបង្ហោះបញ្ហានៅថ្ងៃនេះ — ជាងជំនាញអាចផ្តល់តម្លៃ និងទទួលការងារបានភ្លាមៗ
+                {isKm
+                  ? "អតិថិជនទើបតែបានបង្ហោះបញ្ហានៅថ្ងៃនេះ — ជាងជំនាញអាចផ្តល់តម្លៃ និងទទួលការងារបានភ្លាមៗ"
+                  : "Customers posted requests today — technicians can quote and accept jobs immediately"}
               </p>
             </div>
 
@@ -538,7 +581,7 @@ export default function HomeClient() {
                         {req.category}
                       </span>
                       <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full">
-                        {req.budgetMax ? `$${req.budgetMax}` : req.budgetMin ? `$${req.budgetMin}` : "ចរចាតម្លៃ"}
+                        {req.budgetMax ? `$${req.budgetMax}` : req.budgetMin ? `$${req.budgetMin}` : (isKm ? "ចរចាតម្លៃ" : "Negotiable")}
                       </span>
                     </div>
 
@@ -546,22 +589,26 @@ export default function HomeClient() {
                       {req.title}
                     </h3>
                     <p className="text-xs text-slate-600 leading-relaxed mb-4">
-                      {req.offerCount !== undefined ? `ទទួលបានការផ្តល់តម្លៃចំនួន ${req.offerCount} នាក់` : "កំពុងរង់ចាំការផ្តល់តម្លៃ"}
+                      {req.offerCount !== undefined
+                        ? (isKm ? `ទទួលបានការផ្តល់តម្លៃចំនួន ${req.offerCount} នាក់` : `${req.offerCount} quotes received`)
+                        : (isKm ? "កំពុងរង់ចាំការផ្តល់តម្លៃ" : "Waiting for quotes")}
                     </p>
 
                     <div className="flex items-center gap-2 text-xs text-slate-500 mb-2">
                       <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span className="truncate">{req.district || req.city || "រាជធានីភ្នំពេញ"}</span>
+                      <span className="truncate">{req.district || req.city || (isKm ? "រាជធានីភ្នំពេញ" : "Phnom Penh")}</span>
                     </div>
                   </div>
 
                   <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-                    <span className="text-[11px] text-slate-400">កំពុងរង់ចាំការផ្តល់តម្លៃ</span>
+                    <span className="text-[11px] text-slate-400">
+                      {isKm ? "កំពុងរង់ចាំការផ្តល់តម្លៃ" : "Waiting for quotes"}
+                    </span>
                     <Link
                       href={`/services/${req.id}`}
                       className="px-4 py-2 rounded-lg bg-[#104ccb] hover:bg-[#0a3ca8] text-white text-xs font-bold transition shadow-xs"
                     >
-                      {isKm ? "មើលបញ្ហាលម្អិត" : "See Problem Details"}
+                      {isKm ? "មើលបញ្ហាលម្អិត" : "See Details"}
                     </Link>
                   </div>
                 </div>
@@ -614,10 +661,12 @@ export default function HomeClient() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8 sm:mb-12">
             <h2 className="text-xl sm:text-3xl font-extrabold text-[#104ccb]">
-              តើលោកអ្នកមានចម្ងល់ទាក់ទងនឹងថ្នាលសេវាខ្មែរឬទេ?
+              {isKm ? "តើលោកអ្នកមានចម្ងល់ទាក់ទងនឹងថ្នាលសេវាខ្មែរឬទេ?" : "Frequently Asked Questions"}
             </h2>
             <p className="text-xs sm:text-sm text-slate-500 mt-1 sm:mt-2">
-              សំណួរ និងចម្លើយផ្លូវការអំពីដំណើរការជួសជុល ការទូទាត់ និងការធានាសុវត្ថិភាព
+              {isKm
+                ? "សំណួរ និងចម្លើយផ្លូវការអំពីដំណើរការជួសជុល ការទូទាត់ និងការធានាសុវត្ថិភាព"
+                : "Official answers about repair procedures, payment methods, and quality guarantees"}
             </p>
           </div>
 
@@ -668,10 +717,16 @@ export default function HomeClient() {
               <X className="w-5 h-5" />
             </button>
 
-            <span className="text-xs font-bold text-[#104ccb] mb-1 block">ស្វែងរកសេវាកម្មរហ័ស</span>
-            <h3 className="text-xl font-bold text-slate-900 mb-2">តើអ្នកមានបញ្ហាអ្វីត្រូវជួសជុល?</h3>
+            <span className="text-xs font-bold text-[#104ccb] mb-1 block">
+              {isKm ? "ស្វែងរកសេវាកម្មរហ័ស" : "Quick Search"}
+            </span>
+            <h3 className="text-xl font-bold text-slate-900 mb-2">
+              {isKm ? "តើអ្នកមានបញ្ហាអ្វីត្រូវជួសជុល?" : "What needs repair?"}
+            </h3>
             <p className="text-xs text-slate-600 mb-4">
-              វាយបញ្ចូលបញ្ហារបស់អ្នកដើម្បីស្វែងរកជាងជំនាញដែលនៅជិតអ្នកបំផុត
+              {isKm
+                ? "វាយបញ្ចូលបញ្ហារបស់អ្នកដើម្បីស្វែងរកជាងជំនាញដែលនៅជិតអ្នកបំផុត"
+                : "Describe your problem to quickly find nearby technicians"}
             </p>
 
             <form
@@ -687,7 +742,11 @@ export default function HomeClient() {
                 required
                 value={searchProblemInput}
                 onChange={(e) => setSearchProblemInput(e.target.value)}
-                placeholder="ឧ. ម៉ាស៊ីនត្រជាក់មិនត្រជាក់, លេចទុយោទឹក, ឆ្លងភ្លើង..."
+                placeholder={
+                  isKm
+                    ? "ឧ. ម៉ាស៊ីនត្រជាក់មិនត្រជាក់, លេចទុយោទឹក, ឆ្លងភ្លើង..."
+                    : "e.g., AC not cooling, pipe leaking, power outage..."
+                }
                 className="w-full px-4 py-3 text-xs sm:text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
 
@@ -696,14 +755,14 @@ export default function HomeClient() {
                   type="submit"
                   className="flex-1 py-3 rounded-xl bg-[#104ccb] hover:bg-[#0a3ca8] text-white font-bold text-xs sm:text-sm shadow-md transition cursor-pointer"
                 >
-                  បន្តទៅមុខ →
+                  {isKm ? "បន្តទៅមុខ →" : "Continue →"}
                 </button>
                 <button
                   type="button"
                   onClick={() => setQuickPostModalOpen(false)}
                   className="px-4 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs transition cursor-pointer"
                 >
-                  បិទ
+                  {isKm ? "បិទ" : "Close"}
                 </button>
               </div>
             </form>

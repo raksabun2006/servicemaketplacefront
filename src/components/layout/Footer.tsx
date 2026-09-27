@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { MapPin, Mail, Phone, ChevronUp } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 import {
   FOOTER_SERVICES_LINKS,
   FOOTER_CUSTOMER_LINKS,
@@ -42,6 +43,9 @@ function SocialIcon({ platform }: { platform: SocialLink["platform"] }) {
 }
 
 export const Footer: React.FC = () => {
+  const { language } = useLanguage();
+  const isKm = language === "km";
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -74,12 +78,14 @@ export const Footer: React.FC = () => {
             </Link>
 
             <p className="text-xs text-slate-400 leading-relaxed max-w-sm">
-              ស្វែងរកជាង និងអ្នកផ្តល់សេវាកម្មដែលអ្នកត្រូវការនៅកម្ពុជា។
+              {isKm
+                ? "ស្វែងរកជាង និងអ្នកផ្តល់សេវាកម្មដែលអ្នកត្រូវការនៅកម្ពុជា។"
+                : "Find the technicians and service providers you need in Cambodia."}
             </p>
 
             {/* Subtle Social Media Links */}
             <div className="pt-2">
-              <nav aria-label="បណ្តាញសង្គម" className="flex items-center space-x-2.5">
+              <nav aria-label={isKm ? "បណ្តាញសង្គម" : "Social media"} className="flex items-center space-x-2.5">
                 {FOOTER_SOCIAL_LINKS.map((item) => (
                   <a
                     key={item.name}
@@ -96,12 +102,12 @@ export const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Column 2 — សេវាកម្ម */}
+          {/* Column 2 — សេវាកម្ម (Services) */}
           <div className="space-y-3">
             <h3 className="text-xs font-bold text-white uppercase tracking-wider">
-              សេវាកម្ម
+              {isKm ? "សេវាកម្ម" : "Services"}
             </h3>
-            <nav aria-label="តំណភ្ជាប់សេវាកម្ម">
+            <nav aria-label={isKm ? "តំណភ្ជាប់សេវាកម្ម" : "Service links"}>
               <ul className="space-y-2">
                 {FOOTER_SERVICES_LINKS.map((item) => (
                   <li key={item.href}>
@@ -109,7 +115,7 @@ export const Footer: React.FC = () => {
                       href={item.href}
                       className="text-xs text-slate-400 hover:text-white transition-colors block py-0.5 focus:outline-none focus:text-white focus:underline"
                     >
-                      {item.name}
+                      {isKm ? item.name : item.nameEn || item.name}
                     </Link>
                   </li>
                 ))}
@@ -117,12 +123,12 @@ export const Footer: React.FC = () => {
             </nav>
           </div>
 
-          {/* Column 3 — សម្រាប់អ្នកប្រើប្រាស់ */}
+          {/* Column 3 — សម្រាប់អ្នកប្រើប្រាស់ (For Customers) */}
           <div className="space-y-3">
             <h3 className="text-xs font-bold text-white uppercase tracking-wider">
-              សម្រាប់អ្នកប្រើប្រាស់
+              {isKm ? "សម្រាប់អ្នកប្រើប្រាស់" : "For Customers"}
             </h3>
-            <nav aria-label="តំណភ្ជាប់សម្រាប់អ្នកប្រើប្រាស់">
+            <nav aria-label={isKm ? "តំណភ្ជាប់សម្រាប់អ្នកប្រើប្រាស់" : "Customer links"}>
               <ul className="space-y-2">
                 {FOOTER_CUSTOMER_LINKS.map((item) => (
                   <li key={item.name}>
@@ -130,7 +136,7 @@ export const Footer: React.FC = () => {
                       href={item.href}
                       className="text-xs text-slate-400 hover:text-white transition-colors block py-0.5 focus:outline-none focus:text-white focus:underline"
                     >
-                      {item.name}
+                      {isKm ? item.name : item.nameEn || item.name}
                     </Link>
                   </li>
                 ))}
@@ -138,12 +144,12 @@ export const Footer: React.FC = () => {
             </nav>
           </div>
 
-          {/* Column 4 — សម្រាប់អ្នកផ្តល់សេវា */}
+          {/* Column 4 — សម្រាប់អ្នកផ្តល់សេវា (For Service Providers) */}
           <div className="space-y-3">
             <h3 className="text-xs font-bold text-white uppercase tracking-wider">
-              សម្រាប់អ្នកផ្តល់សេវា
+              {isKm ? "សម្រាប់អ្នកផ្តល់សេវា" : "For Providers"}
             </h3>
-            <nav aria-label="តំណភ្ជាប់សម្រាប់អ្នកផ្តល់សេវា">
+            <nav aria-label={isKm ? "តំណភ្ជាប់សម្រាប់អ្នកផ្តល់សេវា" : "Provider links"}>
               <ul className="space-y-2">
                 {FOOTER_PROVIDER_LINKS.map((item) => (
                   <li key={item.name}>
@@ -151,7 +157,7 @@ export const Footer: React.FC = () => {
                       href={item.href}
                       className="text-xs text-slate-400 hover:text-white transition-colors block py-0.5 focus:outline-none focus:text-white focus:underline"
                     >
-                      {item.name}
+                      {isKm ? item.name : item.nameEn || item.name}
                     </Link>
                   </li>
                 ))}
@@ -165,19 +171,22 @@ export const Footer: React.FC = () => {
           {/* Contact Section */}
           <div className="space-y-3">
             <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider">
-              ទំនាក់ទំនង
+              {isKm ? "ទំនាក់ទំនង" : "Contact Us"}
             </h4>
             <div className="space-y-2 text-slate-400">
               <div className="flex items-center space-x-2.5">
                 <MapPin className="w-4 h-4 text-slate-400 shrink-0" aria-hidden="true" />
                 <span>
-                  ទីតាំង៖ <span className="text-slate-300">{FOOTER_CONTACT_INFO.location}</span>
+                  {isKm ? "ទីតាំង៖ " : "Location: "}
+                  <span className="text-slate-300">
+                    {isKm ? FOOTER_CONTACT_INFO.location : FOOTER_CONTACT_INFO.locationEn || "Phnom Penh, Cambodia"}
+                  </span>
                 </span>
               </div>
               <div className="flex items-center space-x-2.5">
                 <Mail className="w-4 h-4 text-slate-400 shrink-0" aria-hidden="true" />
                 <span>
-                  អ៊ីមែល៖{" "}
+                  {isKm ? "អ៊ីមែល៖ " : "Email: "}
                   <a
                     href={`mailto:${FOOTER_CONTACT_INFO.email}`}
                     className="text-slate-300 hover:text-white hover:underline focus:outline-none focus:underline"
@@ -189,7 +198,7 @@ export const Footer: React.FC = () => {
               <div className="flex items-center space-x-2.5">
                 <Phone className="w-4 h-4 text-slate-400 shrink-0" aria-hidden="true" />
                 <span>
-                  ទូរស័ព្ទ៖{" "}
+                  {isKm ? "ទូរស័ព្ទ៖ " : "Phone: "}
                   <a
                     href={`tel:${FOOTER_CONTACT_INFO.phone.replace(/\s+/g, "")}`}
                     className="text-slate-300 hover:text-white hover:underline focus:outline-none focus:underline"
@@ -204,9 +213,9 @@ export const Footer: React.FC = () => {
           {/* SEO Footer Content: សេវាកម្មពេញនិយម */}
           <div className="space-y-3">
             <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider">
-              សេវាកម្មពេញនិយម
+              {isKm ? "សេវាកម្មពេញនិយម" : "Popular Services"}
             </h4>
-            <nav aria-label="សេវាកម្មពេញនិយម">
+            <nav aria-label={isKm ? "សេវាកម្មពេញនិយម" : "Popular services"}>
               <div className="flex flex-wrap gap-2 pt-0.5">
                 {FOOTER_POPULAR_LINKS.map((item) => (
                   <Link
@@ -214,7 +223,7 @@ export const Footer: React.FC = () => {
                     href={item.href}
                     className="inline-block px-2.5 py-1 rounded-md bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700 transition-colors text-[11px] focus:outline-none focus:ring-1 focus:ring-blue-500"
                   >
-                    {item.name}
+                    {isKm ? item.name : item.nameEn || item.name}
                   </Link>
                 ))}
               </div>
@@ -224,9 +233,11 @@ export const Footer: React.FC = () => {
 
         {/* Bottom Footer Section */}
         <div className="pt-6 border-t border-slate-850 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-4">
-          <p>© 2026 ខ្មែរ សេវា. រក្សាសិទ្ធិគ្រប់យ៉ាង។</p>
+          <p>
+            {isKm ? "© 2026 ខ្មែរ សេវា. រក្សាសិទ្ធិគ្រប់យ៉ាង។" : "© 2026 Khmer Service. All rights reserved."}
+          </p>
 
-          <nav aria-label="លក្ខខណ្ឌច្បាប់">
+          <nav aria-label={isKm ? "លក្ខខណ្ឌច្បាប់" : "Legal links"}>
             <ul className="flex items-center space-x-4">
               {FOOTER_LEGAL_LINKS.map((item, index) => (
                 <React.Fragment key={item.href}>
@@ -236,7 +247,7 @@ export const Footer: React.FC = () => {
                       href={item.href}
                       className="hover:text-white transition-colors focus:outline-none focus:underline"
                     >
-                      {item.name}
+                      {isKm ? item.name : item.nameEn || item.name}
                     </Link>
                   </li>
                 </React.Fragment>
@@ -250,9 +261,9 @@ export const Footer: React.FC = () => {
       <button
         type="button"
         onClick={scrollToTop}
-        aria-label="ត្រឡប់ទៅលើវិញ"
+        aria-label={isKm ? "ត្រឡប់ទៅលើវិញ" : "Back to top"}
         className="fixed bottom-6 right-6 z-40 w-10 h-10 rounded-full bg-slate-900/90 hover:bg-slate-850 text-slate-300 hover:text-white shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-105 active:scale-95 border border-slate-750 backdrop-blur-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
-        title="ត្រឡប់ទៅលើវិញ"
+        title={isKm ? "ត្រឡប់ទៅលើវិញ" : "Back to top"}
       >
         <ChevronUp className="w-5 h-5" aria-hidden="true" />
       </button>

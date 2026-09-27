@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { ProviderProfileResponse, NearbyProviderResponse } from "@/types/provider";
 import { MapPin, Navigation, Star, CheckCircle2, ExternalLink, X } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 interface ProviderMapPanelProps {
   providers: (ProviderProfileResponse | NearbyProviderResponse)[];
@@ -17,6 +18,9 @@ export const ProviderMapPanel: React.FC<ProviderMapPanelProps> = ({
   userLocation,
   className = "",
 }) => {
+  const { language } = useLanguage();
+  const isKm = language === "km";
+
   const [selectedProvider, setSelectedProvider] = useState<
     ProviderProfileResponse | NearbyProviderResponse | null
   >(providers[0] || null);
@@ -32,15 +36,15 @@ export const ProviderMapPanel: React.FC<ProviderMapPanelProps> = ({
       {/* Map Header */}
       <div className="bg-white/95 backdrop-blur-xs px-4 py-2.5 border-b border-slate-200/90 flex items-center justify-between z-10">
         <div className="flex items-center space-x-2">
-          <MapPin className="w-4 h-4 text-blue-600" />
+          <MapPin className="w-4 h-4 text-[#104ccb]" />
           <span className="text-xs font-bold text-slate-800">
-            ផែនទីទីតាំងជាង ({providers.length} នាក់)
+            {isKm ? `ផែនទីទីតាំងជាង (${providers.length} នាក់)` : `Technician Map (${providers.length} providers)`}
           </span>
         </div>
         {userLocation && (
           <span className="inline-flex items-center space-x-1 text-[11px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full font-semibold border border-emerald-200">
             <Navigation className="w-3 h-3 text-emerald-600" />
-            <span>បានភ្ជាប់ GPS</span>
+            <span>{isKm ? "បានភ្ជាប់ GPS" : "GPS Connected"}</span>
           </span>
         )}
       </div>
@@ -70,7 +74,7 @@ export const ProviderMapPanel: React.FC<ProviderMapPanelProps> = ({
                     {selectedProvider.businessName ||
                       ("fullName" in selectedProvider
                         ? selectedProvider.fullName
-                        : "ជាងជំនាញ")}
+                        : isKm ? "ជាងជំនាញ" : "Technician")}
                   </h4>
                   {selectedProvider.isVerified && (
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
@@ -79,11 +83,11 @@ export const ProviderMapPanel: React.FC<ProviderMapPanelProps> = ({
                 <div className="flex items-center space-x-1 text-[11px] text-slate-500 mt-0.5">
                   <MapPin className="w-3 h-3 text-slate-400" />
                   <span className="truncate">
-                    {selectedProvider.district || selectedProvider.city || "ភ្នំពេញ"}
+                    {selectedProvider.district || selectedProvider.city || (isKm ? "ភ្នំពេញ" : "Phnom Penh")}
                   </span>
                   {"distanceKm" in selectedProvider &&
                     selectedProvider.distanceKm !== undefined && (
-                      <span className="text-blue-600 font-bold">
+                      <span className="text-[#104ccb] font-bold">
                         · {selectedProvider.distanceKm.toFixed(1)} km
                       </span>
                     )}
@@ -92,7 +96,7 @@ export const ProviderMapPanel: React.FC<ProviderMapPanelProps> = ({
               <button
                 type="button"
                 onClick={() => setSelectedProvider(null)}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded-md"
+                className="text-slate-400 hover:text-slate-600 p-1 rounded-md cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -113,9 +117,9 @@ export const ProviderMapPanel: React.FC<ProviderMapPanelProps> = ({
 
               <Link
                 href={`/providers/${selectedProvider.id}`}
-                className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition flex items-center space-x-1 shadow-2xs"
+                className="px-3 py-1 bg-[#104ccb] hover:bg-[#0a3ca8] text-white rounded-lg text-xs font-bold transition flex items-center space-x-1 shadow-2xs"
               >
-                <span>មើលប្រវត្តិរូប</span>
+                <span>{isKm ? "មើលប្រវត្តិរូប" : "View Profile"}</span>
                 <ExternalLink className="w-3 h-3" />
               </Link>
             </div>
@@ -126,12 +130,12 @@ export const ProviderMapPanel: React.FC<ProviderMapPanelProps> = ({
       {/* Quick Pin Selector Pill list */}
       <div className="bg-white/95 px-3 py-2 border-t border-slate-200 overflow-x-auto flex items-center space-x-2 scrollbar-none z-10">
         <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider shrink-0 mr-1">
-          ជាង៖
+          {isKm ? "ជាង៖" : "Techs:"}
         </span>
         {providers.slice(0, 8).map((p) => {
           const name =
             p.businessName ||
-            ("fullName" in p ? p.fullName : "ជាង");
+            ("fullName" in p ? p.fullName : isKm ? "ជាង" : "Tech");
           const isCurrent = selectedProvider?.id === p.id;
           return (
             <button
@@ -140,7 +144,7 @@ export const ProviderMapPanel: React.FC<ProviderMapPanelProps> = ({
               onClick={() => setSelectedProvider(p)}
               className={`px-2.5 py-1 rounded-lg text-xs font-medium whitespace-nowrap transition cursor-pointer shrink-0 ${
                 isCurrent
-                  ? "bg-blue-600 text-white shadow-2xs"
+                  ? "bg-[#104ccb] text-white shadow-2xs"
                   : "bg-slate-100 text-slate-700 hover:bg-slate-200"
               }`}
             >

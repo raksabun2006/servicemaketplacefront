@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Search, MapPin, Navigation, Loader2 } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 interface SearchBarProps {
   searchQuery: string;
@@ -13,7 +14,7 @@ interface SearchBarProps {
   isLocating?: boolean;
 }
 
-const SEARCH_EXAMPLES = [
+const SEARCH_EXAMPLES_KM = [
   "ជួសជុលម៉ាស៊ីនត្រជាក់",
   "ជាងទឹក",
   "ជាងអគ្គិសនី",
@@ -21,14 +22,22 @@ const SEARCH_EXAMPLES = [
   "សម្អាតផ្ទះ",
 ];
 
-const CITIES = [
-  { value: "", label: "គ្រប់ទីតាំងទាំងអស់ (All Locations)" },
-  { value: "Phnom Penh", label: "រាជធានីភ្នំពេញ (Phnom Penh)" },
-  { value: "Kandal", label: "ខេត្តកណ្ដាល (Kandal)" },
-  { value: "Siem Reap", label: "ខេត្តសៀមរាប (Siem Reap)" },
-  { value: "Battambang", label: "ខេត្តបាត់ដំបង (Battambang)" },
-  { value: "Preah Sihanouk", label: "ខេត្តព្រះសីហនុ (Preah Sihanouk)" },
-  { value: "Kampot", label: "ខេត្តកំពត (Kampot)" },
+const SEARCH_EXAMPLES_EN = [
+  "AC Repair",
+  "Plumbing",
+  "Electrician",
+  "Computer Repair",
+  "Cleaning",
+];
+
+const getCities = (isKm: boolean) => [
+  { value: "", label: isKm ? "គ្រប់ទីតាំងទាំងអស់ (All Locations)" : "All Locations" },
+  { value: "Phnom Penh", label: isKm ? "រាជធានីភ្នំពេញ (Phnom Penh)" : "Phnom Penh" },
+  { value: "Kandal", label: isKm ? "ខេត្តកណ្ដាល (Kandal)" : "Kandal Province" },
+  { value: "Siem Reap", label: isKm ? "ខេត្តសៀមរាប (Siem Reap)" : "Siem Reap Province" },
+  { value: "Battambang", label: isKm ? "ខេត្តបាត់ដំបង (Battambang)" : "Battambang Province" },
+  { value: "Preah Sihanouk", label: isKm ? "ខេត្តព្រះសីហនុ (Preah Sihanouk)" : "Preah Sihanouk" },
+  { value: "Kampot", label: isKm ? "ខេត្តកំពត (Kampot)" : "Kampot Province" },
 ];
 
 export const SearchBar: React.FC<SearchBarProps> = ({
@@ -40,6 +49,11 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   onNearMeClick,
   isLocating = false,
 }) => {
+  const { language } = useLanguage();
+  const isKm = language === "km";
+  const cities = getCities(isKm);
+  const searchExamples = isKm ? SEARCH_EXAMPLES_KM : SEARCH_EXAMPLES_EN;
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSearchSubmit();
@@ -59,8 +73,8 @@ export const SearchBar: React.FC<SearchBarProps> = ({
             type="text"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="តើអ្នកកំពុងស្វែងរកសេវាអ្វី?"
-            aria-label="ស្វែងរកសេវាកម្ម"
+            placeholder={isKm ? "តើអ្នកកំពុងស្វែងរកសេវាអ្វី?" : "What service are you looking for?"}
+            aria-label={isKm ? "ស្វែងរកសេវាកម្ម" : "Search services"}
             className="w-full text-xs sm:text-sm text-slate-800 placeholder:text-slate-400 outline-none bg-transparent"
           />
         </div>
@@ -76,10 +90,10 @@ export const SearchBar: React.FC<SearchBarProps> = ({
             <select
               value={selectedCity}
               onChange={(e) => onCityChange(e.target.value)}
-              aria-label="ទីតាំងរបស់អ្នក"
+              aria-label={isKm ? "ទីតាំងរបស់អ្នក" : "Your Location"}
               className="w-full text-xs text-slate-700 bg-transparent outline-none cursor-pointer pr-4 truncate font-medium"
             >
-              {CITIES.map((city) => (
+              {cities.map((city) => (
                 <option key={city.value} value={city.value}>
                   {city.label}
                 </option>
@@ -93,7 +107,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
               type="button"
               onClick={onNearMeClick}
               disabled={isLocating}
-              title="ស្វែងរកជាងនៅជិតទីតាំងរបស់ខ្ញុំ"
+              title={isKm ? "ស្វែងរកជាងនៅជិតទីតាំងរបស់ខ្ញុំ" : "Find technicians near my location"}
               className="hidden lg:flex items-center space-x-1.5 px-3 h-12 rounded-xl border border-slate-200 text-slate-600 hover:text-blue-600 hover:bg-blue-50/60 text-xs font-semibold transition shrink-0 cursor-pointer"
             >
               {isLocating ? (
@@ -101,7 +115,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
               ) : (
                 <Navigation className="w-3.5 h-3.5 text-[#104ccb]" />
               )}
-              <span>ជិតខ្ញុំ</span>
+              <span>{isKm ? "ជិតខ្ញុំ" : "Near Me"}</span>
             </button>
           )}
 
@@ -111,7 +125,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
             className="h-11 sm:h-12 px-5 sm:px-7 bg-[#104ccb] hover:bg-[#0a3ca8] active:bg-blue-900 text-white rounded-xl text-xs sm:text-sm font-bold shadow-sm shadow-blue-600/20 transition flex items-center justify-center space-x-1.5 shrink-0 cursor-pointer"
           >
             <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
-            <span>ស្វែងរក</span>
+            <span>{isKm ? "ស្វែងរក" : "Search"}</span>
           </button>
         </div>
       </form>
@@ -119,9 +133,9 @@ export const SearchBar: React.FC<SearchBarProps> = ({
       {/* Suggested Quick Searches - Mobile Horizontal Scroll Chip list */}
       <div className="mt-2.5 sm:mt-3 flex items-center gap-1.5 overflow-x-auto scrollbar-none py-0.5 -mx-1 px-1">
         <span className="text-slate-400 text-[11px] font-medium shrink-0 mr-0.5">
-          ឧទាហរណ៍៖
+          {isKm ? "ឧទាហរណ៍៖" : "Examples:"}
         </span>
-        {SEARCH_EXAMPLES.map((example) => (
+        {searchExamples.map((example) => (
           <button
             key={example}
             type="button"

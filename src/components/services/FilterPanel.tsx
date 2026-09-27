@@ -12,6 +12,7 @@ import {
   Navigation,
 } from "lucide-react";
 import { CAMBODIA_LOCATIONS } from "@/components/ui/LocationPicker";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 export interface FilterState {
   city: string;
@@ -46,14 +47,14 @@ interface FilterPanelProps {
   isLoadingCategories?: boolean;
 }
 
-const PROVINCES = [
-  { key: "", label: "គ្រប់ខេត្ត/ក្រុងទាំងអស់" },
-  { key: "Phnom Penh", label: "ភ្នំពេញ (Phnom Penh)" },
-  { key: "Kandal", label: "កណ្ដាល (Kandal)" },
-  { key: "Siem Reap", label: "សៀមរាប (Siem Reap)" },
-  { key: "Battambang", label: "បាត់ដំបង (Battambang)" },
-  { key: "Preah Sihanouk", label: "ព្រះសីហនុ (Preah Sihanouk)" },
-  { key: "Kampot", label: "កំពត (Kampot)" },
+const getProvinces = (isKm: boolean) => [
+  { key: "", label: isKm ? "គ្រប់ខេត្ត/ក្រុងទាំងអស់" : "All Cities / Provinces" },
+  { key: "Phnom Penh", label: isKm ? "ភ្នំពេញ (Phnom Penh)" : "Phnom Penh" },
+  { key: "Kandal", label: isKm ? "កណ្ដាល (Kandal)" : "Kandal Province" },
+  { key: "Siem Reap", label: isKm ? "សៀមរាប (Siem Reap)" : "Siem Reap Province" },
+  { key: "Battambang", label: isKm ? "បាត់ដំបង (Battambang)" : "Battambang Province" },
+  { key: "Preah Sihanouk", label: isKm ? "ព្រះសីហនុ (Preah Sihanouk)" : "Preah Sihanouk" },
+  { key: "Kampot", label: isKm ? "កំពត (Kampot)" : "Kampot Province" },
 ];
 
 export const FilterPanel: React.FC<FilterPanelProps> = ({
@@ -66,14 +67,18 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   categoryOptions = [{ value: "", label: "ទាំងអស់ (All)" }],
   isLoadingCategories = false,
 }) => {
+  const { language } = useLanguage();
+  const isKm = language === "km";
+  const provinces = getProvinces(isKm);
   const effectiveCategories = categoryOptions;
+
   // Available districts for chosen city
   const districtList =
     filters.city && CAMBODIA_LOCATIONS[filters.city]
       ? Object.entries(CAMBODIA_LOCATIONS[filters.city].districts).map(
           ([key, detail]) => ({
             key,
-            label: detail.khmer,
+            label: isKm ? detail.khmer : key,
           })
         )
       : [];
@@ -112,7 +117,9 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
       {!isMobileModal && (
         <div className="flex items-center justify-between pb-4 border-b border-slate-100">
           <div className="flex items-center space-x-2">
-            <span className="font-bold text-base text-slate-900">តម្រង</span>
+            <span className="font-bold text-base text-slate-900">
+              {isKm ? "តម្រង" : "Filters"}
+            </span>
             {totalResults !== undefined && (
               <span className="text-xs text-slate-500 font-medium">
                 ({totalResults})
@@ -125,7 +132,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
             className="inline-flex items-center space-x-1 text-xs text-blue-600 hover:text-blue-800 font-medium transition cursor-pointer"
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            <span>លុបតម្រង</span>
+            <span>{isKm ? "លុបតម្រង" : "Reset"}</span>
           </button>
         </div>
       )}
@@ -133,21 +140,21 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
       {/* 1. ទីតាំង (Location) */}
       <div className="space-y-3">
         <label className="flex items-center space-x-1.5 text-xs font-bold text-slate-800 uppercase tracking-wider">
-          <MapPin className="w-3.5 h-3.5 text-blue-600" />
-          <span>ទីតាំង (Location)</span>
+          <MapPin className="w-3.5 h-3.5 text-[#104ccb]" />
+          <span>{isKm ? "ទីតាំង (Location)" : "Location"}</span>
         </label>
 
         {/* Province / City */}
         <div>
           <span className="block text-[11px] font-medium text-slate-500 mb-1">
-            រាជធានី/ខេត្ត
+            {isKm ? "រាជធានី/ខេត្ត" : "City / Province"}
           </span>
           <select
             value={filters.city}
             onChange={(e) => handleCityChange(e.target.value)}
             className="w-full text-xs text-slate-800 p-2.5 rounded-xl border border-slate-200 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none cursor-pointer"
           >
-            {PROVINCES.map((p) => (
+            {provinces.map((p) => (
               <option key={p.key} value={p.key}>
                 {p.label}
               </option>
@@ -159,14 +166,16 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
         {districtList.length > 0 && (
           <div>
             <span className="block text-[11px] font-medium text-slate-500 mb-1">
-              ខណ្ឌ/ស្រុក
+              {isKm ? "ខណ្ឌ/ស្រុក" : "District"}
             </span>
             <select
               value={filters.district}
               onChange={(e) => handleDistrictChange(e.target.value)}
               className="w-full text-xs text-slate-800 p-2.5 rounded-xl border border-slate-200 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none cursor-pointer"
             >
-              <option value="">គ្រប់ខណ្ឌ/ស្រុកទាំងអស់</option>
+              <option value="">
+                {isKm ? "គ្រប់ខណ្ឌ/ស្រុកទាំងអស់" : "All Districts"}
+              </option>
               {districtList.map((d) => (
                 <option key={d.key} value={d.key}>
                   {d.label}
@@ -179,11 +188,11 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
         {/* Distance from my location */}
         <div>
           <span className="block text-[11px] font-medium text-slate-500 mb-1.5">
-            ចម្ងាយពីទីតាំងរបស់ខ្ញុំ
+            {isKm ? "ចម្ងាយពីទីតាំងរបស់ខ្ញុំ" : "Distance from My Location"}
           </span>
           <div className="grid grid-cols-4 gap-1.5">
             {[
-              { val: "", label: "ទាំងអស់" },
+              { val: "", label: isKm ? "ទាំងអស់" : "All" },
               { val: 5, label: "5 km" },
               { val: 10, label: "10 km" },
               { val: 20, label: "20 km" },
@@ -215,8 +224,8 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
       {/* 2. ប្រភេទសេវា (Category) */}
       <div className="space-y-3">
         <label className="flex items-center space-x-1.5 text-xs font-bold text-slate-800 uppercase tracking-wider">
-          <Tag className="w-3.5 h-3.5 text-blue-600" />
-          <span>ប្រភេទសេវា (Category)</span>
+          <Tag className="w-3.5 h-3.5 text-[#104ccb]" />
+          <span>{isKm ? "ប្រភេទសេវា (Category)" : "Service Category"}</span>
         </label>
         {isLoadingCategories ? (
           <div className="space-y-2 py-1">
@@ -241,7 +250,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 <span
                   className={
                     filters.category === cat.value
-                      ? "font-bold text-blue-700"
+                      ? "font-bold text-[#104ccb]"
                       : "font-normal"
                   }
                 >
@@ -259,12 +268,12 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
       <div className="space-y-3">
         <label className="flex items-center space-x-1.5 text-xs font-bold text-slate-800 uppercase tracking-wider">
           <DollarSign className="w-3.5 h-3.5 text-emerald-600" />
-          <span>ជួរតម្លៃ ($)</span>
+          <span>{isKm ? "ជួរតម្លៃ ($/ម៉ោង)" : "Price Range ($/hr)"}</span>
         </label>
         <div className="grid grid-cols-2 gap-2">
           <div>
             <span className="block text-[11px] font-medium text-slate-500 mb-1">
-              តម្លៃចាប់ពី
+              {isKm ? "តម្លៃចាប់ពី" : "Min Price"}
             </span>
             <input
               type="number"
@@ -281,7 +290,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
           </div>
           <div>
             <span className="block text-[11px] font-medium text-slate-500 mb-1">
-              ដល់
+              {isKm ? "ដល់" : "Max Price"}
             </span>
             <input
               type="number"
@@ -305,13 +314,13 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
       <div className="space-y-3">
         <label className="flex items-center space-x-1.5 text-xs font-bold text-slate-800 uppercase tracking-wider">
           <Star className="w-3.5 h-3.5 text-amber-500" />
-          <span>ការវាយតម្លៃ</span>
+          <span>{isKm ? "ការវាយតម្លៃ" : "Rating"}</span>
         </label>
         <div className="space-y-1.5">
           {[
-            { val: "", label: "ទាំងអស់" },
-            { val: 4.5, label: "4.5+ ផ្កាយ" },
-            { val: 4.0, label: "4.0+ ផ្កាយ" },
+            { val: "", label: isKm ? "ទាំងអស់" : "All Ratings" },
+            { val: 4.5, label: isKm ? "4.5+ ផ្កាយ" : "4.5+ Stars" },
+            { val: 4.0, label: isKm ? "4.0+ ផ្កាយ" : "4.0+ Stars" },
           ].map((r) => (
             <label
               key={String(r.val)}
@@ -319,7 +328,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
             >
               <input
                 type="radio"
-                name="ratingFilter"
+                name={`ratingFilter-${isMobileModal ? "mobile" : "desktop"}`}
                 checked={filters.minRating === r.val}
                 onChange={() =>
                   onChange({
@@ -332,7 +341,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               <span
                 className={
                   filters.minRating === r.val
-                    ? "font-bold text-blue-700"
+                    ? "font-bold text-[#104ccb]"
                     : "font-normal"
                 }
               >
@@ -348,14 +357,14 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
       {/* 5. ស្ថានភាព (Availability Status) */}
       <div className="space-y-3">
         <label className="flex items-center space-x-1.5 text-xs font-bold text-slate-800 uppercase tracking-wider">
-          <Clock className="w-3.5 h-3.5 text-blue-600" />
-          <span>ស្ថានភាព</span>
+          <Clock className="w-3.5 h-3.5 text-[#104ccb]" />
+          <span>{isKm ? "ស្ថានភាពការងារ" : "Availability Status"}</span>
         </label>
         <div className="space-y-1.5">
           {[
-            { val: "ALL", label: "ទាំងអស់" },
-            { val: "AVAILABLE", label: "មានទំនេរឥឡូវនេះ" },
-            { val: "ACTIVE", label: "អាចទទួលការងារ" },
+            { val: "ALL", label: isKm ? "ទាំងអស់" : "All" },
+            { val: "AVAILABLE", label: isKm ? "មានទំនេរឥឡូវនេះ" : "Available Now" },
+            { val: "ACTIVE", label: isKm ? "អាចទទួលការងារ" : "Taking Jobs" },
           ].map((st) => (
             <label
               key={st.val}
@@ -363,7 +372,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
             >
               <input
                 type="radio"
-                name="statusFilter"
+                name={`statusFilter-${isMobileModal ? "mobile" : "desktop"}`}
                 checked={filters.status === st.val}
                 onChange={() =>
                   onChange({
@@ -376,7 +385,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               <span
                 className={
                   filters.status === st.val
-                    ? "font-bold text-blue-700"
+                    ? "font-bold text-[#104ccb]"
                     : "font-normal"
                 }
               >
@@ -395,14 +404,14 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
             onClick={onReset}
             className="flex-1 py-3 px-4 rounded-xl border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-50 transition cursor-pointer"
           >
-            លុបតម្រង
+            {isKm ? "លុបតម្រង" : "Reset"}
           </button>
           <button
             type="button"
             onClick={onApply}
-            className="flex-1 py-3 px-4 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 shadow-sm transition cursor-pointer"
+            className="flex-1 py-3 px-4 rounded-xl bg-[#104ccb] hover:bg-[#0a3ca8] text-white text-xs font-bold shadow-sm transition cursor-pointer"
           >
-            អនុវត្តតម្រង
+            {isKm ? "អនុវត្តតម្រង" : "Apply Filters"}
           </button>
         </div>
       )}

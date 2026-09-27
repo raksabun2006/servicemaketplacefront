@@ -3,6 +3,7 @@
 import React, { useEffect } from "react";
 import { X, SlidersHorizontal } from "lucide-react";
 import { FilterPanel, FilterState } from "./FilterPanel";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 interface MobileFilterDrawerProps {
   isOpen: boolean;
@@ -25,6 +26,9 @@ export const MobileFilterDrawer: React.FC<MobileFilterDrawerProps> = ({
   categoryOptions,
   isLoadingCategories = false,
 }) => {
+  const { language } = useLanguage();
+  const isKm = language === "km";
+
   // Prevent body scroll when open
   useEffect(() => {
     if (isOpen) {
@@ -51,7 +55,7 @@ export const MobileFilterDrawer: React.FC<MobileFilterDrawerProps> = ({
       <div
         role="dialog"
         aria-modal="true"
-        aria-label="តម្រងស្វែងរក"
+        aria-label={isKm ? "តម្រងស្វែងរក" : "Filter Search"}
         className="fixed inset-x-0 bottom-0 max-h-[85vh] bg-white rounded-t-3xl shadow-2xl flex flex-col z-50 animate-in slide-in-from-bottom duration-250 ease-out"
       >
         {/* Pull Indicator + Header */}
@@ -59,19 +63,21 @@ export const MobileFilterDrawer: React.FC<MobileFilterDrawerProps> = ({
           <div className="w-12 h-1.5 bg-slate-300 rounded-full mb-3" />
           <div className="w-full flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <SlidersHorizontal className="w-4 h-4 text-blue-600" />
-              <h2 className="text-base font-bold text-slate-900">តម្រងស្វែងរក</h2>
+              <SlidersHorizontal className="w-4 h-4 text-[#104ccb]" />
+              <h2 className="text-base font-bold text-slate-900">
+                {isKm ? "តម្រងស្វែងរក" : "Filter Search"}
+              </h2>
               {totalResults !== undefined && (
                 <span className="text-xs text-slate-500 font-medium">
-                  ({totalResults} លទ្ធផល)
+                  ({totalResults} {isKm ? "លទ្ធផល" : "results"})
                 </span>
               )}
             </div>
             <button
               type="button"
               onClick={onClose}
-              className="p-1.5 rounded-full hover:bg-slate-100 text-slate-500 transition"
-              aria-label="បិទ"
+              className="p-1.5 rounded-full hover:bg-slate-100 text-slate-500 transition cursor-pointer"
+              aria-label={isKm ? "បិទ" : "Close"}
             >
               <X className="w-5 h-5" />
             </button>

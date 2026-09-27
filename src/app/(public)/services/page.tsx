@@ -59,6 +59,7 @@ function ServicesPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { language } = useLanguage();
+  const isKm = language === "km";
 
   // Search parameters
   const initialCategory = searchParams.get("category") || "";
@@ -185,12 +186,20 @@ function ServicesPageContent() {
   // GPS Location handler
   const handleDetectLocation = () => {
     if (typeof window === "undefined" || !navigator.geolocation) {
-      setLocationStatus("ឧបករណ៍របស់អ្នកមិនគាំទ្រប្រព័ន្ធ GPS ទេ។");
+      setLocationStatus(
+        isKm
+          ? "ឧបករណ៍របស់អ្នកមិនគាំទ្រប្រព័ន្ធ GPS ទេ។"
+          : "Geolocation is not supported by your device."
+      );
       return;
     }
 
     setIsLocating(true);
-    setLocationStatus("កំពុងស្វែងរកជាងនៅជិតទីតាំងរបស់អ្នក...");
+    setLocationStatus(
+      isKm
+        ? "កំពុងស្វែងរកជាងនៅជិតទីតាំងរបស់អ្នក..."
+        : "Detecting technicians near your location..."
+    );
 
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
@@ -198,7 +207,11 @@ function ServicesPageContent() {
         const lng = pos.coords.longitude;
         setUserLocation({ lat, lng });
         setIsLocating(false);
-        setLocationStatus("បានរកឃើញទីតាំងបច្ចុប្បន្នរបស់អ្នក");
+        setLocationStatus(
+          isKm
+            ? "បានរកឃើញទីតាំងបច្ចុប្បន្នរបស់អ្នក"
+            : "Location detected successfully"
+        );
 
         try {
           const res = await providerApi.getNearby({
@@ -218,7 +231,11 @@ function ServicesPageContent() {
       },
       () => {
         setIsLocating(false);
-        setLocationStatus("មិនអាចទាញយកទីតាំង GPS បានទេ។ សូមពិនិត្យការអនុញ្ញាត។");
+        setLocationStatus(
+          isKm
+            ? "មិនអាចទាញយកទីតាំង GPS បានទេ។ សូមពិនិត្យការអនុញ្ញាត។"
+            : "Could not access GPS. Please check location permissions."
+        );
       },
       { timeout: 10000, enableHighAccuracy: true }
     );
@@ -252,7 +269,7 @@ function ServicesPageContent() {
   // Dynamically build filter category options strictly from API
   const dynamicCategoryOptions = useMemo(() => {
     const list: { value: string; label: string }[] = [
-      { value: "", label: "ទាំងអស់ (All)" },
+      { value: "", label: isKm ? "ទាំងអស់ (All)" : "All Categories" },
     ];
 
     apiCategories.forEach((cat) => {
@@ -263,7 +280,7 @@ function ServicesPageContent() {
     });
 
     return list;
-  }, [apiCategories]);
+  }, [apiCategories, isKm]);
 
   // Filter & Sort Providers
   const filteredProviders = useMemo(() => {
@@ -421,10 +438,10 @@ function ServicesPageContent() {
   };
 
   const selectedCategoryLabel = useMemo(() => {
-    if (!filters.category) return "ជាងជំនាញ";
+    if (!filters.category) return isKm ? "ជាងជំនាញ" : "Technicians";
     const found = displayedCategories.find((c) => c.code === filters.category);
     return found ? found.name : filters.category;
-  }, [filters.category, displayedCategories]);
+  }, [filters.category, displayedCategories, isKm]);
 
   // Reset all filters
   const handleClearFilters = () => {
@@ -486,17 +503,21 @@ function ServicesPageContent() {
         <div className="relative max-w-4xl mx-auto text-center space-y-2 sm:space-y-3">
           {/* Eyebrow badge matching Home Page */}
           <span className="text-xs sm:text-sm font-semibold text-blue-600 block tracking-wide">
-            ថ្នាលស្វែងរកសេវាកម្មកម្ពុជា (Khmer Service)
+            {isKm
+              ? "ថ្នាលស្វែងរកសេវាកម្មកម្ពុជា (Khmer Service)"
+              : "Cambodia Service Marketplace"}
           </span>
 
-          {/* Main Khmer Heading in Brand Blue */}
+          {/* Main Heading in Brand Blue */}
           <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black text-[#104ccb] tracking-tight leading-snug sm:leading-tight">
-            ស្វែងរកសេវាកម្មដែលអ្នកត្រូវការ
+            {isKm ? "ស្វែងរកសេវាកម្មដែលអ្នកត្រូវការ" : "Find the Services You Need"}
           </h1>
 
           {/* Supporting Text */}
           <p className="text-xs sm:text-sm md:text-base text-slate-600 leading-relaxed font-normal max-w-2xl mx-auto">
-            ស្វែងរកអ្នកផ្តល់សេវាកម្មនៅជិតអ្នក និងទាក់ទងជាងជំនាញដែលសាកសមនឹងតម្រូវការរបស់អ្នក
+            {isKm
+              ? "ស្វែងរកអ្នកផ្តល់សេវាកម្មនៅជិតអ្នក និងទាក់ទងជាងជំនាញដែលសាកសមនឹងតម្រូវការរបស់អ្នក"
+              : "Find trusted local service providers near you and connect with experienced technicians directly"}
           </p>
 
           {/* Large Clean Search Box with Khmer City Selector */}
@@ -533,7 +554,7 @@ function ServicesPageContent() {
                 id="popular-categories-title"
                 className="text-sm sm:text-xl font-bold text-slate-900"
               >
-                ប្រភេទសេវាកម្មពេញនិយម
+                {isKm ? "ប្រភេទសេវាកម្មពេញនិយម" : "Popular Service Categories"}
               </h2>
             </div>
             {filters.category && (
@@ -544,7 +565,7 @@ function ServicesPageContent() {
                 }
                 className="text-xs text-blue-600 hover:text-blue-800 font-semibold transition cursor-pointer"
               >
-                បង្ហាញទាំងអស់
+                {isKm ? "បង្ហាញទាំងអស់" : "Show All"}
               </button>
             )}
           </div>
@@ -586,18 +607,20 @@ function ServicesPageContent() {
             <div className="min-w-0 flex-1">
               <div className="flex items-center space-x-2 flex-wrap gap-y-0.5">
                 <h3 className="text-xs sm:text-base font-bold text-slate-900 truncate">
-                  ជាងនៅជិតអ្នក
+                  {isKm ? "ជាងនៅជិតអ្នក" : "Technicians Near You"}
                 </h3>
                 {userLocation && (
                   <span className="inline-flex items-center space-x-1 px-1.5 py-0.2 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold border border-emerald-200">
                     <CheckCircle2 className="w-2.5 h-2.5 text-emerald-600" />
-                    <span>GPS បានភ្ជាប់</span>
+                    <span>{isKm ? "GPS បានភ្ជាប់" : "GPS Connected"}</span>
                   </span>
                 )}
               </div>
               <p className="text-[11px] sm:text-xs text-slate-500 line-clamp-1 sm:line-clamp-none mt-0.5">
                 {locationStatus ||
-                  "បើកទីតាំង GPS ដើម្បីស្វែងរកជាងជំនាញនៅក្បែរផ្ទះរបស់អ្នកឆាប់រហ័ស"}
+                  (isKm
+                    ? "បើកទីតាំង GPS ដើម្បីស្វែងរកជាងជំនាញនៅក្បែរផ្ទះរបស់អ្នកឆាប់រហ័ស"
+                    : "Enable GPS location to find experienced technicians near you quickly")}
               </p>
             </div>
           </div>
@@ -617,8 +640,8 @@ function ServicesPageContent() {
               )}
               <span className="truncate">
                 {userLocation
-                  ? "បច្ចុប្បន្នភាពទីតាំង"
-                  : "រកជាងជិតខ្ញុំ"}
+                  ? (isKm ? "បច្ចុប្បន្នភាពទីតាំង" : "Update Location")
+                  : (isKm ? "រកជាងជិតខ្ញុំ" : "Find Near Me")}
               </span>
             </button>
 
@@ -635,12 +658,12 @@ function ServicesPageContent() {
               {showMap ? (
                 <>
                   <ListIcon className="w-3.5 h-3.5" />
-                  <span>បិទផែនទី</span>
+                  <span>{isKm ? "បិទផែនទី" : "Close Map"}</span>
                 </>
               ) : (
                 <>
                   <MapIcon className="w-3.5 h-3.5 text-slate-600" />
-                  <span>ផែនទី</span>
+                  <span>{isKm ? "ផែនទី" : "Map"}</span>
                 </>
               )}
             </button>
@@ -666,10 +689,12 @@ function ServicesPageContent() {
                 id="available-services-title"
                 className="text-base sm:text-2xl font-bold text-slate-900"
               >
-                សេវាកម្មដែលអាចរកបាន
+                {isKm ? "សេវាកម្មដែលអាចរកបាន" : "Available Services"}
               </h2>
               <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5">
-                ប្រៀបធៀប និងទាក់ទងជាងជំនាញ ឬស្វែងរកសំណើការងារ
+                {isKm
+                  ? "ប្រៀបធៀប និងទាក់ទងជាងជំនាញ ឬស្វែងរកសំណើការងារ"
+                  : "Compare and connect with technicians, or explore job requests"}
               </p>
             </div>
 
@@ -685,7 +710,7 @@ function ServicesPageContent() {
                 }`}
               >
                 <Users className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-                <span>ជាងជំនាញ</span>
+                <span>{isKm ? "ជាងជំនាញ" : "Technicians"}</span>
                 <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-blue-100 text-blue-800">
                   {filteredProviders.length}
                 </span>
@@ -701,7 +726,7 @@ function ServicesPageContent() {
                 }`}
               >
                 <Wrench className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                <span>សំណើសេវា</span>
+                <span>{isKm ? "សំណើសេវា" : "Job Requests"}</span>
                 {totalRequestElements > 0 && (
                   <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-indigo-100 text-indigo-800">
                     {totalRequestElements}
@@ -736,7 +761,7 @@ function ServicesPageContent() {
                   className="lg:hidden inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-800 text-xs font-bold shadow-2xs transition cursor-pointer"
                 >
                   <SlidersHorizontal className="w-3.5 h-3.5 text-blue-600" />
-                  <span>តម្រង</span>
+                  <span>{isKm ? "តម្រង" : "Filters"}</span>
                   {activeFiltersCount > 0 && (
                     <span className="px-1.5 py-0.2 rounded-full bg-blue-600 text-white text-[10px] font-bold">
                       {activeFiltersCount}
@@ -744,19 +769,19 @@ function ServicesPageContent() {
                   )}
                 </button>
 
-                {/* Dynamic Result Count: "ជាង និងសេវាកម្ម 24 នាក់" */}
+                {/* Dynamic Result Count: "ជាង និងសេវាកម្ម 24 នាក់" / "Providers & Services: 24 found" */}
                 <div className="text-xs sm:text-sm font-bold text-slate-800">
-                  <span>ជាង និងសេវាកម្ម </span>
+                  <span>{isKm ? "ជាង និងសេវាកម្ម " : "Providers & Services: "}</span>
                   <span className="text-blue-700 font-extrabold">
                     {currentResultCount}
                   </span>
-                  <span> នាក់</span>
+                  <span>{isKm ? " នាក់" : " found"}</span>
                 </div>
 
                 {/* Sort Dropdown: "តម្រៀបតាម" */}
                 <div className="flex items-center space-x-1.5 ml-auto">
                   <span className="text-xs text-slate-500 font-medium hidden sm:inline">
-                    តម្រៀបតាម៖
+                    {isKm ? "តម្រៀបតាម៖" : "Sort by:"}
                   </span>
                   <div className="relative">
                     <select
@@ -764,10 +789,10 @@ function ServicesPageContent() {
                       onChange={(e) => setSortBy(e.target.value as SortOption)}
                       className="text-xs text-slate-800 font-bold py-1.5 pl-2.5 pr-7 sm:py-2 sm:pl-3 sm:pr-8 rounded-xl border border-slate-200 bg-white focus:border-blue-500 outline-none cursor-pointer shadow-2xs appearance-none"
                     >
-                      <option value="RELEVANT">ពាក់ព័ន្ធបំផុត</option>
-                      <option value="NEAREST">ជិតបំផុត</option>
-                      <option value="RATING">វាយតម្លៃខ្ពស់</option>
-                      <option value="EXPERIENCE">បទពិសោធន៍ច្រើន</option>
+                      <option value="RELEVANT">{isKm ? "ពាក់ព័ន្ធបំផុត" : "Most Relevant"}</option>
+                      <option value="NEAREST">{isKm ? "ជិតបំផុត" : "Nearest Distance"}</option>
+                      <option value="RATING">{isKm ? "វាយតម្លៃខ្ពស់" : "Highest Rated"}</option>
+                      <option value="EXPERIENCE">{isKm ? "បទពិសោធន៍ច្រើន" : "Most Experienced"}</option>
                     </select>
                     <ArrowUpDown className="w-3 h-3 text-slate-400 absolute right-2 sm:right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                   </div>
@@ -778,26 +803,26 @@ function ServicesPageContent() {
               {activeFiltersCount > 0 && (
                 <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
                   <span className="text-slate-400 font-medium text-[11px]">
-                    តម្រងដែលបានជ្រើសរើស៖
+                    {isKm ? "តម្រងដែលបានជ្រើសរើស៖" : "Active Filters:"}
                   </span>
                   {filters.category && (
                     <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 font-semibold border border-blue-100">
-                      <span>ប្រភេទ៖ {selectedCategoryLabel}</span>
+                      <span>{isKm ? "ប្រភេទ៖ " : "Category: "}{selectedCategoryLabel}</span>
                     </span>
                   )}
                   {filters.city && (
                     <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 font-semibold border border-blue-100">
-                      <span>ខេត្ត៖ {filters.city}</span>
+                      <span>{isKm ? "ខេត្ត៖ " : "City: "}{filters.city}</span>
                     </span>
                   )}
                   {filters.district && (
                     <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 font-semibold border border-blue-100">
-                      <span>ខណ្ឌ៖ {filters.district}</span>
+                      <span>{isKm ? "ខណ្ឌ៖ " : "District: "}{filters.district}</span>
                     </span>
                   )}
                   {filters.minRating && (
                     <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-amber-50 text-amber-800 font-semibold border border-amber-200">
-                      <span>ផ្កាយ {filters.minRating}+</span>
+                      <span>{filters.minRating}+ {isKm ? "ផ្កាយ" : "Stars"}</span>
                     </span>
                   )}
                   <button
@@ -805,7 +830,7 @@ function ServicesPageContent() {
                     onClick={handleClearFilters}
                     className="text-[11px] text-red-600 hover:text-red-700 font-bold ml-1 transition"
                   >
-                    លុបទាំងអស់
+                    {isKm ? "លុបទាំងអស់" : "Clear All"}
                   </button>
                 </div>
               )}
@@ -834,8 +859,16 @@ function ServicesPageContent() {
                       handleClearFilters();
                       setActiveTab("providers");
                     }}
-                    title="មិនទាន់មានជាងសម្រាប់ការស្វែងរកនេះ"
-                    description="សាកល្បងប្តូរប្រភេទសេវា ឬទីតាំងរបស់អ្នកដើម្បីស្វែងរកជាងជំនាញផ្សេងទៀត"
+                    title={
+                      isKm
+                        ? "មិនទាន់មានជាងសម្រាប់ការស្វែងរកនេះ"
+                        : "No Technicians Found"
+                    }
+                    description={
+                      isKm
+                        ? "សាកល្បងប្តូរប្រភេទសេវា ឬទីតាំងរបស់អ្នកដើម្បីស្វែងរកជាងជំនាញផ្សេងទៀត"
+                        : "Try adjusting your category, search query, or location filters"
+                    }
                   />
                 )
               ) : requests.length > 0 ? (
@@ -844,7 +877,7 @@ function ServicesPageContent() {
                     <ServiceCard
                       key={req.id}
                       request={req}
-                      categoryLabel={req.category || "សេវាកម្ម"}
+                      categoryLabel={req.category || (isKm ? "សេវាកម្ម" : "Service")}
                     />
                   ))}
                 </div>
@@ -855,8 +888,16 @@ function ServicesPageContent() {
                     handleClearFilters();
                     setActiveTab("requests");
                   }}
-                  title="មិនទាន់មានសំណើសេវាកម្មក្នុងលក្ខខណ្ឌនេះទេ"
-                  description="សូមសាកល្បងសម្អាតតម្រង ឬបង្ហោះសំណើថ្មីដើម្បីស្វែងរកជាងជំនាញ"
+                  title={
+                    isKm
+                      ? "មិនទាន់មានសំណើសេវាកម្មក្នុងលក្ខខណ្ឌនេះទេ"
+                      : "No Job Requests Found"
+                  }
+                  description={
+                    isKm
+                      ? "សូមសាកល្បងសម្អាតតម្រង ឬបង្ហោះសំណើថ្មីដើម្បីស្វែងរកជាងជំនាញ"
+                      : "Try clearing filters or posting a new service request"
+                  }
                 />
               )}
 
@@ -904,13 +945,15 @@ function ServicesPageContent() {
           <div className="space-y-1.5 text-center md:text-left">
             <div className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-blue-100/80 text-[11px] sm:text-xs font-bold text-[#104ccb]">
               <Sparkles className="w-3 h-3 text-[#104ccb]" />
-              <span>ថ្នាលសេវាកម្មកម្ពុជា</span>
+              <span>{isKm ? "ថ្នាលសេវាកម្មកម្ពុជា" : "Cambodia Service Hub"}</span>
             </div>
             <h3 className="text-lg sm:text-2xl font-black text-[#104ccb]">
-              ត្រូវការជាងជំនាញ ឬចង់ផ្ដល់សេវាកម្ម?
+              {isKm ? "ត្រូវការជាងជំនាញ ឬចង់ផ្ដល់សេវាកម្ម?" : "Need a Technician or Want to Offer Services?"}
             </h3>
             <p className="text-xs sm:text-sm text-slate-600 max-w-xl font-normal leading-relaxed">
-              ផ្ញើសំណើការងារជួសជុលគេហដ្ឋានរបស់អ្នក ឬចុះឈ្មោះជាជាងជំនាញដើម្បីទទួលបានការងារជារៀងរាល់ថ្ងៃ។
+              {isKm
+                ? "ផ្ញើសំណើការងារជួសជុលគេហដ្ឋានរបស់អ្នក ឬចុះឈ្មោះជាជាងជំនាញដើម្បីទទួលបានការងារជារៀងរាល់ថ្ងៃ។"
+                : "Post your repair or maintenance needs, or sign up as a certified technician to receive jobs daily."}
             </p>
           </div>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2.5 w-full sm:w-auto shrink-0">
@@ -918,13 +961,13 @@ function ServicesPageContent() {
               href="/customer/requests/create"
               className="px-5 py-2.5 rounded-xl sm:rounded-full bg-[#104ccb] hover:bg-[#0a3ca8] text-white text-xs font-bold text-center shadow-sm shadow-blue-600/20 transition"
             >
-              បង្ហោះបញ្ហាត្រូវការជាង
+              {isKm ? "បង្ហោះបញ្ហាត្រូវការជាង" : "Post a Service Request"}
             </Link>
             <Link
               href="/register?role=provider"
               className="px-5 py-2.5 rounded-xl sm:rounded-full bg-white hover:bg-blue-50 text-[#104ccb] border border-blue-200 text-xs font-bold text-center transition"
             >
-              ចុះឈ្មោះជាជាងជំនាញ
+              {isKm ? "ចុះឈ្មោះជាជាងជំនាញ" : "Register as Technician"}
             </Link>
           </div>
         </section>
@@ -950,7 +993,7 @@ export default function ServicesPage() {
     <Suspense
       fallback={
         <div className="min-h-[80vh] flex items-center justify-center text-xs text-slate-400">
-          កំពុងផ្ទុក...
+          Loading...
         </div>
       }
     >

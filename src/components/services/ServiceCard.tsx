@@ -6,6 +6,7 @@ import { ServiceRequestSummaryResponse } from "@/types/service-request";
 import { serviceRequestApi } from "@/lib/api/service-request.api";
 import { fileApi } from "@/lib/api/file.api";
 import { PhotoLightbox } from "@/components/ui/PhotoLightbox";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 import {
   Calendar,
   MapPin,
@@ -22,11 +23,15 @@ export const toKhmerDigits = (num: number | string): string => {
   return String(num).replace(/[0-9]/g, (d) => khmerDigits[parseInt(d, 10)]);
 };
 
-export const formatKhmerDate = (dateStr?: string): string => {
-  if (!dateStr) return "ថ្មីៗនេះ";
+export const formatCardDate = (dateStr?: string, isKm = true): string => {
+  if (!dateStr) return isKm ? "ថ្មីៗនេះ" : "Recently";
   try {
     const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return "ថ្មីៗនេះ";
+    if (isNaN(d.getTime())) return isKm ? "ថ្មីៗនេះ" : "Recently";
+
+    if (!isKm) {
+      return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+    }
 
     const day = d.getDate();
     const dayPadded = day < 10 ? `0${day}` : `${day}`;
@@ -50,7 +55,7 @@ export const formatKhmerDate = (dateStr?: string): string => {
 
     return `${toKhmerDigits(dayPadded)} ${khmerMonths[month]} ${toKhmerDigits(year)}`;
   } catch {
-    return "ថ្មីៗនេះ";
+    return isKm ? "ថ្មីៗនេះ" : "Recently";
   }
 };
 
@@ -63,6 +68,9 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
   request,
   categoryLabel,
 }) => {
+  const { language } = useLanguage();
+  const isKm = language === "km";
+
   const [images, setImages] = useState<string[]>(() => {
     const raw = (
       "imageUrls" in request &&
@@ -118,7 +126,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
   const hasRealPhoto = realImageUrls.length > 0 && !imgError;
   const firstImageUrl = hasRealPhoto ? realImageUrls[0] : null;
 
-  const formattedDate = formatKhmerDate(request.createdAt);
+  const formattedDate = formatCardDate(request.createdAt, isKm);
 
   const hasMin = request.budgetMin != null && !isNaN(Number(request.budgetMin));
   const hasMax = request.budgetMax != null && !isNaN(Number(request.budgetMax));
@@ -126,10 +134,10 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
     hasMin && hasMax
       ? `$${request.budgetMin} - $${request.budgetMax}`
       : hasMin
-      ? `ចាប់ពី $${request.budgetMin}`
+      ? (isKm ? `ចាប់ពី $${request.budgetMin}` : `From $${request.budgetMin}`)
       : hasMax
-      ? `រហូតដល់ $${request.budgetMax}`
-      : "តម្លៃចរចា";
+      ? (isKm ? `រហូតដល់ $${request.budgetMax}` : `Up to $${request.budgetMax}`)
+      : (isKm ? "តម្លៃចរចា" : "Negotiable");
 
   const handleOpenPhoto = (e: React.MouseEvent, index = 0) => {
     e.preventDefault();
@@ -143,7 +151,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
       <Link
         href={`/services/${request.id}`}
         className="group bg-white rounded-2xl border border-slate-200/90 hover:border-blue-500 shadow-xs hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 flex flex-col overflow-hidden"
-        title="ចុចដើម្បីមើលព័ត៌មានលម្អិតនៃបញ្ហា"
+        title={isKm ? "ចុចដើម្បីមើលព័ត៌មានលម្អិតនៃបញ្ហា" : "Click to view details"}
       >
         {/* Edge-to-edge photo if exists */}
         {hasRealPhoto && firstImageUrl && (
@@ -164,7 +172,9 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
             <div className="absolute inset-0 bg-slate-900/35 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900/80 text-white text-[11px] font-semibold backdrop-blur-xs">
                 <Eye className="w-3.5 h-3.5" />
-                <span>មើលរូបភាព ({realImageUrls.length})</span>
+                <span>
+                  {isKm ? `មើលរូបភាព (${realImageUrls.length})` : `View Photos (${realImageUrls.length})`}
+                </span>
               </span>
             </div>
 
@@ -172,12 +182,12 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
             <div className="absolute bottom-2.5 right-2 flex items-center space-x-1.5 pointer-events-none">
               <div className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-md bg-emerald-600/90 text-white text-[10px] font-bold backdrop-blur-xs shadow-xs">
                 <Camera className="w-3.5 h-3.5" />
-                <span>រូបថតជាក់ស្តែង</span>
+                <span>{isKm ? "រូបថតជាក់ស្តែង" : "Real Photo"}</span>
               </div>
               {realImageUrls.length > 1 && (
                 <div className="px-1.5 py-0.5 rounded-md bg-slate-950/80 text-white text-[10px] font-bold flex items-center space-x-1 backdrop-blur-xs shadow-xs">
                   <ImageIcon className="w-3 h-3" />
-                  <span>{realImageUrls.length} រូប</span>
+                  <span>{realImageUrls.length} {isKm ? "រូប" : "photos"}</span>
                 </div>
               )}
             </div>
@@ -191,7 +201,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
             {request.urgent && (
               <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-red-600 text-white text-[10px] font-bold shadow-xs flex items-center space-x-1">
                 <AlertTriangle className="w-2.5 h-2.5" />
-                <span>បន្ទាន់</span>
+                <span>{isKm ? "បន្ទាន់" : "Urgent"}</span>
               </div>
             )}
           </div>
@@ -202,13 +212,13 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
           <div>
             {!hasRealPhoto && (
               <div className="flex items-center justify-between gap-2 mb-2.5">
-                <span className="inline-block px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-blue-50 text-blue-700">
+                <span className="inline-block px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-blue-50 text-[#104ccb]">
                   {categoryLabel}
                 </span>
                 {request.urgent && (
                   <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-red-50 text-red-600 border border-red-200 text-[10px] font-bold">
                     <AlertTriangle className="w-2.5 h-2.5" />
-                    <span>បន្ទាន់</span>
+                    <span>{isKm ? "បន្ទាន់" : "Urgent"}</span>
                   </span>
                 )}
               </div>
@@ -226,7 +236,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
                   <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                   <span className="truncate">
                     {request.district ? `${request.district}, ` : ""}
-                    {request.city || "ភ្នំពេញ"}
+                    {request.city || (isKm ? "ភ្នំពេញ" : "Phnom Penh")}
                   </span>
                 </div>
               )}
@@ -240,12 +250,12 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
           {/* Date Footer & Offers */}
           <div className="flex items-center justify-between text-[11px] font-semibold text-slate-500 pt-3 border-t border-slate-100">
             <div className="flex items-center space-x-1.5">
-              <Calendar className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+              <Calendar className="w-3.5 h-3.5 text-[#104ccb] shrink-0" />
               <span>{formattedDate}</span>
             </div>
             {request.offerCount !== undefined && request.offerCount > 0 && (
-              <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
-                {request.offerCount} សំណើ
+              <span className="text-[10px] font-bold text-[#104ccb] bg-blue-50 px-2 py-0.5 rounded-full">
+                {request.offerCount} {isKm ? "សំណើ" : "offers"}
               </span>
             )}
           </div>

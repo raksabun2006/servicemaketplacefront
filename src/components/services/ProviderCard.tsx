@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { ProviderProfileResponse, NearbyProviderResponse } from "@/types/provider";
 import { fileApi } from "@/lib/api/file.api";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 import {
   MapPin,
   CheckCircle2,
@@ -25,11 +26,13 @@ export const ProviderCard: React.FC<ProviderCardProps> = ({
   provider,
   categoryLabel,
 }) => {
+  const { language } = useLanguage();
+  const isKm = language === "km";
   const [imgError, setImgError] = useState(false);
 
   const businessName = provider.businessName;
   const fullName = "fullName" in provider ? provider.fullName : "";
-  const displayName = businessName || fullName || "អ្នកផ្តល់សេវា";
+  const displayName = businessName || fullName || (isKm ? "អ្នកផ្តល់សេវា" : "Service Provider");
 
   const isVerified =
     provider.isVerified ||
@@ -100,10 +103,10 @@ export const ProviderCard: React.FC<ProviderCardProps> = ({
               }`}
               title={
                 isAvailable
-                  ? "មានទំនេរឥឡូវនេះ"
+                  ? isKm ? "មានទំនេរឥឡូវនេះ" : "Available Now"
                   : isBusy
-                  ? "រវល់ការងារ"
-                  : "មិនទាន់ទំនេរ"
+                  ? isKm ? "រវល់ការងារ" : "Busy"
+                  : isKm ? "មិនទាន់ទំនេរ" : "Unavailable"
               }
             />
           </div>
@@ -124,18 +127,18 @@ export const ProviderCard: React.FC<ProviderCardProps> = ({
               {isVerified ? (
                 <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200/80 text-[11px] font-bold">
                   <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0" />
-                  <span>បានផ្ទៀងផ្ទាត់</span>
+                  <span>{isKm ? "បានផ្ទៀងផ្ទាត់" : "Verified"}</span>
                 </span>
               ) : (
                 <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[11px] font-medium">
                   <Clock className="w-3 h-3 text-slate-400 shrink-0" />
-                  <span>ជាងជំនាញ</span>
+                  <span>{isKm ? "ជាងជំនាញ" : "Technician"}</span>
                 </span>
               )}
 
               {/* Category tag */}
               {categoryLabel && (
-                <span className="inline-block px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 text-[11px] font-semibold truncate max-w-[140px]">
+                <span className="inline-block px-2 py-0.5 rounded-md bg-blue-50 text-[#104ccb] text-[11px] font-semibold truncate max-w-[140px]">
                   {categoryLabel}
                 </span>
               )}
@@ -146,12 +149,14 @@ export const ProviderCard: React.FC<ProviderCardProps> = ({
               <div className="flex items-center space-x-0.5 text-amber-500">
                 <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
                 <span className="font-bold text-slate-800">
-                  {rating > 0 ? rating.toFixed(1) : "ថ្មី"}
+                  {rating > 0 ? rating.toFixed(1) : (isKm ? "ថ្មី" : "New")}
                 </span>
               </div>
               <span className="text-slate-300">·</span>
               <span className="text-[11px] text-slate-500">
-                {totalReviews > 0 ? `${totalReviews} ការវាយតម្លៃ` : "មិនទាន់មានការវាយតម្លៃ"}
+                {totalReviews > 0
+                  ? isKm ? `${totalReviews} ការវាយតម្លៃ` : `${totalReviews} reviews`
+                  : isKm ? "មិនទាន់មានការវាយតម្លៃ" : "No reviews yet"}
               </span>
             </div>
           </div>
@@ -164,7 +169,11 @@ export const ProviderCard: React.FC<ProviderCardProps> = ({
             <div className="flex items-center space-x-1.5 text-slate-600">
               <Briefcase className="w-3.5 h-3.5 text-slate-400 shrink-0" />
               <span>
-                មានបទពិសោធន៍ <strong className="text-slate-800">{experienceYears} ឆ្នាំ</strong>
+                {isKm ? (
+                  <>មានបទពិសោធន៍ <strong className="text-slate-800">{experienceYears} ឆ្នាំ</strong></>
+                ) : (
+                  <><strong className="text-slate-800">{experienceYears} years</strong> experience</>
+                )}
               </span>
             </div>
           )}
@@ -173,7 +182,11 @@ export const ProviderCard: React.FC<ProviderCardProps> = ({
           <div className="flex items-center space-x-1.5 text-slate-600">
             <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
             <span className="truncate">
-              មានជំនាញនៅ <strong className="text-slate-800">{locationText}</strong>
+              {isKm ? (
+                <>មានជំនាញនៅ <strong className="text-slate-800">{locationText}</strong></>
+              ) : (
+                <>Service area in <strong className="text-slate-800">{locationText}</strong></>
+              )}
             </span>
           </div>
 
@@ -181,7 +194,11 @@ export const ProviderCard: React.FC<ProviderCardProps> = ({
           {distanceKm !== undefined && (
             <div className="flex items-center space-x-1.5 text-blue-600 font-semibold text-[11px]">
               <Navigation className="w-3 h-3 text-blue-600 shrink-0" />
-              <span>ចម្ងាយ {distanceKm.toFixed(1)} km ពីទីតាំងរបស់អ្នក</span>
+              <span>
+                {isKm
+                  ? `ចម្ងាយ ${distanceKm.toFixed(1)} km ពីទីតាំងរបស់អ្នក`
+                  : `${distanceKm.toFixed(1)} km from your location`}
+              </span>
             </div>
           )}
 
@@ -189,16 +206,23 @@ export const ProviderCard: React.FC<ProviderCardProps> = ({
           {completedCount !== undefined && completedCount > 0 && (
             <div className="flex items-center space-x-1.5 text-slate-500 text-[11px]">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-              <span>បានបញ្ចប់ការងារ {completedCount}+</span>
+              <span>
+                {isKm ? `បានបញ្ចប់ការងារ ${completedCount}+` : `${completedCount}+ jobs completed`}
+              </span>
             </div>
           )}
 
           {/* Starting Price */}
           {hourlyRate !== undefined && hourlyRate > 0 && (
             <div className="pt-1 flex items-center justify-between text-xs">
-              <span className="text-slate-500 font-medium">តម្លៃចាប់ពី</span>
+              <span className="text-slate-500 font-medium">
+                {isKm ? "តម្លៃចាប់ពី" : "Starting from"}
+              </span>
               <span className="font-extrabold text-sm text-emerald-600">
-                ${hourlyRate} <span className="text-[11px] font-normal text-slate-400">/ម៉ោង</span>
+                ${hourlyRate}{" "}
+                <span className="text-[11px] font-normal text-slate-400">
+                  {isKm ? "/ម៉ោង" : "/hr"}
+                </span>
               </span>
             </div>
           )}
@@ -216,17 +240,17 @@ export const ProviderCard: React.FC<ProviderCardProps> = ({
       <div className="pt-3 border-t border-slate-100 flex items-center gap-2 mt-2">
         <Link
           href={`/customer/requests/create?providerId=${provider.id}`}
-          className="flex-1 py-2 px-3 rounded-xl border border-blue-600 text-blue-700 hover:bg-blue-50 active:bg-blue-100 text-xs font-bold text-center transition flex items-center justify-center space-x-1"
+          className="flex-1 py-2 px-3 rounded-xl border border-[#104ccb] text-[#104ccb] hover:bg-blue-50 active:bg-blue-100 text-xs font-bold text-center transition flex items-center justify-center space-x-1"
         >
-          <Send className="w-3 h-3 text-blue-600" />
-          <span>ស្នើសុំសេវា</span>
+          <Send className="w-3 h-3 text-[#104ccb]" />
+          <span>{isKm ? "ស្នើសុំសេវា" : "Request Service"}</span>
         </Link>
 
         <Link
           href={`/providers/${provider.id}`}
-          className="flex-1 py-2 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-bold text-center shadow-2xs transition flex items-center justify-center space-x-1"
+          className="flex-1 py-2 px-3 rounded-xl bg-[#104ccb] hover:bg-[#0a3ca8] active:bg-blue-900 text-white text-xs font-bold text-center shadow-2xs transition flex items-center justify-center space-x-1"
         >
-          <span>មើលព័ត៌មាន</span>
+          <span>{isKm ? "មើលព័ត៌មាន" : "View Profile"}</span>
           <ArrowRight className="w-3.5 h-3.5" />
         </Link>
       </div>

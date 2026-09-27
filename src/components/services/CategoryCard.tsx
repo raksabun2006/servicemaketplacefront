@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { CategoryResponse } from "@/types/category";
 import { fileApi } from "@/lib/api/file.api";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 export interface CategoryItem {
   id: string;
@@ -142,6 +143,8 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
   count,
   onClick,
 }) => {
+  const { language } = useLanguage();
+  const isKm = language === "km";
   const [imgError, setImgError] = useState(false);
   const Icon = category.icon;
 
@@ -151,7 +154,7 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
       onClick={onClick}
       className={`group relative text-left p-3 sm:p-4 rounded-2xl border transition-all duration-200 cursor-pointer flex flex-col justify-between min-h-[96px] sm:min-h-[116px] min-w-[130px] sm:min-w-0 flex-shrink-0 select-none ${
         isSelected
-          ? "bg-blue-50/90 border-blue-600 shadow-md shadow-blue-600/10 ring-2 ring-blue-600/20"
+          ? "bg-blue-50/90 border-[#104ccb] shadow-md shadow-blue-600/10 ring-2 ring-blue-600/20"
           : "bg-white border-slate-200/90 hover:border-blue-400 hover:shadow-md hover:-translate-y-0.5"
       }`}
     >
@@ -160,8 +163,8 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
         <div
           className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors overflow-hidden ${
             isSelected
-              ? "bg-blue-600 text-white shadow-sm"
-              : "bg-slate-100 text-slate-700 group-hover:bg-blue-50 group-hover:text-blue-600"
+              ? "bg-[#104ccb] text-white shadow-sm"
+              : "bg-slate-100 text-slate-700 group-hover:bg-blue-50 group-hover:text-[#104ccb]"
           }`}
         >
           {category.iconUrl && !imgError ? (
@@ -185,7 +188,7 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
                 : "bg-slate-100 text-slate-600 group-hover:bg-blue-50 group-hover:text-blue-600"
             }`}
           >
-            {count} ជាង
+            {count} {isKm ? "ជាង" : "techs"}
           </span>
         )}
       </div>
