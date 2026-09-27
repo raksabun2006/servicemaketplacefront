@@ -10,6 +10,11 @@ import { serviceRequestApi } from "@/lib/api/service-request.api";
 import { categoryApi } from "@/lib/api/category.api";
 import { CategoryResponse } from "@/types/category";
 import { ServiceCategory } from "@/types/service-request";
+import {
+  resolveToServiceCategory,
+  isValidServiceCategory,
+  normalizeServiceCategory,
+} from "@/lib/constants/categories";
 import { LocationPicker, LocationData } from "@/components/ui/LocationPicker";
 import { fileApi } from "@/lib/api/file.api";
 import {
@@ -68,7 +73,8 @@ function CreateServiceRequestContent() {
 
   // Form State
   const initialProblem = searchParams.get("problem") || "";
-  const initialCat = (searchParams.get("category") as ServiceCategory) || "";
+  const initialCatRaw = searchParams.get("category");
+  const initialCat = normalizeServiceCategory(initialCatRaw);
 
   const [title, setTitle] = useState(initialProblem);
   const [category, setCategory] = useState<ServiceCategory>(
@@ -109,9 +115,13 @@ function CreateServiceRequestContent() {
       .then((data) => {
         if (isMounted && data && Array.isArray(data) && data.length > 0) {
           setApiCategories(data);
-          // If no initial category from query parameters, default to first category from API
+          // If no initial category from query parameters, default to first category from API mapped to backend enum
           if (!initialCat && !initialProblem && data.length > 0) {
-            setCategory(data[0].code as ServiceCategory);
+            const firstValid =
+              resolveToServiceCategory(data[0].code) !== "OTHER"
+                ? resolveToServiceCategory(data[0].code)
+                : resolveToServiceCategory(data[0].name);
+            setCategory(firstValid);
           }
         }
       })
@@ -175,10 +185,14 @@ function CreateServiceRequestContent() {
   const effectiveCategories =
     apiCategories.length > 0
       ? apiCategories.map((c) => {
-          const meta = getCategoryMeta(c.code);
+          const validBackendCode =
+            resolveToServiceCategory(c.code) !== "OTHER"
+              ? resolveToServiceCategory(c.code)
+              : resolveToServiceCategory(c.name);
+          const meta = getCategoryMeta(validBackendCode);
           return {
-            code: c.code as ServiceCategory,
-            name: c.name,
+            code: validBackendCode,
+            name: c.name, // Display directly from API without translating
             icon: meta.icon,
             color: meta.color,
             iconUrl: c.iconFile ? fileApi.getFileUrl(c.iconFile.url || c.iconFile.id) : null,
@@ -257,6 +271,11 @@ function CreateServiceRequestContent() {
         setError("សូមប្រាប់ពីបញ្ហារបស់អ្នក (ឧ. ម៉ាស៊ីនត្រជាក់មិនត្រជាក់)");
         return false;
       }
+      const validCategory = resolveToServiceCategory(category);
+      if (!isValidServiceCategory(validCategory)) {
+        setError("សូមជ្រើសរើសប្រភេទសេវាកម្មត្រឹមត្រូវ");
+        return false;
+      }
       return true;
     }
     if (currentStep === 2) {
@@ -296,6 +315,12 @@ function CreateServiceRequestContent() {
       return;
     }
 
+    const backendCategory = resolveToServiceCategory(category);
+    if (!isValidServiceCategory(backendCategory)) {
+      setError("សូមជ្រើសរើសប្រភេទសេវាកម្មត្រឹមត្រូវ");
+      return;
+    }
+
     const min = budgetMin ? parseFloat(budgetMin) : undefined;
     const max = budgetMax ? parseFloat(budgetMax) : undefined;
 
@@ -306,7 +331,7 @@ function CreateServiceRequestContent() {
       const res = await serviceRequestApi.create({
         title: title.trim(),
         description: description.trim() || title.trim(),
-        category,
+        category: backendCategory,
         budgetMin: min,
         budgetMax: max,
         preferredDate: preferredDate || undefined,

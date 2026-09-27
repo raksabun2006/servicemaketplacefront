@@ -15,6 +15,11 @@ import {
   ServiceCategory,
   ServiceRequestSummaryResponse,
 } from "@/types/service-request";
+import {
+  resolveToServiceCategory,
+  isValidServiceCategory,
+  normalizeServiceCategory,
+} from "@/lib/constants/categories";
 import { CategoryResponse } from "@/types/category";
 
 import { SearchBar } from "@/components/services/SearchBar";
@@ -62,7 +67,10 @@ function ServicesPageContent() {
   const isKm = language === "km";
 
   // Search parameters
-  const initialCategory = searchParams.get("category") || "";
+  const initialCategoryRaw = searchParams.get("category") || "";
+  const initialCategory =
+    normalizeServiceCategory(initialCategoryRaw) ||
+    (isValidServiceCategory(initialCategoryRaw) ? initialCategoryRaw : "");
   const initialSearch = searchParams.get("search") || "";
 
   // Core filter states
@@ -146,8 +154,11 @@ function ServicesPageContent() {
   const loadServiceRequests = useCallback(async () => {
     try {
       setIsLoading(true);
+      const resolvedCat = filters.category
+        ? (resolveToServiceCategory(filters.category) as ServiceCategory)
+        : undefined;
       const res = await serviceRequestApi.browse({
-        category: (filters.category as ServiceCategory) || undefined,
+        category: isValidServiceCategory(resolvedCat) ? resolvedCat : undefined,
         city: filters.city || undefined,
         district: filters.district || undefined,
         search: searchQuery.trim() || undefined,
@@ -272,11 +283,19 @@ function ServicesPageContent() {
       { value: "", label: isKm ? "ទាំងអស់ (All)" : "All Categories" },
     ];
 
+    const seen = new Set<string>();
     apiCategories.forEach((cat) => {
-      list.push({
-        value: cat.code,
-        label: cat.name,
-      });
+      const validCode =
+        resolveToServiceCategory(cat.code) !== "OTHER"
+          ? resolveToServiceCategory(cat.code)
+          : resolveToServiceCategory(cat.name);
+      if (!seen.has(validCode)) {
+        seen.add(validCode);
+        list.push({
+          value: validCode,
+          label: cat.name, // Display exactly from API, do not translate
+        });
+      }
     });
 
     return list;

@@ -1,16 +1,6 @@
-export type ServiceCategory =
-  | "CLEANING"
-  | "PLUMBING"
-  | "ELECTRICAL"
-  | "CARPENTRY"
-  | "PAINTING"
-  | "APPLIANCE_REPAIR"
-  | "AC_REPAIR"
-  | "PEST_CONTROL"
-  | "TUTORING"
-  | "BEAUTY"
-  | "OTHER"
-  | (string & {});
+import { ServiceCategory } from "@/lib/constants/categories";
+
+export type { ServiceCategory };
 
 export type ServiceRequestStatus =
   | "OPEN"

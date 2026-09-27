@@ -15,6 +15,7 @@ import {
 import { CategoryResponse } from "@/types/category";
 import { fileApi } from "@/lib/api/file.api";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { resolveToServiceCategory } from "@/lib/constants/categories";
 
 export interface CategoryItem {
   id: string;
@@ -116,13 +117,23 @@ export const POPULAR_CATEGORIES: CategoryItem[] = [
 ];
 
 export const mapApiCategoryToItem = (apiCat: CategoryResponse): CategoryItem => {
-  const icon = getIconForCategory(apiCat.code, apiCat.name);
-  const iconUrl = apiCat.iconFile ? fileApi.getFileUrl(apiCat.iconFile.id || (apiCat.iconFile as unknown as { fileId?: string }).fileId || "") : null;
+  const validCode =
+    resolveToServiceCategory(apiCat.code) !== "OTHER"
+      ? resolveToServiceCategory(apiCat.code)
+      : resolveToServiceCategory(apiCat.name);
+  const icon = getIconForCategory(validCode, apiCat.name);
+  const iconUrl = apiCat.iconFile
+    ? fileApi.getFileUrl(
+        apiCat.iconFile.id ||
+          (apiCat.iconFile as unknown as { fileId?: string }).fileId ||
+          ""
+      )
+    : null;
 
   return {
     id: apiCat.id,
-    code: apiCat.code,
-    name: apiCat.name,
+    code: validCode, // Always valid backend ServiceCategory
+    name: apiCat.name, // Keep exact name directly from API without translating
     description: apiCat.description || "សេវាកម្មជំនាញពីជាងឯកទេស",
     icon,
     iconUrl,
@@ -152,20 +163,18 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
     <button
       type="button"
       onClick={onClick}
-      className={`group relative text-left p-3 sm:p-4 rounded-2xl border transition-all duration-200 cursor-pointer flex flex-col justify-between min-h-[96px] sm:min-h-[116px] min-w-[130px] sm:min-w-0 flex-shrink-0 select-none ${
-        isSelected
+      className={`group relative text-left p-3 sm:p-4 rounded-2xl border transition-all duration-200 cursor-pointer flex flex-col justify-between min-h-[96px] sm:min-h-[116px] min-w-[130px] sm:min-w-0 flex-shrink-0 select-none ${isSelected
           ? "bg-blue-50/90 border-[#104ccb] shadow-md shadow-blue-600/10 ring-2 ring-blue-600/20"
           : "bg-white border-slate-200/90 hover:border-blue-400 hover:shadow-md hover:-translate-y-0.5"
-      }`}
+        }`}
     >
       {/* Top: Icon + Count */}
       <div className="flex items-center justify-between w-full">
         <div
-          className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors overflow-hidden ${
-            isSelected
+          className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors overflow-hidden ${isSelected
               ? "bg-[#104ccb] text-white shadow-sm"
               : "bg-slate-100 text-slate-700 group-hover:bg-blue-50 group-hover:text-[#104ccb]"
-          }`}
+            }`}
         >
           {category.iconUrl && !imgError ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -182,11 +191,10 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
 
         {count !== undefined && count > 0 && (
           <span
-            className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${
-              isSelected
+            className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${isSelected
                 ? "bg-blue-200/60 text-blue-800"
                 : "bg-slate-100 text-slate-600 group-hover:bg-blue-50 group-hover:text-blue-600"
-            }`}
+              }`}
           >
             {count} {isKm ? "ជាង" : "techs"}
           </span>
@@ -196,9 +204,8 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
       {/* Bottom: Title & Subtitle */}
       <div className="mt-2.5">
         <h3
-          className={`text-sm sm:text-[15px] font-bold leading-snug transition-colors line-clamp-1 ${
-            isSelected ? "text-blue-800" : "text-slate-900 group-hover:text-blue-700"
-          }`}
+          className={`text-sm sm:text-[15px] font-bold leading-snug transition-colors line-clamp-1 ${isSelected ? "text-blue-800" : "text-slate-900 group-hover:text-blue-700"
+            }`}
         >
           {category.name}
         </h3>
