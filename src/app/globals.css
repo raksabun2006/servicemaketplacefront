@@ -86,6 +86,13 @@ a {
   touch-action: manipulation;
 }
 
+/* Mobile Chat Mode: Hide mobile bottom navigation and footer so chat input pins cleanly to keyboard */
+body.in-mobile-chat [data-mobile-nav],
+body.in-mobile-chat footer {
+  display: none !important;
+}
+
+
 /* Custom subtle scrollbar */
 ::-webkit-scrollbar {
   width: 6px;

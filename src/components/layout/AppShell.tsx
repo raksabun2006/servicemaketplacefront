@@ -27,12 +27,29 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     return <main className="flex-1 min-h-screen flex flex-col">{children}</main>;
   }
 
+  const isMessagesPage =
+    pathname === "/provider/messages" ||
+    pathname === "/customer/messages" ||
+    pathname.endsWith("/messages");
+
   if (isDashboardPage) {
     return (
-      <div className="min-h-screen flex flex-col bg-slate-50 w-full overflow-x-clip">
+      <div
+        className={`min-h-screen flex flex-col bg-slate-50 w-full overflow-x-clip ${
+          isMessagesPage ? "h-[100dvh] overflow-hidden" : ""
+        }`}
+      >
         <DashboardNavbar />
-        <main className="flex-1 pb-28 md:pb-0 flex flex-col w-full min-w-0">{children}</main>
-        <DashboardFooter />
+        <main
+          className={`flex-1 flex flex-col w-full min-w-0 ${
+            isMessagesPage
+              ? "h-[calc(100dvh-4rem)] overflow-hidden"
+              : "pb-28 md:pb-0"
+          }`}
+        >
+          {children}
+        </main>
+        {!isMessagesPage && <DashboardFooter />}
         <MobileNavigation />
       </div>
     );
