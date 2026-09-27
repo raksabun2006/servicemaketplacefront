@@ -1,4 +1,4 @@
-export type UserRole = "CUSTOMER" | "PROVIDER" | "ADMIN";
+export type UserRole = "CUSTOMER" | "PROVIDER" | "ADMIN" | "MANAGER";
 
 export interface UserResponse {
   id: string;
@@ -17,6 +17,11 @@ export interface AuthResponse {
   tokenType?: string;
   expiresIn?: number;
   user: UserResponse;
+}
+
+export interface GoogleLoginRequest {
+  idToken: string;
+  credential?: string;
 }
 
 export interface LoginRequest {

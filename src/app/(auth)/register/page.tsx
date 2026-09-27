@@ -26,6 +26,7 @@ import {
   Star,
 } from "lucide-react";
 import { LanguageSelector } from "@/components/ui/LanguageSelector";
+import { GoogleLoginButton } from "@/components/auth/GoogleLoginButton";
 
 function RegisterContent() {
   const router = useRouter();
@@ -703,6 +704,31 @@ function RegisterContent() {
                   </div>
                 )}
               </form>
+
+              {/* OR Divider and Google Sign-In for Fast Customer Registration */}
+              {role === "CUSTOMER" && (
+                <>
+                  <div className="relative my-3 flex items-center justify-center">
+                    <div className="w-full border-t border-slate-200" />
+                    <span className="absolute bg-white px-2.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                      {language === "km" ? "ឬ" : "OR"}
+                    </span>
+                  </div>
+
+                  <GoogleLoginButton
+                    text="signup_with"
+                    onSuccess={(res) => {
+                      if (res.user?.role === "PROVIDER") {
+                        router.push("/provider/dashboard");
+                      } else {
+                        router.push("/customer/dashboard");
+                      }
+                    }}
+                    onError={(msg) => setError(msg)}
+                    disabled={isLoading}
+                  />
+                </>
+              )}
 
               {/* Bottom Login Link */}
               <div className="pt-2 text-center text-xs text-slate-500 border-t border-slate-100">

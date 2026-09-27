@@ -20,6 +20,8 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { LanguageSelector } from "@/components/ui/LanguageSelector";
+import { GoogleLoginButton } from "@/components/auth/GoogleLoginButton";
+import { AuthResponse } from "@/types/auth";
 
 function LoginContent() {
   const router = useRouter();
@@ -34,6 +36,23 @@ function LoginContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const handleAuthSuccess = (res: AuthResponse) => {
+    const redirectUrl = searchParams.get("redirect");
+    if (redirectUrl && redirectUrl.startsWith("/")) {
+      router.push(redirectUrl);
+      return;
+    }
+
+    const role = res.user?.role;
+    if (role === "PROVIDER") {
+      router.push("/provider/dashboard");
+    } else if (role === "ADMIN" || role === "MANAGER") {
+      router.push("/admin/dashboard");
+    } else {
+      router.push("/customer/dashboard");
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim() || !password.trim()) {
@@ -45,14 +64,7 @@ function LoginContent() {
       setIsLoading(true);
       setError(null);
       const res = await login({ email: email.trim(), password });
-
-      if (res.user?.role === "PROVIDER") {
-        router.push("/provider/dashboard");
-      } else if (res.user?.role === "ADMIN") {
-        router.push("/admin/dashboard");
-      } else {
-        router.push("/customer/dashboard");
-      }
+      handleAuthSuccess(res);
     } catch (err: unknown) {
       const apiErr = err as { message?: string };
       setError(apiErr?.message || "អ៊ីមែល ឬ ពាក្យសម្ងាត់មិនត្រឹមត្រូវទេ។ សូមព្យាយាមម្តងទៀត។");
@@ -239,6 +251,21 @@ function LoginContent() {
                   <span>{isLoading ? "កំពុងផ្ទៀងផ្ទាត់..." : t("login")}</span>
                 </button>
               </form>
+
+              {/* Clean Divider */}
+              <div className="relative my-3 flex items-center justify-center">
+                <div className="w-full border-t border-slate-200" />
+                <span className="absolute bg-white px-2.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                  {language === "km" ? "ឬ" : "OR"}
+                </span>
+              </div>
+
+              {/* Google Sign-In */}
+              <GoogleLoginButton
+                onSuccess={handleAuthSuccess}
+                onError={(msg) => setError(msg)}
+                disabled={isLoading}
+              />
 
               {/* Footer Links */}
               <div className="text-center pt-3 border-t border-slate-100 text-xs text-slate-500 space-y-1.5">

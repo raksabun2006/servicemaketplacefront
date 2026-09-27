@@ -19,6 +19,7 @@ interface AuthContextType {
   isAdmin: boolean;
   login: (data: LoginRequest) => Promise<AuthResponse>;
   register: (data: RegisterRequest) => Promise<AuthResponse>;
+  googleLogin: (idToken: string) => Promise<AuthResponse>;
   logout: () => void;
   updateUser: (user: UserResponse) => void;
   refreshUserProfile: () => Promise<void>;
@@ -99,6 +100,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("user");
+      localStorage.removeItem("refreshToken");
     } finally {
       setIsLoading(false);
     }
@@ -114,6 +116,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(res.user);
       localStorage.setItem("accessToken", res.accessToken);
       localStorage.setItem("user", JSON.stringify(res.user));
+      if (res.refreshToken) {
+        localStorage.setItem("refreshToken", res.refreshToken);
+      }
       // Refresh to grab full provider/customer profile avatar
       setTimeout(() => refreshUserProfile(), 100);
     }
@@ -127,6 +132,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(res.user);
       localStorage.setItem("accessToken", res.accessToken);
       localStorage.setItem("user", JSON.stringify(res.user));
+      if (res.refreshToken) {
+        localStorage.setItem("refreshToken", res.refreshToken);
+      }
+    }
+    return res;
+  };
+
+  const googleLogin = async (idToken: string): Promise<AuthResponse> => {
+    const res = await authApi.googleLogin(idToken);
+    if (res.accessToken) {
+      setToken(res.accessToken);
+      setUser(res.user);
+      localStorage.setItem("accessToken", res.accessToken);
+      localStorage.setItem("user", JSON.stringify(res.user));
+      if (res.refreshToken) {
+        localStorage.setItem("refreshToken", res.refreshToken);
+      }
+      setTimeout(() => refreshUserProfile(), 100);
     }
     return res;
   };
@@ -137,6 +160,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
     localStorage.removeItem("accessToken");
     localStorage.removeItem("user");
+    localStorage.removeItem("refreshToken");
   };
 
   const updateUser = (newUser: UserResponse) => {
@@ -163,6 +187,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isAdmin,
         login,
         register,
+        googleLogin,
         logout,
         updateUser,
         refreshUserProfile,
