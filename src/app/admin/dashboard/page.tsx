@@ -17,6 +17,7 @@ import {
   CheckCircle2,
   Clock,
   ArrowRight,
+  Globe,
 } from "lucide-react";
 
 export default function AdminDashboardPage() {
@@ -34,15 +35,25 @@ export default function AdminDashboardPage() {
 
   return (
     <ProtectedRoute allowedRoles={["ADMIN"]}>
-      <div className="flex">
+      <div className="flex w-full min-w-0">
         <Sidebar />
 
-        <div className="flex-1 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900">{t("adminDashboard")}</h1>
-            <p className="text-xs text-slate-500 mt-1">
-              ស្ថិតិ និងទិន្នន័យរួមនៃវេទិកាសេវាខ្មែរ (Platform Summary & Analytics)
-            </p>
+        <div className="flex-1 w-full min-w-0 max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-8 space-y-6 sm:space-y-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-bold text-slate-900">{t("adminDashboard")}</h1>
+              <p className="text-xs text-slate-500 mt-1">
+                ស្ថិតិ និងទិន្នន័យរួមនៃវេទិកាសេវាខ្មែរ (Platform Summary & Analytics)
+              </p>
+            </div>
+
+            <Link
+              href="/"
+              className="inline-flex items-center space-x-2 px-4 py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-bold rounded-xl border border-purple-200 transition shadow-xs w-fit"
+            >
+              <Globe className="w-4 h-4 text-purple-600" />
+              <span>មើលគេហទំព័រផ្សារ (Go to Marketplace) →</span>
+            </Link>
           </div>
 
           {/* Cards Grid from Backend Metrics */}

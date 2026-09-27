@@ -25,6 +25,7 @@ import {
   CircleDot,
   ShieldAlert,
   AlertCircle,
+  Globe,
 } from "lucide-react";
 
 export default function ProviderDashboardPage() {
@@ -95,8 +96,17 @@ export default function ProviderDashboardPage() {
           {/* Header & Availability Switcher */}
           <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div className="space-y-1.5">
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-blue-50 text-blue-700 text-xs font-semibold">
-                <span>ផ្ទាំងគ្រប់គ្រងអ្នកផ្តល់សេវា</span>
+              <div className="flex items-center flex-wrap gap-2">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-blue-50 text-blue-700 text-xs font-semibold">
+                  <span>ផ្ទាំងគ្រប់គ្រងអ្នកផ្តល់សេវា</span>
+                </div>
+                <Link
+                  href="/"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition"
+                >
+                  <Globe className="w-3 h-3 text-slate-500" />
+                  <span>មើលគេហទំព័រផ្សារ (Marketplace) →</span>
+                </Link>
               </div>
               <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
                 សួស្តី, {profile?.businessName || user?.fullName || "ជាងជំនាញ"}!

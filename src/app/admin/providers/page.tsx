@@ -33,7 +33,8 @@ import {
 } from "lucide-react";
 
 export default function AdminProvidersPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const isKm = language === "km";
 
   const [activeTab, setActiveTab] = useState<"pending_apps" | "all_apps" | "providers">("pending_apps");
   const [applications, setApplications] = useState<ProviderApplicationResponse[]>([]);
@@ -55,13 +56,23 @@ export default function AdminProvidersPage() {
     try {
       setIsLoading(true);
       if (activeTab === "pending_apps") {
-        const res = await adminApi.getApplications({ status: "PENDING", page: 0, size: 50 });
-        const items = Array.isArray(res) ? res : res.content || [];
-        setApplications(items);
+        const [appRes, provRes] = await Promise.all([
+          adminApi.getApplications({ status: "PENDING", page: 0, size: 50 }).catch(() => ({ content: [] })),
+          adminApi.getProviders(0, 100).catch(() => ({ content: [] })),
+        ]);
+        const appItems = Array.isArray(appRes) ? appRes : appRes.content || [];
+        const provItems = Array.isArray(provRes) ? provRes : provRes.content || [];
+        setApplications(appItems);
+        setProviders(provItems);
       } else if (activeTab === "all_apps") {
-        const res = await adminApi.getApplications({ page: 0, size: 50 });
-        const items = Array.isArray(res) ? res : res.content || [];
-        setApplications(items);
+        const [appRes, provRes] = await Promise.all([
+          adminApi.getApplications({ page: 0, size: 50 }).catch(() => ({ content: [] })),
+          adminApi.getProviders(0, 100).catch(() => ({ content: [] })),
+        ]);
+        const appItems = Array.isArray(appRes) ? appRes : appRes.content || [];
+        const provItems = Array.isArray(provRes) ? provRes : provRes.content || [];
+        setApplications(appItems);
+        setProviders(provItems);
       } else {
         const res = await adminApi.getProviders(0, 100);
         const items = Array.isArray(res) ? res : res.content || [];
@@ -84,13 +95,30 @@ export default function AdminProvidersPage() {
     fetchItems();
   }, [fetchItems]);
 
-  const handleApproveApp = async (applicationId: string) => {
+  const handleApproveApp = async (applicationId: string, applicantEmail?: string, businessName?: string) => {
     try {
       setActionLoading(applicationId);
       await adminApi.approveApplication(applicationId);
+
+      // Auto-verify corresponding provider profile so admin doesn't need a separate approval
+      try {
+        const provRes = await adminApi.getProviders(0, 100);
+        const provList = Array.isArray(provRes) ? provRes : provRes.content || [];
+        const matchingProv = provList.find(
+          (p) =>
+            (applicantEmail && p.email?.toLowerCase() === applicantEmail.toLowerCase()) ||
+            (businessName && p.businessName?.toLowerCase() === businessName.toLowerCase())
+        );
+        if (matchingProv && (!matchingProv.isVerified || matchingProv.verificationStatus !== "VERIFIED")) {
+          await adminApi.approveProvider(matchingProv.id);
+        }
+      } catch (e) {
+        console.warn("Auto-verify provider profile skipped:", e);
+      }
+
       setNotification({
         type: "success",
-        message: "ពាក្យស្នើសុំត្រូវបានអនុម័ត! អ្នកប្រើប្រាស់ត្រូវបានដំឡើងជាអ្នកផ្តល់សេវា (PROVIDER) ដោយជោគជ័យ។",
+        message: "ពាក្យស្នើសុំត្រូវបានអនុម័ត និងបានផ្ទៀងផ្ទាត់កម្រងព័ត៌មាន (Verified) ដោយជោគជ័យ!",
       });
       fetchItems();
     } catch (err: unknown) {
@@ -98,6 +126,33 @@ export default function AdminProvidersPage() {
       setNotification({
         type: "error",
         message: apiErr?.message || "ការអនុម័តបានបរាជ័យ។",
+      });
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleVerifyAllUnverified = async () => {
+    const unverified = providers.filter(
+      (p) => !p.isVerified && p.verificationStatus !== "VERIFIED"
+    );
+    if (unverified.length === 0) return;
+
+    try {
+      setActionLoading("verify_all");
+      for (const prov of unverified) {
+        await adminApi.approveProvider(prov.id);
+      }
+      setNotification({
+        type: "success",
+        message: `បានផ្ទៀងផ្ទាត់អ្នកផ្តល់សេវាចំនួន ${unverified.length} នាក់ដោយជោគជ័យ! ឥឡូវនេះនឹងបង្ហាញជា "បានផ្ទៀងផ្ទាត់" (Verified) នៅលើទំព័រដើម។`,
+      });
+      fetchItems();
+    } catch (err: unknown) {
+      const apiErr = err as { message?: string };
+      setNotification({
+        type: "error",
+        message: apiErr?.message || "ការផ្ទៀងផ្ទាត់មានបញ្ហា។",
       });
     } finally {
       setActionLoading(null);
@@ -221,29 +276,31 @@ export default function AdminProvidersPage() {
 
   return (
     <ProtectedRoute allowedRoles={["ADMIN"]}>
-      <div className="flex">
+      <div className="flex w-full min-w-0">
         <Sidebar />
 
-        <div className="flex-1 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+        <div className="flex-1 w-full min-w-0 max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-8 space-y-5 sm:space-y-6">
           {/* Header & Stats */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
             <div>
-              <h1 className="text-2xl font-bold text-slate-900">{t("providerVerification")}</h1>
-              <p className="text-xs text-slate-500 mt-1">
-                ត្រួតពិនិត្យពាក្យស្នើសុំ ឯកសារអត្តសញ្ញាណប័ណ្ណ និងផ្ទៀងផ្ទាត់អ្នកផ្តល់សេវាដោយងាយស្រួល
+              <h1 className="text-xl sm:text-2xl font-bold text-slate-900">{t("providerVerification")}</h1>
+              <p className="text-xs text-slate-500 mt-0.5 sm:mt-1">
+                {isKm
+                  ? "ត្រួតពិនិត្យពាក្យស្នើសុំ ឯកសារអត្តសញ្ញាណប័ណ្ណ និងផ្ទៀងផ្ទាត់អ្នកផ្តល់សេវា"
+                  : "Review applications, national ID documents, and verify providers"}
               </p>
             </div>
 
             {/* Quick Metrics */}
-            <div className="flex items-center space-x-3 text-xs">
-              <div className="bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-xl flex items-center space-x-1.5 text-amber-800">
-                <Clock className="w-3.5 h-3.5 text-amber-600" />
-                <span className="font-semibold">រង់ចាំផ្ទៀងផ្ទាត់:</span>
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs">
+              <div className="bg-amber-50 border border-amber-200 px-2.5 sm:px-3 py-1.5 rounded-xl flex items-center space-x-1.5 text-amber-800">
+                <Clock className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                <span className="font-semibold">{isKm ? "រង់ចាំផ្ទៀងផ្ទាត់:" : "Pending:"}</span>
                 <span className="font-bold">{pendingCount + unverifiedProviderCount}</span>
               </div>
-              <div className="bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl flex items-center space-x-1.5 text-emerald-800">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                <span className="font-semibold">បានផ្ទៀងផ្ទាត់:</span>
+              <div className="bg-emerald-50 border border-emerald-200 px-2.5 sm:px-3 py-1.5 rounded-xl flex items-center space-x-1.5 text-emerald-800">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span className="font-semibold">{isKm ? "បានផ្ទៀងផ្ទាត់:" : "Verified:"}</span>
                 <span className="font-bold">{verifiedProviderCount}</span>
               </div>
             </div>
@@ -252,88 +309,135 @@ export default function AdminProvidersPage() {
           {/* Toast Notification */}
           {notification && (
             <div
-              className={`flex items-center justify-between p-3.5 rounded-2xl text-xs border animate-in fade-in duration-200 ${
+              className={`flex items-start justify-between p-3 sm:p-3.5 rounded-2xl text-xs border gap-2.5 animate-in fade-in duration-200 ${
                 notification.type === "success"
                   ? "bg-emerald-50 border-emerald-200 text-emerald-800"
                   : "bg-rose-50 border-rose-200 text-rose-800"
               }`}
             >
-              <div className="flex items-center space-x-2">
+              <div className="flex items-start space-x-2 min-w-0">
                 {notification.type === "success" ? (
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                 ) : (
-                  <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                  <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
                 )}
-                <span className="font-medium">{notification.message}</span>
+                <span className="font-medium break-words leading-relaxed">{notification.message}</span>
               </div>
               <button
                 onClick={() => setNotification(null)}
-                className="text-slate-400 hover:text-slate-600 p-1"
+                className="text-slate-400 hover:text-slate-600 p-1 shrink-0"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
             </div>
           )}
 
-          {/* Navigation Tabs */}
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3">
-            <div className="flex items-center space-x-2 overflow-x-auto text-xs">
+          {/* Unverified Providers Alert Banner (Fixes 'still pending' confusion) */}
+          {unverifiedProviderCount > 0 && (
+            <div className="bg-amber-50 border border-amber-200/90 rounded-2xl p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+              <div className="flex items-start sm:items-center space-x-2.5">
+                <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
+                  <AlertCircle className="w-4 h-4 text-amber-600" />
+                </div>
+                <div className="min-w-0">
+                  <p className="font-bold text-amber-900 text-xs sm:text-sm">
+                    {isKm
+                      ? `មានអ្នកផ្តល់សេវា ${unverifiedProviderCount} នាក់មិនទាន់បានផ្ទៀងផ្ទាត់ (UNVERIFIED)`
+                      : `${unverifiedProviderCount} providers require verification (UNVERIFIED)`}
+                  </p>
+                  <p className="text-amber-700 text-[11px] sm:text-xs mt-0.5 leading-snug">
+                    {isKm
+                      ? "គណនីទាំងនេះបង្ហាញជា «រង់ចាំការផ្ទៀងផ្ទាត់» នៅលើទំព័រដើម។ ចុចប៊ូតុងដើម្បីផ្ទៀងផ្ទាត់ភ្លាមៗ។"
+                      : "These show as 'Pending Verification' on marketplace. Click below to verify all."}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2 shrink-0 w-full sm:w-auto">
+                <button
+                  type="button"
+                  onClick={handleVerifyAllUnverified}
+                  disabled={actionLoading === "verify_all"}
+                  className="w-full sm:w-auto px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-xs transition flex items-center justify-center space-x-1.5 text-xs"
+                >
+                  {actionLoading === "verify_all" ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                  )}
+                  <span>{isKm ? `ផ្ទៀងផ្ទាត់ទាំងអស់ (${unverifiedProviderCount})` : `Verify All (${unverifiedProviderCount})`}</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Navigation Tabs - Responsive Tab Bar */}
+          <div className="border-b border-slate-200 pb-2">
+            <div className="flex items-center space-x-1.5 sm:space-x-2 overflow-x-auto no-scrollbar scroll-smooth py-1">
               <button
+                type="button"
                 onClick={() => {
                   setActiveTab("pending_apps");
                   setSearchQuery("");
                 }}
-                className={`px-4 py-2 rounded-xl font-bold transition flex items-center space-x-1.5 ${
+                className={`px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl font-bold transition flex items-center space-x-1 sm:space-x-1.5 whitespace-nowrap shrink-0 text-xs ${
                   activeTab === "pending_apps"
                     ? "bg-purple-600 text-white shadow-xs"
-                    : "text-slate-600 hover:bg-slate-100"
+                    : "text-slate-600 hover:bg-slate-100 bg-slate-50"
                 }`}
               >
-                <Clock className="w-3.5 h-3.5" />
-                <span>ពាក្យស្នើសុំរង់ចាំ (Pending Applications)</span>
+                <Clock className="w-3.5 h-3.5 shrink-0" />
+                <span>{isKm ? "ពាក្យស្នើសុំរង់ចាំ" : "Pending"}</span>
+                <span className="hidden sm:inline">{isKm ? "" : " Apps"}</span>
                 {applications.length > 0 && activeTab === "pending_apps" && (
-                  <span className="ml-1 px-1.5 py-0.5 bg-white/20 rounded-full text-[10px]">
+                  <span className="ml-1 px-1.5 py-0.2 bg-white/20 rounded-full text-[10px]">
                     {applications.length}
                   </span>
                 )}
               </button>
 
               <button
+                type="button"
                 onClick={() => {
                   setActiveTab("all_apps");
                   setSearchQuery("");
                 }}
-                className={`px-4 py-2 rounded-xl font-bold transition ${
+                className={`px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl font-bold transition flex items-center space-x-1 sm:space-x-1.5 whitespace-nowrap shrink-0 text-xs ${
                   activeTab === "all_apps"
                     ? "bg-purple-600 text-white shadow-xs"
-                    : "text-slate-600 hover:bg-slate-100"
+                    : "text-slate-600 hover:bg-slate-100 bg-slate-50"
                 }`}
               >
-                ពាក្យស្នើសុំទាំងអស់ (All Applications)
+                <FileText className="w-3.5 h-3.5 shrink-0" />
+                <span>{isKm ? "ពាក្យស្នើសុំទាំងអស់" : "All Apps"}</span>
               </button>
 
               <button
+                type="button"
                 onClick={() => {
                   setActiveTab("providers");
                   setSearchQuery("");
                 }}
-                className={`px-4 py-2 rounded-xl font-bold transition flex items-center space-x-1.5 ${
+                className={`px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl font-bold transition flex items-center space-x-1 sm:space-x-1.5 whitespace-nowrap shrink-0 text-xs ${
                   activeTab === "providers"
                     ? "bg-purple-600 text-white shadow-xs"
-                    : "text-slate-600 hover:bg-slate-100"
+                    : "text-slate-600 hover:bg-slate-100 bg-slate-50"
                 }`}
               >
-                <ShieldCheck className="w-3.5 h-3.5" />
-                <span>អ្នកផ្តល់សេវាទាំងអស់ (Active Providers)</span>
-                {providers.length > 0 && (
+                <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
+                <span>{isKm ? "អ្នកផ្តល់សេវា" : "Providers"}</span>
+                {unverifiedProviderCount > 0 ? (
+                  <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-amber-500 text-white font-bold">
+                    {unverifiedProviderCount}
+                  </span>
+                ) : providers.length > 0 ? (
                   <span
-                    className={`ml-1 px-1.5 py-0.5 rounded-full text-[10px] ${
-                      activeTab === "providers" ? "bg-white/20" : "bg-slate-200 text-slate-700"
+                    className={`ml-1 px-1.5 py-0.2 rounded-full text-[10px] ${
+                      activeTab === "providers" ? "bg-white/20 text-white" : "bg-slate-200 text-slate-700"
                     }`}
                   >
                     {providers.length}
                   </span>
-                )}
+                ) : null}
               </button>
             </div>
           </div>
@@ -464,7 +568,13 @@ export default function AdminProvidersPage() {
                             <>
                               <button
                                 type="button"
-                                onClick={() => handleApproveApp(app.id)}
+                                onClick={() =>
+                                  handleApproveApp(
+                                    app.id,
+                                    app.applicant?.email,
+                                    app.businessName
+                                  )
+                                }
                                 disabled={actionLoading === app.id}
                                 className="inline-flex items-center space-x-1 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl transition shadow-xs"
                               >

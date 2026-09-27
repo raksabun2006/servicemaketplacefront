@@ -101,12 +101,12 @@ export const ProviderCard: React.FC<ProviderCardProps> = ({ provider, initialFav
             {isVerified ? (
               <div className="inline-flex items-center space-x-1 text-[11px] font-semibold text-emerald-600 mt-0.5">
                 <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>បានផ្ទៀងផ្ទាត់អត្តសញ្ញាណ</span>
+                <span>បានផ្ទៀងផ្ទាត់អត្តសញ្ញាណ (Verified)</span>
               </div>
             ) : (
-              <div className="inline-flex items-center space-x-1 text-[11px] font-semibold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md mt-0.5 border border-amber-200">
+              <div className="inline-flex items-center space-x-1 text-[11px] font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md mt-0.5 border border-amber-200">
                 <Clock className="w-3 h-3 text-amber-500" />
-                <span>រង់ចាំការអនុម័ត (Pending)</span>
+                <span>រង់ចាំការផ្ទៀងផ្ទាត់ (Pending)</span>
               </div>
             )}
           </div>

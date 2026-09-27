@@ -9,7 +9,8 @@ export type ServiceCategory =
   | "PEST_CONTROL"
   | "TUTORING"
   | "BEAUTY"
-  | "OTHER";
+  | "OTHER"
+  | (string & {});
 
 export type ServiceRequestStatus =
   | "OPEN"

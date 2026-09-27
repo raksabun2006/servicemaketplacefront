@@ -1,9 +1,12 @@
 import api from "./client";
 import { FileUploadResponse, UploadFileType } from "@/types/file";
 
-const BASE_URL = (
-  process.env.NEXT_PUBLIC_API_URL || "https://servicemaketplaceapi-production.up.railway.app"
-).replace(/\/+$/, "");
+const getPublicApiPrefix = (): string => {
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL.replace(/\/+$/, "");
+  }
+  return "";
+};
 
 export const fileApi = {
   upload: (file: File, fileType: UploadFileType = "OTHER") => {
@@ -18,14 +21,17 @@ export const fileApi = {
     if (!trimmed) return "";
     if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) return trimmed;
     if (trimmed.startsWith("blob:") || trimmed.startsWith("data:")) return trimmed;
-    if (trimmed.startsWith("/uploads/")) return `${BASE_URL}${trimmed}`;
-    if (trimmed.startsWith("uploads/")) return `${BASE_URL}/${trimmed}`;
-    if (trimmed.startsWith("/api/v1/files/")) return `${BASE_URL}${trimmed}`;
-    if (trimmed.startsWith("api/v1/files/")) return `${BASE_URL}/${trimmed}`;
-    if (trimmed.startsWith("/")) return `${BASE_URL}${trimmed}`;
+
+    const prefix = getPublicApiPrefix();
+
+    if (trimmed.startsWith("/uploads/")) return `${prefix}${trimmed}`;
+    if (trimmed.startsWith("uploads/")) return `${prefix}/${trimmed}`;
+    if (trimmed.startsWith("/api/v1/files/")) return `${prefix}${trimmed}`;
+    if (trimmed.startsWith("api/v1/files/")) return `${prefix}/${trimmed}`;
+    if (trimmed.startsWith("/")) return `${prefix}${trimmed}`;
 
     // If it's a stored file name starting with uploads or containing filename
-    return `${BASE_URL}/api/v1/files/${trimmed}`;
+    return `${prefix}/api/v1/files/${trimmed}`;
   },
 
   getFileByFilename: (filename?: string | null): string => {
@@ -33,7 +39,8 @@ export const fileApi = {
     const trimmed = filename.trim();
     if (!trimmed) return "";
     if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) return trimmed;
-    return `${BASE_URL}/api/v1/files/filename/${encodeURIComponent(trimmed.replace(/^\/+/, ""))}`;
+    const prefix = getPublicApiPrefix();
+    return `${prefix}/api/v1/files/filename/${encodeURIComponent(trimmed.replace(/^\/+/, ""))}`;
   },
 
   getUploadUrl: (path?: string | null): string => {
@@ -41,7 +48,8 @@ export const fileApi = {
     const trimmed = path.trim().replace(/^\/+/, "");
     if (!trimmed) return "";
     if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) return trimmed;
-    return `${BASE_URL}/${trimmed.startsWith("uploads/") ? trimmed : `uploads/${trimmed}`}`;
+    const prefix = getPublicApiPrefix();
+    return `${prefix}/${trimmed.startsWith("uploads/") ? trimmed : `uploads/${trimmed}`}`;
   },
 
   deleteFile: (fileId: string) => api.delete<void>(`/api/v1/files/${fileId}`),

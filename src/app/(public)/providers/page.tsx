@@ -145,7 +145,7 @@ export default function ProvidersPage() {
             }`}
           >
             <Clock className="w-3.5 h-3.5" />
-            <span>រង់ចាំការអនុម័ត (Pending Approval)</span>
+            <span>រង់ចាំការផ្ទៀងផ្ទាត់ (Pending)</span>
             <span
               className={`px-1.5 py-0.2 rounded-full text-[10px] ${
                 statusFilter === "PENDING" ? "bg-white/20 text-white" : "bg-amber-100 text-amber-800"

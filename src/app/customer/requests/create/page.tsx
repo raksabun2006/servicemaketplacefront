@@ -7,6 +7,8 @@ import { ProtectedRoute } from "@/components/guards/ProtectedRoute";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { serviceRequestApi } from "@/lib/api/service-request.api";
+import { categoryApi } from "@/lib/api/category.api";
+import { CategoryResponse } from "@/types/category";
 import { ServiceCategory } from "@/types/service-request";
 import { LocationPicker, LocationData } from "@/components/ui/LocationPicker";
 import { fileApi } from "@/lib/api/file.api";
@@ -35,6 +37,7 @@ import {
   MapPin,
   AlertTriangle,
   ChevronDown,
+  Tag,
 } from "lucide-react";
 
 // Automatic problem keyword to category classifier
@@ -94,8 +97,38 @@ function CreateServiceRequestContent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Visual Category Options (Strictly typed to ServiceCategory)
-  const visualCategories: { code: ServiceCategory; name: string; icon: React.ComponentType<{ className?: string }>; color: string }[] = [
+  // Real Categories from Backend API
+  const [apiCategories, setApiCategories] = useState<CategoryResponse[]>([]);
+  const [isLoadingCategories, setIsLoadingCategories] = useState<boolean>(true);
+
+  // Fetch real categories from API on load
+  useEffect(() => {
+    let isMounted = true;
+    categoryApi
+      .getActive()
+      .then((data) => {
+        if (isMounted && data && Array.isArray(data) && data.length > 0) {
+          setApiCategories(data);
+          // If no initial category from query parameters, default to first category from API
+          if (!initialCat && !initialProblem && data.length > 0) {
+            setCategory(data[0].code as ServiceCategory);
+          }
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to load real categories from API:", err);
+      })
+      .finally(() => {
+        if (isMounted) setIsLoadingCategories(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [initialCat, initialProblem]);
+
+  // Visual Category Options (Fallback default)
+  const visualCategories: { code: ServiceCategory; name: string; icon: React.ComponentType<{ className?: string }>; color: string; iconUrl?: string | null }[] = [
     { code: "AC_REPAIR", name: "ជួសជុលម៉ាស៊ីនត្រជាក់", icon: Wind, color: "bg-sky-50 text-sky-600" },
     { code: "PLUMBING", name: "ជាងទឹក & បំពង់ទឹក", icon: Droplets, color: "bg-blue-50 text-blue-600" },
     { code: "ELECTRICAL", name: "ជាងអគ្គិសនី & ភ្លើង", icon: Zap, color: "bg-amber-50 text-amber-600" },
@@ -106,6 +139,52 @@ function CreateServiceRequestContent() {
     { code: "PEST_CONTROL", name: "កំចាត់សត្វល្អិត", icon: Sparkles, color: "bg-teal-50 text-teal-600" },
     { code: "OTHER", name: "ការងារជួសជុលទូទៅ & យានយន្ត", icon: Wrench, color: "bg-slate-50 text-slate-600" },
   ];
+
+  const getCategoryMeta = (code: string) => {
+    const upper = (code || "").toUpperCase();
+    switch (upper) {
+      case "AC_REPAIR":
+        return { icon: Wind, color: "bg-sky-50 text-sky-600" };
+      case "PLUMBING":
+        return { icon: Droplets, color: "bg-blue-50 text-blue-600" };
+      case "ELECTRICAL":
+        return { icon: Zap, color: "bg-amber-50 text-amber-600" };
+      case "CLEANING":
+        return { icon: Sparkles, color: "bg-emerald-50 text-emerald-600" };
+      case "CARPENTRY":
+        return { icon: Hammer, color: "bg-orange-50 text-orange-600" };
+      case "PAINTING":
+        return { icon: Paintbrush, color: "bg-purple-50 text-purple-600" };
+      case "APPLIANCE_REPAIR":
+        return { icon: Smartphone, color: "bg-rose-50 text-rose-600" };
+      case "PEST_CONTROL":
+        return { icon: Sparkles, color: "bg-teal-50 text-teal-600" };
+      case "PAIR":
+      case "MOTORCYCLE":
+      case "MOTO":
+        return { icon: Bike, color: "bg-indigo-50 text-indigo-600" };
+      case "CAR":
+      case "AUTO":
+        return { icon: Car, color: "bg-cyan-50 text-cyan-600" };
+      default:
+        return { icon: Tag, color: "bg-slate-50 text-slate-700" };
+    }
+  };
+
+  // Merge categories: prioritize real API categories, fallback to visualCategories
+  const effectiveCategories =
+    apiCategories.length > 0
+      ? apiCategories.map((c) => {
+          const meta = getCategoryMeta(c.code);
+          return {
+            code: c.code as ServiceCategory,
+            name: c.name,
+            icon: meta.icon,
+            color: meta.color,
+            iconUrl: c.iconFile ? fileApi.getFileUrl(c.iconFile.url || c.iconFile.id) : null,
+          };
+        })
+      : visualCategories;
 
   // Section 3: Common Problem Chips
   const commonProblems = [
@@ -121,8 +200,17 @@ function CreateServiceRequestContent() {
 
   const handleTitleChange = (val: string) => {
     setTitle(val);
-    const autoCat = detectCategory(val);
-    setCategory(autoCat);
+    const lower = val.toLowerCase();
+    const matched = effectiveCategories.find(
+      (c) =>
+        (c.name && lower.includes(c.name.toLowerCase())) ||
+        (c.code && lower.includes(c.code.toLowerCase()))
+    );
+    if (matched) {
+      setCategory(matched.code);
+    } else {
+      setCategory(detectCategory(val));
+    }
   };
 
   const handleSelectCommonProblem = (probText: string, catCode: ServiceCategory) => {
@@ -243,7 +331,10 @@ function CreateServiceRequestContent() {
     }
   };
 
-  const selectedCatObj = visualCategories.find((c) => c.code === category) || visualCategories[0];
+  const selectedCatObj =
+    effectiveCategories.find((c) => c.code === category) ||
+    effectiveCategories[0] ||
+    visualCategories[0];
 
   // Section 20: Success Celebration Screen
   if (isSuccess) {
@@ -428,31 +519,47 @@ function CreateServiceRequestContent() {
                 </button>
               </div>
 
-              {/* Optional Category Override Dropdown Grid */}
+              {/* Category Override Dropdown Grid with Real API Categories */}
               {showCategorySelector && (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 p-3 bg-slate-50 rounded-2xl border border-slate-200">
-                  {visualCategories.map((cat) => {
-                    const Icon = cat.icon;
-                    const isSelected = category === cat.code;
-                    return (
-                      <button
-                        key={cat.code}
-                        type="button"
-                        onClick={() => {
-                          setCategory(cat.code as ServiceCategory);
-                          setShowCategorySelector(false);
-                        }}
-                        className={`p-2.5 rounded-xl border text-left flex items-center space-x-2 text-xs transition ${
-                          isSelected
-                            ? "bg-blue-600 text-white border-blue-600"
-                            : "bg-white text-slate-700 border-slate-200 hover:bg-slate-100"
-                        }`}
-                      >
-                        <Icon className="w-4 h-4 shrink-0" />
-                        <span className="truncate font-semibold">{cat.name}</span>
-                      </button>
-                    );
-                  })}
+                <div className="space-y-2.5 p-3 sm:p-4 bg-slate-50 rounded-2xl border border-slate-200 animate-in fade-in duration-150">
+                  <div className="flex items-center justify-between text-xs text-slate-500 font-semibold px-1">
+                    <span>ជ្រើសរើសប្រភេទសេវាកម្មពិតពីប្រព័ន្ធ៖</span>
+                    {isLoadingCategories && (
+                      <span className="flex items-center space-x-1 text-[11px] text-blue-600">
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                        <span>កំពុងទាញយក...</span>
+                      </span>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {effectiveCategories.map((cat) => {
+                      const Icon = cat.icon;
+                      const isSelected = category === cat.code;
+                      return (
+                        <button
+                          key={cat.code}
+                          type="button"
+                          onClick={() => {
+                            setCategory(cat.code as ServiceCategory);
+                            setShowCategorySelector(false);
+                          }}
+                          className={`p-2.5 sm:p-3 rounded-xl border text-left flex items-center space-x-2 text-xs transition active:scale-95 ${
+                            isSelected
+                              ? "bg-blue-600 text-white border-blue-600 shadow-xs font-bold"
+                              : "bg-white text-slate-700 border-slate-200 hover:bg-slate-100 font-medium"
+                          }`}
+                        >
+                          {"iconUrl" in cat && cat.iconUrl ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={cat.iconUrl} alt={cat.name} className="w-4 h-4 object-contain shrink-0 rounded" />
+                          ) : (
+                            <Icon className={`w-4 h-4 shrink-0 ${isSelected ? "text-white" : "text-blue-600"}`} />
+                          )}
+                          <span className="truncate">{cat.name}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
 

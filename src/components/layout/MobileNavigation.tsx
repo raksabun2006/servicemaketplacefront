@@ -22,7 +22,8 @@ import {
 
 export const MobileNavigation: React.FC = () => {
   const { isAuthenticated, isCustomer, isProvider, isAdmin } = useAuth();
-  const { t } = useLanguage();
+  const { language } = useLanguage();
+  const isKm = language === "km";
   const pathname = usePathname();
 
   // Helper for active link checking
@@ -61,7 +62,7 @@ export const MobileNavigation: React.FC = () => {
           <Icon className="w-5 h-5 shrink-0" />
         </div>
         <span
-          className={`text-[10px] tracking-tight leading-tight mt-0.5 max-w-[64px] truncate text-center transition-colors duration-150 ${
+          className={`text-[10px] tracking-tight leading-tight mt-0.5 max-w-[70px] truncate text-center transition-colors duration-150 ${
             isActive
               ? `${activeColorClass} font-bold`
               : "text-slate-500 font-normal"
@@ -80,58 +81,58 @@ export const MobileNavigation: React.FC = () => {
         aria-label="Mobile Navigation"
         className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] px-2 pt-2 pb-[max(0.85rem,calc(env(safe-area-inset-bottom)+0.35rem))] grid grid-cols-4 items-center"
       >
-        {renderTab("/", Home, t("home"))}
-        {renderTab("/services", Search, t("services"))}
-        {renderTab("/providers", Users, t("providers"))}
-        {renderTab("/login", LogIn, t("login"))}
+        {renderTab("/", Home, isKm ? "ទំព័រដើម" : "Home")}
+        {renderTab("/services", Search, isKm ? "សេវាកម្ម" : "Services")}
+        {renderTab("/providers", Users, isKm ? "ជាងជំនាញ" : "Providers")}
+        {renderTab("/login", LogIn, isKm ? "ចូលប្រើ" : "Login")}
       </nav>
     );
   }
 
-  // Customer Mobile Navigation (Section 16: ទំព័រដើម, សំណើ, សារ, ជូនដំណឹង, គណនី)
+  // Customer Mobile Navigation
   if (isCustomer) {
     return (
       <nav
         aria-label="Customer Navigation"
         className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] px-1 pt-2 pb-[max(0.85rem,calc(env(safe-area-inset-bottom)+0.35rem))] grid grid-cols-5 items-center"
       >
-        {renderTab("/", Home, t("home"))}
-        {renderTab("/customer/requests", Wrench, t("myRequests"))}
-        {renderTab("/customer/messages", MessageSquare, t("messages"))}
-        {renderTab("/customer/notifications", Bell, t("notifications"))}
-        {renderTab("/customer/profile", User, t("account"))}
+        {renderTab("/", Home, isKm ? "ទំព័រដើម" : "Home")}
+        {renderTab("/customer/requests", Wrench, isKm ? "សំណើ" : "Requests")}
+        {renderTab("/customer/messages", MessageSquare, isKm ? "សារ" : "Messages")}
+        {renderTab("/customer/notifications", Bell, isKm ? "ជូនដំណឹង" : "Alerts")}
+        {renderTab("/customer/profile", User, isKm ? "គណនី" : "Profile")}
       </nav>
     );
   }
 
-  // Provider Mobile Navigation (Section 16: ទំព័រដើម, ការងារ, ការផ្តល់តម្លៃ, សារ, គណនី)
+  // Provider Mobile Navigation: Home, Dashboard, Jobs, Messages, Account
   if (isProvider) {
     return (
       <nav
         aria-label="Provider Navigation"
         className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] px-1 pt-2 pb-[max(0.85rem,calc(env(safe-area-inset-bottom)+0.35rem))] grid grid-cols-5 items-center"
       >
-        {renderTab("/provider/dashboard", Home, t("home"))}
-        {renderTab("/provider/bookings", Wrench, t("jobs"))}
-        {renderTab("/provider/offers", Clock, t("offers"))}
-        {renderTab("/provider/messages", MessageSquare, t("messages"))}
-        {renderTab("/provider/profile", User, t("account"))}
+        {renderTab("/", Home, isKm ? "ទំព័រដើម" : "Home")}
+        {renderTab("/provider/dashboard", LayoutDashboard, isKm ? "ផ្ទាំងគ្រប់គ្រង" : "Dashboard", "text-emerald-600")}
+        {renderTab("/provider/bookings", Wrench, isKm ? "ការងារ" : "Jobs", "text-emerald-600")}
+        {renderTab("/provider/messages", MessageSquare, isKm ? "សារ" : "Messages", "text-emerald-600")}
+        {renderTab("/provider/profile", User, isKm ? "គណនី" : "Profile", "text-emerald-600")}
       </nav>
     );
   }
 
-  // Admin Mobile Navigation (5 equal tabs)
+  // Admin Mobile Navigation: Home, Dashboard, Providers Verification, Users, Profile
   if (isAdmin) {
     return (
       <nav
         aria-label="Admin Navigation"
         className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] px-1 pt-2 pb-[max(0.85rem,calc(env(safe-area-inset-bottom)+0.35rem))] grid grid-cols-5 items-center"
       >
-        {renderTab("/admin/dashboard", LayoutDashboard, t("dashboard"), "text-purple-600")}
-        {renderTab("/admin/providers", ShieldCheck, t("providers"), "text-purple-600")}
-        {renderTab("/admin/users", Users, t("users"), "text-purple-600")}
-        {renderTab("/admin/categories", Tag, t("categories"), "text-purple-600")}
-        {renderTab("/admin/profile", User, t("profile"), "text-purple-600")}
+        {renderTab("/", Home, isKm ? "ទំព័រដើម" : "Home")}
+        {renderTab("/admin/dashboard", LayoutDashboard, isKm ? "ផ្ទាំងគ្រប់គ្រង" : "Dashboard", "text-purple-600")}
+        {renderTab("/admin/providers", ShieldCheck, isKm ? "ផ្ទៀងផ្ទាត់" : "Verify", "text-purple-600")}
+        {renderTab("/admin/users", Users, isKm ? "អ្នកប្រើ" : "Users", "text-purple-600")}
+        {renderTab("/admin/profile", User, isKm ? "គណនី" : "Profile", "text-purple-600")}
       </nav>
     );
   }

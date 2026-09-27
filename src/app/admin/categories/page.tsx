@@ -249,87 +249,164 @@ export default function AdminCategoriesPage() {
               <span>កំពុងផ្ទុកបញ្ជីប្រភេទសេវាកម្ម...</span>
             </div>
           ) : categories.length > 0 ? (
-            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="border-b border-slate-100 bg-slate-50/70 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                      <th className="py-3.5 px-4">លំដាប់</th>
-                      <th className="py-3.5 px-4">ឈ្មោះប្រភេទសេវា</th>
-                      <th className="py-3.5 px-4">កូដ (Code)</th>
-                      <th className="py-3.5 px-4">ការពិពណ៌នា</th>
-                      <th className="py-3.5 px-4 text-center">ស្ថានភាព</th>
-                      <th className="py-3.5 px-4 text-right">សកម្មភាព</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 text-xs">
-                    {categories.map((cat) => (
-                      <tr key={cat.id} className="hover:bg-slate-50/60 transition group">
-                        <td className="py-3.5 px-4 font-semibold text-slate-400">
-                          {cat.displayOrder ?? 0}
-                        </td>
-                        <td className="py-3.5 px-4">
-                          <div className="flex items-center space-x-2.5">
-                            <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs shrink-0">
-                              <Tag className="w-4 h-4" />
-                            </div>
-                            <span className="font-bold text-slate-900">{cat.name}</span>
+            <div className="space-y-4">
+              {/* Mobile Card View (< md) */}
+              <div className="block md:hidden space-y-3">
+                {categories.map((cat) => (
+                  <div key={cat.id} className="p-4 bg-white rounded-2xl border border-slate-200 shadow-2xs space-y-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center space-x-2.5 min-w-0">
+                        <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs shrink-0">
+                          <Tag className="w-4 h-4" />
+                        </div>
+                        <div className="min-w-0">
+                          <h3 className="font-bold text-slate-900 text-sm truncate">{cat.name}</h3>
+                          <div className="flex items-center space-x-1.5 mt-0.5">
+                            <span className="px-1.5 py-0.5 rounded-md bg-slate-100 font-mono text-[10px] font-bold text-slate-700">
+                              {cat.code}
+                            </span>
+                            <span className="text-[10px] text-slate-400 font-medium">
+                              #{cat.displayOrder ?? 0}
+                            </span>
                           </div>
-                        </td>
-                        <td className="py-3.5 px-4">
-                          <span className="inline-block px-2 py-0.5 rounded-md bg-slate-100 font-mono text-[11px] font-semibold text-slate-700">
-                            {cat.code}
-                          </span>
-                        </td>
-                        <td className="py-3.5 px-4 text-slate-500 text-[11px] max-w-xs truncate">
-                          {cat.description || "—"}
-                        </td>
-                        <td className="py-3.5 px-4 text-center">
-                          <span
-                            className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                              cat.isActive
-                                ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                                : "bg-slate-100 text-slate-500 border border-slate-200"
-                            }`}
-                          >
-                            {cat.isActive ? "សកម្ម" : "អសកម្ម"}
-                          </span>
-                        </td>
-                        <td className="py-3.5 px-4 text-right">
-                          <div className="inline-flex items-center space-x-1">
-                            <button
-                              onClick={() => handleToggleStatus(cat)}
-                              title={cat.isActive ? "បិទដំណើរការ" : "បើកដំណើរការ"}
-                              className={`p-1.5 rounded-lg border transition ${
+                        </div>
+                      </div>
+
+                      <span
+                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold shrink-0 ${
+                          cat.isActive
+                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                            : "bg-slate-100 text-slate-500 border border-slate-200"
+                        }`}
+                      >
+                        {cat.isActive ? "សកម្ម" : "អសកម្ម"}
+                      </span>
+                    </div>
+
+                    {cat.description && (
+                      <p className="text-xs text-slate-500 leading-relaxed bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                        {cat.description}
+                      </p>
+                    )}
+
+                    {/* Action Buttons for Mobile */}
+                    <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+                      <button
+                        onClick={() => handleToggleStatus(cat)}
+                        className={`inline-flex items-center space-x-1 px-2.5 py-1.5 rounded-xl font-semibold border transition text-xs ${
+                          cat.isActive
+                            ? "border-amber-200 text-amber-700 bg-amber-50/50 hover:bg-amber-100"
+                            : "border-emerald-200 text-emerald-700 bg-emerald-50/50 hover:bg-emerald-100"
+                        }`}
+                      >
+                        <Power className="w-3.5 h-3.5" />
+                        <span>{cat.isActive ? "បិទដំណើរការ" : "បើកដំណើរការ"}</span>
+                      </button>
+
+                      <div className="flex items-center space-x-1.5">
+                        <button
+                          onClick={() => handleOpenEditModal(cat)}
+                          className="p-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 transition"
+                          title="កែសម្រួល"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(cat)}
+                          className="p-2 rounded-xl border border-rose-200 text-rose-600 hover:bg-rose-50 transition"
+                          title="លុប"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop Table View (>= md) */}
+              <div className="hidden md:block bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[640px] text-left border-collapse">
+                    <thead>
+                      <tr className="border-b border-slate-100 bg-slate-50/70 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                        <th className="py-3.5 px-4">លំដាប់</th>
+                        <th className="py-3.5 px-4">ឈ្មោះប្រភេទសេវា</th>
+                        <th className="py-3.5 px-4">កូដ (Code)</th>
+                        <th className="py-3.5 px-4">ការពិពណ៌នា</th>
+                        <th className="py-3.5 px-4 text-center">ស្ថានភាព</th>
+                        <th className="py-3.5 px-4 text-right">សកម្មភាព</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 text-xs">
+                      {categories.map((cat) => (
+                        <tr key={cat.id} className="hover:bg-slate-50/60 transition group">
+                          <td className="py-3.5 px-4 font-semibold text-slate-400">
+                            {cat.displayOrder ?? 0}
+                          </td>
+                          <td className="py-3.5 px-4">
+                            <div className="flex items-center space-x-2.5">
+                              <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs shrink-0">
+                                <Tag className="w-4 h-4" />
+                              </div>
+                              <span className="font-bold text-slate-900">{cat.name}</span>
+                            </div>
+                          </td>
+                          <td className="py-3.5 px-4">
+                            <span className="inline-block px-2 py-0.5 rounded-md bg-slate-100 font-mono text-[11px] font-semibold text-slate-700">
+                              {cat.code}
+                            </span>
+                          </td>
+                          <td className="py-3.5 px-4 text-slate-500 text-[11px] max-w-xs truncate">
+                            {cat.description || "—"}
+                          </td>
+                          <td className="py-3.5 px-4 text-center">
+                            <span
+                              className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${
                                 cat.isActive
-                                  ? "border-amber-200 text-amber-600 hover:bg-amber-50"
-                                  : "border-emerald-200 text-emerald-600 hover:bg-emerald-50"
+                                  ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                                  : "bg-slate-100 text-slate-500 border border-slate-200"
                               }`}
                             >
-                              <Power className="w-3.5 h-3.5" />
-                            </button>
+                              {cat.isActive ? "សកម្ម" : "អសកម្ម"}
+                            </span>
+                          </td>
+                          <td className="py-3.5 px-4 text-right">
+                            <div className="inline-flex items-center space-x-1">
+                              <button
+                                onClick={() => handleToggleStatus(cat)}
+                                title={cat.isActive ? "បិទដំណើរការ" : "បើកដំណើរការ"}
+                                className={`p-1.5 rounded-lg border transition ${
+                                  cat.isActive
+                                    ? "border-amber-200 text-amber-600 hover:bg-amber-50"
+                                    : "border-emerald-200 text-emerald-600 hover:bg-emerald-50"
+                                }`}
+                              >
+                                <Power className="w-3.5 h-3.5" />
+                              </button>
 
-                            <button
-                              onClick={() => handleOpenEditModal(cat)}
-                              title="កែសម្រួល"
-                              className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100 transition"
-                            >
-                              <Edit2 className="w-3.5 h-3.5" />
-                            </button>
+                              <button
+                                onClick={() => handleOpenEditModal(cat)}
+                                title="កែសម្រួល"
+                                className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100 transition"
+                              >
+                                <Edit2 className="w-3.5 h-3.5" />
+                              </button>
 
-                            <button
-                              onClick={() => handleDelete(cat)}
-                              title="លុប"
-                              className="p-1.5 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 transition"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                              <button
+                                onClick={() => handleDelete(cat)}
+                                title="លុប"
+                                className="p-1.5 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 transition"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           ) : (

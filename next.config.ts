@@ -1,11 +1,27 @@
 import type { NextConfig } from "next";
 
+const backendUrl = (
+  process.env.BACKEND_API_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  "http://localhost:8080"
+).replace(/\/+$/, "");
+
+let backendHost = "localhost";
+let backendProtocol: "http" | "https" = "http";
+try {
+  const parsed = new URL(backendUrl);
+  backendHost = parsed.hostname;
+  backendProtocol = parsed.protocol.replace(":", "") as "http" | "https";
+} catch {
+  // fallback
+}
+
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: "https",
-        hostname: "servicemaketplaceapi-production.up.railway.app",
+        protocol: backendProtocol,
+        hostname: backendHost,
         pathname: "/**",
       },
       {
@@ -13,12 +29,14 @@ const nextConfig: NextConfig = {
         hostname: "localhost",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+        pathname: "/**",
+      },
     ],
   },
   async rewrites() {
-    const backendUrl = (
-      process.env.NEXT_PUBLIC_API_URL || "https://servicemaketplaceapi-production.up.railway.app"
-    ).replace(/\/+$/, "");
     return [
       {
         source: "/api/:path*",

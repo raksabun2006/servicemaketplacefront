@@ -15,10 +15,8 @@ import {
   ArrowLeft,
   Calendar,
   MapPin,
-  DollarSign,
   AlertTriangle,
   Camera,
-  Image as ImageIcon,
   CheckCircle2,
   Wrench,
   Send,
@@ -28,12 +26,13 @@ import {
   User,
   Share2,
   Check,
-  HelpCircle,
-  Phone,
-  MessageSquare,
+  FileText,
+  Briefcase,
+  Lock,
+  ChevronRight,
+  Maximize2,
   Sparkles,
 } from "lucide-react";
-
 
 const toKhmerDigits = (num: number | string): string => {
   const khmerDigits = ["០", "១", "២", "៣", "៤", "៥", "៦", "៧", "៨", "៩"];
@@ -159,9 +158,9 @@ export function ServiceDetailClient({ id }: ServiceDetailClientProps) {
   if (loading) {
     return (
       <div className="min-h-[70vh] bg-slate-50 flex flex-col items-center justify-center space-y-4">
-        <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
-        <p className="text-sm font-semibold text-slate-600">
-          {language === "km" ? "កំពុងទាញយកព័ត៌មានលម្អិត..." : "Loading problem details..."}
+        <div className="w-10 h-10 border-3 border-blue-600 border-t-transparent rounded-full animate-spin" />
+        <p className="text-sm font-semibold text-slate-500">
+          {language === "km" ? "កំពុងទាញយកព័ត៌មាន..." : "Loading details..."}
         </p>
       </div>
     );
@@ -221,28 +220,33 @@ export function ServiceDetailClient({ id }: ServiceDetailClientProps) {
       ? (language === "km" ? `រហូតដល់ $${request.budgetMax}` : `Up to $${request.budgetMax}`)
       : (language === "km" ? "តម្លៃចរចា" : "Negotiable");
 
+  const isOwner = user?.id === request.customerId;
+
   return (
-    <div className="min-h-screen bg-[#f8fafc] pb-20">
-      {/* Top Breadcrumb & Navigation Bar */}
-      <div className="bg-white border-b border-slate-200 sticky top-16 sm:top-18 z-30 shadow-2xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between gap-4">
-          <div className="flex items-center space-x-2 text-xs sm:text-sm font-semibold text-slate-500 overflow-hidden">
+    <div className="min-h-screen bg-[#f8fafc] pb-24">
+      {/* Main Container */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-5 space-y-4">
+        {/* Clean Inline Breadcrumb & Share Actions */}
+        <div className="flex items-center justify-between gap-4 text-xs font-medium text-slate-500 pb-1">
+          <div className="flex items-center space-x-1.5 overflow-hidden min-w-0">
             <Link
               href="/services"
-              className="inline-flex items-center space-x-1.5 text-blue-600 hover:text-blue-800 font-bold transition shrink-0"
+              className="inline-flex items-center space-x-1 text-slate-600 hover:text-blue-600 font-semibold transition shrink-0"
             >
-              <ArrowLeft className="w-4 h-4" />
-              <span>{language === "km" ? "ត្រឡប់ទៅសេវាកម្ម" : "Back to Services"}</span>
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>{language === "km" ? "សេវាកម្ម" : "Services"}</span>
             </Link>
             <span className="text-slate-300">/</span>
-            <span className="text-slate-700 truncate font-bold">{request.title}</span>
+            <span className="text-slate-500 shrink-0">{categoryLabel}</span>
+            <span className="text-slate-300 hidden sm:inline">/</span>
+            <span className="text-slate-800 font-semibold truncate hidden sm:inline">{request.title}</span>
           </div>
 
           <div className="flex items-center space-x-2 shrink-0">
             <button
               type="button"
               onClick={handleCopyLink}
-              className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-full border border-slate-200 hover:border-slate-300 bg-white text-slate-700 text-xs font-semibold shadow-2xs transition cursor-pointer"
+              className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full border border-slate-200 hover:border-slate-300 hover:bg-white bg-slate-100/80 text-slate-600 text-xs font-semibold transition cursor-pointer"
               title="Copy share link"
             >
               {copiedLink ? (
@@ -252,23 +256,73 @@ export function ServiceDetailClient({ id }: ServiceDetailClientProps) {
                 </>
               ) : (
                 <>
-                  <Share2 className="w-3.5 h-3.5 text-slate-500" />
+                  <Share2 className="w-3.5 h-3.5 text-slate-400" />
                   <span>{language === "km" ? "ចែករំលែក" : "Share"}</span>
                 </>
               )}
             </button>
           </div>
         </div>
-      </div>
 
-      {/* Main Content Area */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Left Column: Problem Details & Photo Gallery */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start pt-1">
+          {/* Left Column: Natural Header, Elegant Image Container & Details (8 cols) */}
           <div className="lg:col-span-8 space-y-6">
+            {/* Header: Title, Badges, Meta (Integrated naturally, not in a floating cage) */}
+            <div className="space-y-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="px-3 py-0.5 rounded-full bg-blue-50 border border-blue-200/80 text-blue-700 text-xs font-bold">
+                  {categoryLabel}
+                </span>
+
+                {request.urgent && (
+                  <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold animate-pulse">
+                    <AlertTriangle className="w-3.5 h-3.5" />
+                    <span>{language === "km" ? "ការងារបន្ទាន់" : "Urgent"}</span>
+                  </span>
+                )}
+
+                <span className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <span>
+                    {request.status === "OPEN"
+                      ? language === "km"
+                        ? "កំពុងបើកទទួលសំណើ"
+                        : "Open for Offers"
+                      : request.status}
+                  </span>
+                </span>
+              </div>
+
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 leading-snug tracking-tight">
+                {request.title}
+              </h1>
+
+              <div className="flex flex-wrap items-center gap-y-2 gap-x-3 text-xs sm:text-sm font-semibold text-slate-500 pt-1">
+                <div className="flex items-center space-x-1.5 text-slate-600">
+                  <Calendar className="w-4 h-4 text-slate-400 shrink-0" />
+                  <span>{language === "km" ? formattedDate.km : formattedDate.en}</span>
+                </div>
+                <span className="text-slate-300">•</span>
+                <div className="flex items-center space-x-1.5 text-slate-600">
+                  <MapPin className="w-4 h-4 text-rose-500 shrink-0" />
+                  <span>
+                    {request.district ? `${request.district}, ` : ""}
+                    {request.city || "Phnom Penh"}
+                  </span>
+                </div>
+                <span className="text-slate-300">•</span>
+                <div className="flex items-center space-x-1.5 text-slate-600">
+                  <Briefcase className="w-4 h-4 text-slate-400 shrink-0" />
+                  <span>
+                    {request.offerCount || 0} {language === "km" ? "សំណើបានទទួល" : "offers received"}
+                  </span>
+                </div>
+              </div>
+            </div>
+
             {bidSuccess && (
-              <div className="p-4 sm:p-5 bg-emerald-50 border border-emerald-200 rounded-3xl flex items-start space-x-3.5 shadow-sm animate-in fade-in duration-200">
-                <CheckCircle2 className="w-6 h-6 text-emerald-600 shrink-0 mt-0.5" />
+              <div className="p-4 sm:p-5 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-start space-x-3.5 shadow-sm animate-in fade-in duration-200">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
                 <div className="space-y-1">
                   <h4 className="text-sm font-bold text-emerald-900">
                     {language === "km" ? "សំណើតម្លៃរបស់អ្នកត្រូវបានផ្ញើជោគជ័យ!" : "Quote Submitted Successfully!"}
@@ -282,12 +336,12 @@ export function ServiceDetailClient({ id }: ServiceDetailClientProps) {
               </div>
             )}
 
-            {/* Photo Gallery Card - only if real photos exist */}
-            {hasRealPhoto && currentPhoto && (
-              <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-xs">
+            {/* Media Gallery: Clean, Soft Canvas (No harsh black voids or awkward letterboxing) */}
+            {hasRealPhoto && currentPhoto ? (
+              <div className="space-y-3">
                 <div
                   onClick={() => setLightboxOpen(true)}
-                  className="relative aspect-16/10 sm:aspect-16/9 w-full bg-slate-950 group cursor-pointer"
+                  className="relative h-[300px] sm:h-[380px] md:h-[440px] w-full rounded-2xl border border-slate-200 bg-gradient-to-b from-slate-50 to-slate-100 flex items-center justify-center group cursor-pointer overflow-hidden shadow-2xs"
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -296,219 +350,215 @@ export function ServiceDetailClient({ id }: ServiceDetailClientProps) {
                     onError={() => {
                       setImgError(true);
                     }}
-                    className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300"
+                    className="max-h-full max-w-full object-contain p-2 rounded-xl group-hover:scale-[1.01] transition-transform duration-300 drop-shadow-sm"
                   />
 
-                  <div className="absolute top-3 left-3 flex items-center space-x-2">
-                    <span className="px-3 py-1 rounded-full bg-blue-700 text-white text-xs font-bold shadow-md">
-                      {categoryLabel}
+                  {/* Top Counter Badge */}
+                  <div className="absolute top-3 left-3 flex items-center space-x-1.5 px-3 py-1 rounded-full bg-white/90 backdrop-blur-md text-slate-700 text-xs font-bold border border-slate-200/80 shadow-xs">
+                    <Camera className="w-3.5 h-3.5 text-blue-600" />
+                    <span>
+                      {activePhotoIdx + 1} / {realImageUrls.length}
                     </span>
-                    {request.urgent && (
-                      <span className="px-2.5 py-1 rounded-full bg-red-600 text-white text-xs font-bold shadow-md flex items-center space-x-1">
-                        <AlertTriangle className="w-3 h-3" />
-                        <span>{language === "km" ? "បន្ទាន់" : "Urgent"}</span>
-                      </span>
-                    )}
                   </div>
 
-                  <div className="absolute bottom-3 left-3 flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-emerald-600/90 text-white text-xs font-bold backdrop-blur-xs shadow-md">
-                    <Camera className="w-4 h-4" />
-                    <span>
-                      {language === "km"
-                        ? `រូបថតជាក់ស្តែងពីអតិថិជន (${realImageUrls.length} រូប)`
-                        : `Real Customer Photos (${realImageUrls.length})`}
-                    </span>
+                  {/* Zoom Action Pill */}
+                  <div className="absolute bottom-3 right-3 flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full bg-slate-900/75 hover:bg-slate-900/90 text-white text-xs font-semibold backdrop-blur-md transition shadow-sm">
+                    <Maximize2 className="w-3.5 h-3.5" />
+                    <span>{language === "km" ? "ពង្រីកមើលរូបពេញ" : "View Fullscreen"}</span>
                   </div>
                 </div>
 
+                {/* Thumbnails row */}
                 {realImageUrls.length > 1 && (
-                  <div className="flex items-center space-x-3 p-4 bg-slate-50 border-t border-slate-100 overflow-x-auto">
+                  <div className="flex items-center space-x-2.5 overflow-x-auto pb-1">
                     {realImageUrls.map((url, i) => (
                       <button
                         key={i}
                         type="button"
                         onClick={() => setActivePhotoIdx(i)}
-                        className={`relative w-20 h-16 rounded-xl overflow-hidden border-2 shrink-0 transition ${
+                        className={`relative w-18 h-18 sm:w-20 sm:h-20 rounded-xl overflow-hidden border-2 bg-slate-50 shrink-0 transition cursor-pointer p-0.5 ${
                           activePhotoIdx === i
-                            ? "border-blue-600 ring-2 ring-blue-500/20 shadow-xs"
-                            : "border-slate-200 opacity-70 hover:opacity-100"
+                            ? "border-blue-600 ring-2 ring-blue-500/25 shadow-xs"
+                            : "border-slate-200 opacity-60 hover:opacity-100"
                         }`}
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={url} alt={`Thumbnail ${i + 1}`} className="w-full h-full object-cover" />
+                        <img src={url} alt={`Thumbnail ${i + 1}`} className="w-full h-full object-cover rounded-lg" />
                       </button>
                     ))}
                   </div>
                 )}
               </div>
-            )}
+            ) : null}
 
-            {/* Problem Details Card */}
-            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-6">
-              <div className="space-y-3 pb-6 border-b border-slate-100">
-                {!hasRealPhoto && (
-                  <div className="flex flex-wrap items-center gap-2 mb-2">
-                    <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-bold">
-                      {categoryLabel}
-                    </span>
-                    {request.urgent && (
-                      <span className="px-2.5 py-1 rounded-full bg-red-100 text-red-700 text-xs font-bold flex items-center space-x-1">
-                        <AlertTriangle className="w-3 h-3" />
-                        <span>{language === "km" ? "បន្ទាន់" : "Urgent"}</span>
-                      </span>
-                    )}
-                  </div>
-                )}
-
-                <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 leading-tight">
-                  {request.title}
-                </h1>
-
-                <div className="flex flex-wrap items-center gap-y-2 gap-x-4 text-xs sm:text-sm font-semibold text-slate-500">
-                  <div className="flex items-center space-x-1.5 text-slate-700">
-                    <Calendar className="w-4 h-4 text-blue-600 shrink-0" />
-                    <span>{language === "km" ? formattedDate.km : formattedDate.en}</span>
-                  </div>
-                  <span>•</span>
-                  <div className="flex items-center space-x-1.5 text-slate-700">
-                    <MapPin className="w-4 h-4 text-slate-400 shrink-0" />
-                    <span>
-                      {request.district ? `${request.district}, ` : ""}
-                      {request.city || "Phnom Penh"}
-                    </span>
-                  </div>
-                  <span>•</span>
-                  <div className="flex items-center space-x-1.5 font-bold text-emerald-600">
-                    <DollarSign className="w-4 h-4 text-emerald-500 shrink-0" />
-                    <span>{budgetText}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2.5">
-                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                  {language === "km" ? "ការពិពណ៌នាអំពីបញ្ហា" : "Problem Description"}
+            {/* Problem Description Card */}
+            <div className="bg-white rounded-2xl p-6 sm:p-7 border border-slate-200/90 shadow-2xs space-y-4">
+              <div className="flex items-center space-x-2 text-slate-900 pb-3 border-b border-slate-100">
+                <FileText className="w-4 h-4 text-blue-600" />
+                <h3 className="text-base font-bold">
+                  {language === "km" ? "ព័ត៌មានលម្អិតអំពីបញ្ហា" : "Problem Description"}
                 </h3>
-                <div className="p-5 bg-slate-50 rounded-2xl border border-slate-200/80">
-                  <p className="text-sm sm:text-base text-slate-800 leading-relaxed whitespace-pre-wrap">
-                    {request.description ||
-                      (language === "km"
-                        ? "ត្រូវការជាងជំនាញមកពិនិត្យ និងជួសជុលបញ្ហាខាងលើឲ្យបានឆាប់រហ័ស។"
-                        : "Requires a certified technician to inspect and resolve this problem.")}
+              </div>
+
+              <div className="text-slate-800 leading-relaxed whitespace-pre-wrap text-sm sm:text-base font-normal">
+                {request.description ||
+                  (language === "km"
+                    ? "ត្រូវការជាងជំនាញមកពិនិត្យ និងជួសជុលបញ្ហាខាងលើឲ្យបានឆាប់រហ័ស។"
+                    : "Requires a certified technician to inspect and resolve this problem.")}
+              </div>
+            </div>
+
+            {/* Service Logistics & Specifics */}
+            <div className="bg-white rounded-2xl p-6 sm:p-7 border border-slate-200/90 shadow-2xs space-y-4">
+              <div className="flex items-center space-x-2 text-slate-900 pb-3 border-b border-slate-100">
+                <MapPin className="w-4 h-4 text-rose-500" />
+                <h3 className="text-base font-bold">
+                  {language === "km" ? "ទីតាំង និងកាលវិភាគការងារ" : "Location & Schedule"}
+                </h3>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="p-4 bg-slate-50/80 rounded-xl border border-slate-100 space-y-1">
+                  <span className="text-xs font-semibold text-slate-400 block">
+                    {language === "km" ? "ទីតាំងជាក់លាក់" : "Specific Location"}
+                  </span>
+                  <p className="text-sm font-bold text-slate-900">
+                    {request.address || (request.district ? `${request.district}, ${request.city}` : "រាជធានីភ្នំពេញ")}
+                  </p>
+                </div>
+
+                <div className="p-4 bg-slate-50/80 rounded-xl border border-slate-100 space-y-1">
+                  <span className="text-xs font-semibold text-slate-400 block">
+                    {language === "km" ? "ពេលវេលាត្រូវការ" : "Preferred Schedule"}
+                  </span>
+                  <p className="text-sm font-bold text-slate-900">
+                    {request.preferredDate
+                      ? `${request.preferredDate} ${request.preferredTime ? `(${request.preferredTime})` : ""}`
+                      : language === "km"
+                      ? "ឆាប់ៗតាមដែលអាច (Flexible)"
+                      : "As soon as possible (Flexible)"}
                   </p>
                 </div>
               </div>
+            </div>
+          </div>
 
-              {/* Status and Summary Grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5">
-                <div className="p-4 bg-blue-50/70 border border-blue-100 rounded-2xl space-y-1">
-                  <span className="text-[10px] font-bold text-blue-600 uppercase">
-                    {language === "km" ? "ស្ថានភាពការងារ" : "Job Status"}
-                  </span>
-                  <p className="text-xs sm:text-sm font-bold text-blue-950">
-                    {request.status === "OPEN"
-                      ? language === "km"
-                        ? "កំពុងបើកទទួលជាង"
-                        : "Open for Offers"
-                      : request.status}
-                  </p>
+          {/* Right Column: Unified Sticky Booking Sidebar (4 cols) */}
+          <div className="lg:col-span-4 lg:sticky lg:top-24 space-y-4">
+            <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 space-y-5">
+              {/* Budget Display */}
+              <div className="space-y-1 pb-4 border-b border-slate-100">
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                  {language === "km" ? "ថវិការំពឹងទុក" : "Estimated Budget"}
+                </span>
+                <div className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                  {budgetText}
                 </div>
-
-                <div className="p-4 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-1">
-                  <span className="text-[10px] font-bold text-slate-500 uppercase">
-                    {language === "km" ? "ការដាក់តម្លៃទទួលបាន" : "Offers Received"}
-                  </span>
-                  <p className="text-xs sm:text-sm font-bold text-slate-900">
-                    {request.offerCount || 0} {language === "km" ? "សំណើ" : "offers"}
-                  </p>
-                </div>
-
-                <div className="p-4 bg-emerald-50/60 border border-emerald-100 rounded-2xl space-y-1 col-span-2 sm:col-span-1">
-                  <span className="text-[10px] font-bold text-emerald-600 uppercase">
-                    {language === "km" ? "ការធានាគុណភាព" : "Quality Guarantee"}
-                  </span>
-                  <p className="text-xs sm:text-sm font-bold text-emerald-800 flex items-center space-x-1.5">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span>100% Verified</span>
-                  </p>
-                </div>
+                <p className="text-xs text-slate-500">
+                  {hasMin || hasMax
+                    ? language === "km"
+                      ? "ថវិកាកំណត់ដោយអតិថិជន"
+                      : "Customer specified budget range"
+                    : language === "km"
+                    ? "អាចចរចាតម្លៃផ្ទាល់ជាមួយអតិថិជន"
+                    : "Open for direct negotiation"}
+                </p>
               </div>
 
-              {/* Provider Action */}
-              {isAuthenticated && isProvider ? (
-                <div className="pt-4 border-t border-slate-100 space-y-4">
+              {/* Action Buttons based on User Role */}
+              {isOwner ? (
+                <div className="space-y-3">
+                  <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-xl text-xs space-y-1">
+                    <p className="font-bold text-amber-900 flex items-center space-x-1">
+                      <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                      <span>{language === "km" ? "នេះជាសំណើរបស់អ្នក" : "Your Request"}</span>
+                    </p>
+                    <p className="text-amber-800 leading-relaxed">
+                      {language === "km"
+                        ? "លោកអ្នកអាចពិនិត្យមើលសំណើតម្លៃដែលជាងបានដាក់មកក្នុងផ្ទាំងគ្រប់គ្រង។"
+                        : "You can view and manage all quotes submitted by technicians."}
+                    </p>
+                  </div>
+                  <Link
+                    href="/customer/requests"
+                    className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition flex items-center justify-center space-x-1.5 text-center"
+                  >
+                    <span>{language === "km" ? "គ្រប់គ្រងសំណើរបស់អ្នក" : "Manage Your Request"}</span>
+                    <ChevronRight className="w-4 h-4" />
+                  </Link>
+                </div>
+              ) : isAuthenticated && isProvider ? (
+                <div className="space-y-3">
                   {!showBidForm ? (
                     <button
                       type="button"
                       onClick={() => setShowBidForm(true)}
-                      className="w-full py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md shadow-blue-600/25 transition flex items-center justify-center space-x-2 cursor-pointer"
+                      className="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md shadow-blue-600/20 hover:shadow-lg transition flex items-center justify-center space-x-2 cursor-pointer"
                     >
                       <Send className="w-4 h-4" />
-                      <span>{language === "km" ? "ដាក់សំណើតម្លៃរបស់អ្នក (Submit Quote)" : "Submit Your Quote"}</span>
+                      <span>{language === "km" ? "ដាក់សំណើតម្លៃរបស់អ្នក" : "Submit Your Quote"}</span>
                     </button>
                   ) : (
                     <form
                       onSubmit={handleSubmitBid}
-                      className="p-5 sm:p-6 bg-blue-50/70 border border-blue-200 rounded-3xl space-y-4 animate-in fade-in duration-150"
+                      className="p-4 bg-blue-50/70 border border-blue-200 rounded-xl space-y-3 animate-in fade-in duration-150 text-xs"
                     >
-                      <div className="flex items-center justify-between pb-3 border-b border-blue-200/60">
-                        <div className="flex items-center space-x-2">
-                          <Wrench className="w-4 h-4 text-blue-700" />
-                          <h4 className="text-sm font-bold text-blue-950 uppercase tracking-wide">
-                            {language === "km" ? "ទម្រង់ដាក់សំណើតម្លៃ" : "Technician Quote Form"}
+                      <div className="flex items-center justify-between pb-2 border-b border-blue-200/60">
+                        <div className="flex items-center space-x-1.5">
+                          <Wrench className="w-3.5 h-3.5 text-blue-700" />
+                          <h4 className="font-bold text-blue-950 uppercase tracking-wide">
+                            {language === "km" ? "ទម្រង់ដាក់តម្លៃ" : "Technician Quote"}
                           </h4>
                         </div>
                         <button
                           type="button"
                           onClick={() => setShowBidForm(false)}
-                          className="text-xs font-semibold text-slate-500 hover:text-slate-800"
+                          className="font-semibold text-slate-500 hover:text-slate-800 cursor-pointer"
                         >
                           {language === "km" ? "បិទ" : "Close"}
                         </button>
                       </div>
 
                       {bidError && (
-                        <div className="p-3 bg-red-50 text-red-700 text-xs rounded-xl border border-red-200 font-medium">
+                        <div className="p-2.5 bg-red-50 text-red-700 rounded-lg border border-red-200 font-medium">
                           {bidError}
                         </div>
                       )}
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                            {language === "km" ? "តម្លៃផ្តល់ជូន ($) *" : "Proposed Price ($) *"}
-                          </label>
-                          <div className="relative">
-                            <span className="absolute left-3.5 top-2.5 text-sm text-slate-400 font-bold">$</span>
-                            <input
-                              type="number"
-                              step="0.01"
-                              min="1"
-                              required
-                              value={proposedPrice}
-                              onChange={(e) => setProposedPrice(e.target.value)}
-                              placeholder="25.00"
-                              className="w-full pl-8 pr-3.5 py-2.5 text-sm bg-white rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold"
-                            />
-                          </div>
-                        </div>
-
-                        <div>
-                          <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                            {language === "km" ? "រយៈពេលរំពឹងទុក" : "Estimated Completion Time"}
-                          </label>
+                      <div>
+                        <label className="block font-bold text-slate-700 mb-1">
+                          {language === "km" ? "តម្លៃផ្តល់ជូន ($) *" : "Proposed Price ($) *"}
+                        </label>
+                        <div className="relative">
+                          <span className="absolute left-2.5 top-2 text-slate-400 font-bold">$</span>
                           <input
-                            type="text"
-                            value={estimatedTime}
-                            onChange={(e) => setEstimatedTime(e.target.value)}
-                            placeholder={language === "km" ? "ឧ. ២ ម៉ោង ឬ ១ ថ្ងៃ" : "e.g. 2 hours or 1 day"}
-                            className="w-full px-3.5 py-2.5 text-sm bg-white rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            type="number"
+                            step="0.01"
+                            min="1"
+                            required
+                            value={proposedPrice}
+                            onChange={(e) => setProposedPrice(e.target.value)}
+                            placeholder="25.00"
+                            className="w-full pl-6 pr-3 py-1.5 bg-white rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold"
                           />
                         </div>
                       </div>
 
                       <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                        <label className="block font-bold text-slate-700 mb-1">
+                          {language === "km" ? "រយៈពេលរំពឹងទុក" : "Estimated Completion Time"}
+                        </label>
+                        <input
+                          type="text"
+                          value={estimatedTime}
+                          onChange={(e) => setEstimatedTime(e.target.value)}
+                          placeholder={language === "km" ? "ឧ. ២ ម៉ោង ឬ ១ ថ្ងៃ" : "e.g. 2 hours or 1 day"}
+                          className="w-full px-3 py-1.5 bg-white rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-bold text-slate-700 mb-1">
                           {language === "km" ? "សារជូនអតិថិជន *" : "Message to Customer *"}
                         </label>
                         <textarea
@@ -521,32 +571,32 @@ export function ServiceDetailClient({ id }: ServiceDetailClientProps) {
                               ? "ជម្រាបសួរ! ខ្ញុំជាជាងជំនាញ... ខ្ញុំអាចមកពិនិត្យ និងដោះស្រាយបញ្ហានេះបានយ៉ាងរហ័ស..."
                               : "Hello! I am an experienced technician and can resolve this issue quickly..."
                           }
-                          className="w-full px-3.5 py-2.5 text-sm bg-white rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full px-3 py-1.5 bg-white rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                       </div>
 
-                      <div className="flex items-center justify-end space-x-3 pt-2">
+                      <div className="flex items-center justify-end space-x-2 pt-1">
                         <button
                           type="button"
                           onClick={() => setShowBidForm(false)}
-                          className="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 text-xs font-bold transition"
+                          className="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100 font-bold transition cursor-pointer"
                         >
                           {language === "km" ? "បោះបង់" : "Cancel"}
                         </button>
                         <button
                           type="submit"
                           disabled={submittingBid}
-                          className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-600/25 transition flex items-center space-x-2 disabled:opacity-50"
+                          className="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-md transition flex items-center space-x-1.5 disabled:opacity-50 cursor-pointer"
                         >
                           {submittingBid ? (
                             <>
-                              <Loader2 className="w-4 h-4 animate-spin" />
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
                               <span>{language === "km" ? "កំពុងផ្ញើ..." : "Submitting..."}</span>
                             </>
                           ) : (
                             <>
-                              <Send className="w-4 h-4" />
-                              <span>{language === "km" ? "បញ្ជូនសំណើតម្លៃឥឡូវនេះ" : "Submit Quote Now"}</span>
+                              <Send className="w-3.5 h-3.5" />
+                              <span>{language === "km" ? "បញ្ជូន" : "Submit"}</span>
                             </>
                           )}
                         </button>
@@ -555,62 +605,90 @@ export function ServiceDetailClient({ id }: ServiceDetailClientProps) {
                   )}
                 </div>
               ) : !isAuthenticated ? (
-                <div className="pt-4 border-t border-slate-100">
-                  <div className="p-5 bg-blue-50/50 rounded-2xl border border-blue-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-                    <div className="space-y-1">
-                      <h4 className="text-sm font-bold text-blue-950">
-                        {language === "km" ? "តើអ្នកជាជាងជំនាញមែនទេ?" : "Are you a skilled technician?"}
-                      </h4>
-                      <p className="text-xs text-slate-600">
-                        {language === "km"
-                          ? "ចូលគណនី ឬចុះឈ្មោះដើម្បីផ្តល់តម្លៃ និងទទួលការងារនេះភ្លាមៗ។"
-                          : "Log in or register as a provider to submit your quote and get hired."}
-                      </p>
+                <div className="space-y-2.5">
+                  <Link
+                    href={`/login?redirect=/services/${request.id}`}
+                    className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition flex items-center justify-center space-x-2 text-center"
+                  >
+                    <Lock className="w-3.5 h-3.5" />
+                    <span>{language === "km" ? "ចូលគណនីដើម្បីដាក់តម្លៃ" : "Login to Submit Quote"}</span>
+                  </Link>
+                  <p className="text-[11px] text-slate-400 text-center">
+                    {language === "km"
+                      ? "សម្រាប់ជាងជំនាញដែលចង់ទទួលការងារនេះ"
+                      : "For certified technicians looking to take this job"}
+                  </p>
+                </div>
+              ) : (
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-600 text-center space-y-0.5">
+                  <p className="font-bold text-slate-800">
+                    {language === "km" ? "គណនីអតិថិជន" : "Customer Account"}
+                  </p>
+                  <p className="text-[11px] text-slate-500">
+                    {language === "km"
+                      ? "មានតែគណនីជាងជំនាញប៉ុណ្ណោះដែលអាចដាក់សំណើតម្លៃបាន។"
+                      : "Only registered technician accounts can submit quotes."}
+                  </p>
+                </div>
+              )}
+
+              {/* Integrated Customer Info */}
+              <div className="pt-4 border-t border-slate-100 space-y-3">
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                  {language === "km" ? "ព័ត៌មានអតិថិជន" : "Posted By Customer"}
+                </span>
+
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-bold text-sm flex items-center justify-center shrink-0 shadow-2xs">
+                    {request.customerName ? request.customerName.charAt(0).toUpperCase() : <User className="w-5 h-5" />}
+                  </div>
+                  <div className="space-y-0.5">
+                    <h4 className="text-sm font-bold text-slate-900 leading-tight">
+                      {request.customerName || (language === "km" ? "អតិថិជន" : "Customer")}
+                    </h4>
+                    <div className="flex items-center space-x-1 text-emerald-600 text-[11px] font-bold">
+                      <CheckCircle2 className="w-3 h-3" />
+                      <span>{language === "km" ? "បានផ្ទៀងផ្ទាត់លេខទូរស័ព្ទ" : "Verified Customer"}</span>
                     </div>
-                    <Link
-                      href={`/login?redirect=/services/${request.id}`}
-                      className="px-6 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md transition whitespace-nowrap"
-                    >
-                      {language === "km" ? "ចូលគណនីដើម្បីដាក់តម្លៃ" : "Login to Submit Offer"}
-                    </Link>
                   </div>
                 </div>
-              ) : null}
-            </div>
-          </div>
 
-          {/* Right Column: Platform Guarantees & Support */}
-          <div className="lg:col-span-4 space-y-6">
-            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs space-y-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-                  <ShieldCheck className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-bold text-slate-900">
-                    {language === "km" ? "ការធានាសុវត្ថិភាព ១០០%" : "100% Platform Guarantee"}
-                  </h3>
-                  <p className="text-xs text-slate-500">
-                    {language === "km" ? "ថ្នាលសេវាកម្មកម្ពុជា" : "Khmer Service Marketplace"}
-                  </p>
+                <div className="text-xs text-slate-500 space-y-1.5 pt-1">
+                  <div className="flex items-center justify-between">
+                    <span>{language === "km" ? "ទីតាំង" : "Location"}:</span>
+                    <span className="font-semibold text-slate-700">
+                      {request.district ? `${request.district}, ` : ""}{request.city || "Phnom Penh"}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span>{language === "km" ? "ការឆ្លើយតប" : "Response Rate"}:</span>
+                    <span className="font-semibold text-emerald-600">
+                      {language === "km" ? "លឿនរហ័ស (< ១ ម៉ោង)" : "Fast (< 1 hr)"}
+                    </span>
+                  </div>
                 </div>
               </div>
 
-              <div className="space-y-3 pt-2 text-xs text-slate-600">
-                <div className="flex items-start space-x-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                  <span>
-                    {language === "km"
-                      ? "ជាងជំនាញទាំងអស់ត្រូវបានផ្ទៀងផ្ទាត់អត្តសញ្ញាណប័ណ្ណសញ្ជាតិខ្មែរ (National ID)។"
-                      : "All technicians are verified with National ID and skill assessments."}
+              {/* Integrated Trust Guarantees */}
+              <div className="pt-4 border-t border-slate-100 space-y-2 text-xs text-slate-600">
+                <div className="flex items-center space-x-2">
+                  <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span className="font-semibold text-slate-700">
+                    {language === "km" ? "ការធានាសុវត្ថិភាព 100%" : "100% Platform Guarantee"}
                   </span>
                 </div>
-                <div className="flex items-start space-x-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                <div className="flex items-start space-x-2 text-[11px] text-slate-500 leading-normal pl-6">
+                  <span>
+                    {language === "km"
+                      ? "ជាងជំនាញត្រូវបានផ្ទៀងផ្ទាត់អត្តសញ្ញាណប័ណ្ណសញ្ជាតិខ្មែរ (National ID)។"
+                      : "All technicians are verified with National ID."}
+                  </span>
+                </div>
+                <div className="flex items-start space-x-2 text-[11px] text-slate-500 leading-normal pl-6">
                   <span>
                     {language === "km"
                       ? "តម្លៃមានតម្លាភាព គ្មានការបូកតម្លៃលាក់បាំង។"
-                      : "Transparent pricing without hidden or unexpected fees."}
+                      : "Transparent pricing without hidden fees."}
                   </span>
                 </div>
               </div>

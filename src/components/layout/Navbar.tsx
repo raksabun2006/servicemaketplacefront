@@ -23,6 +23,12 @@ import {
   Calendar,
   Heart,
   ShieldCheck,
+  Briefcase,
+  Tag,
+  Home,
+  Users,
+  Clock,
+  Sparkles,
 } from "lucide-react";
 import { fileApi } from "@/lib/api/file.api";
 import { LanguageSelector } from "@/components/ui/LanguageSelector";
@@ -37,6 +43,24 @@ export const Navbar: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
+
+  // Close menus on route change
+  useEffect(() => {
+    setProfileDropdownOpen(false);
+    setMobileMenuOpen(false);
+  }, [pathname]);
+
+  // Lock body scroll when mobile drawer is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileMenuOpen]);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -62,7 +86,8 @@ export const Navbar: React.FC = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md shadow-xs border-b border-slate-100">
+    <>
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md shadow-xs border-b border-slate-100">
       <div className="max-w-[1440px] mx-auto px-3 sm:px-5 lg:px-6">
         <div className="flex items-center justify-between h-16 sm:h-18">
           {/* Brand Logo & Title */}
@@ -183,26 +208,17 @@ export const Navbar: React.FC = () => {
                 />
               )}
             </button>
-            {/* If Authenticated: User Avatar Dropdown & Notifications */}
+
+            {/* If Authenticated: User Avatar Dropdown */}
             {isAuthenticated && (
-              <div className="flex items-center space-x-2 pl-2 border-l border-slate-200">
-                <Link
-                  href={isCustomer ? "/customer/notifications" : isProvider ? "/provider/messages" : "/admin/dashboard"}
-                  className="relative p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition"
-                >
-                  <Bell className="w-5 h-5" />
-                  {unreadNotifications > 0 && (
-                    <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                      {unreadNotifications > 9 ? "9+" : unreadNotifications}
-                    </span>
-                  )}
-                </Link>
+              <div className="flex items-center pl-1.5 sm:pl-2 border-l border-slate-200">
                 <div className="relative">
                   <button
                     onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                    className="flex items-center space-x-1 sm:space-x-2 p-1 rounded-xl hover:bg-slate-100 transition"
+                    className="flex items-center space-x-1 sm:space-x-2 p-1 rounded-xl hover:bg-slate-100 transition relative"
+                    aria-label="User profile and menu"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-sm overflow-hidden shrink-0 border border-slate-200">
+                    <div className="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-sm overflow-hidden shrink-0 border border-slate-200 relative">
                       {user?.avatarUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
@@ -220,6 +236,9 @@ export const Navbar: React.FC = () => {
                         {user?.fullName?.charAt(0) || "U"}
                       </span>
                     </div>
+                    {unreadNotifications > 0 && (
+                      <span className="absolute top-0.5 left-6 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white" />
+                    )}
                     <div className="hidden lg:flex flex-col text-left">
                       <span className="text-xs font-semibold text-slate-900 max-w-[120px] truncate">
                         {user?.fullName}
@@ -261,6 +280,15 @@ export const Navbar: React.FC = () => {
                         </div>
                       </div>
 
+                      {/* Marketplace Home Link */}
+                      <Link
+                        href="/"
+                        className="flex items-center space-x-2.5 px-4 py-2 text-xs font-bold text-blue-700 bg-blue-50/50 hover:bg-blue-100 transition border-b border-slate-100"
+                      >
+                        <Globe className="w-4 h-4 text-blue-600" />
+                        <span>{language === "km" ? "ទំព័រដើមផ្សារ (Marketplace)" : "Marketplace Home"}</span>
+                      </Link>
+
                       {isCustomer && (
                         <>
                           <Link
@@ -290,6 +318,20 @@ export const Navbar: React.FC = () => {
                           >
                             <Heart className="w-4 h-4 text-rose-500" />
                             <span>{t("favorites")}</span>
+                          </Link>
+                          <Link
+                            href="/customer/notifications"
+                            className="flex items-center justify-between px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                          >
+                            <div className="flex items-center space-x-2.5">
+                              <Bell className="w-4 h-4 text-indigo-500" />
+                              <span>{t("notifications")}</span>
+                            </div>
+                            {unreadNotifications > 0 && (
+                              <span className="px-1.5 py-0.2 bg-red-500 text-white text-[10px] font-bold rounded-full">
+                                {unreadNotifications}
+                              </span>
+                            )}
                           </Link>
                           <Link
                             href="/customer/profile"
@@ -407,92 +449,411 @@ export const Navbar: React.FC = () => {
           </div>
         </div>
       </div>
+    </header>
 
-      {/* Mobile Menu Drawer */}
-      {mobileMenuOpen && (
-        <div className="md:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-6 space-y-3">
-          <nav className="flex flex-col space-y-1">
-            <Link
-              href="/"
-              onClick={() => setMobileMenuOpen(false)}
-              className="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50"
-            >
-              {t("home")}
-            </Link>
-            <Link
-              href="/services"
-              onClick={() => setMobileMenuOpen(false)}
-              className="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50"
-            >
-              {t("services")}
-            </Link>
-            <Link
-              href="/providers"
-              onClick={() => setMobileMenuOpen(false)}
-              className="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50"
-            >
-              {t("providers")}
-            </Link>
-            <Link
-              href="/about"
-              onClick={() => setMobileMenuOpen(false)}
-              className="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50"
-            >
-              {t("about")}
-            </Link>
-            <div className="pt-2 border-t border-slate-100 flex items-center justify-between px-3 py-2">
-              <span className="text-xs font-semibold text-slate-500">ភាសា / Language:</span>
-              <LanguageSelector variant="pill" />
-            </div>
-          </nav>
+    {/* Mobile Slide-Over Drawer matching exact style from user screenshot */}
+    {mobileMenuOpen && (
+      <div className="fixed inset-0 z-50 md:hidden">
+        {/* Dark Backdrop */}
+        <div
+          className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs transition-opacity animate-in fade-in duration-200"
+          onClick={() => setMobileMenuOpen(false)}
+        />
 
-          {isAuthenticated ? (
-            <div className="pt-2 border-t border-slate-100 flex flex-col space-y-2">
-              {isCustomer && (
-                <Link
-                  href="/customer/requests/create"
+        {/* Slide-out Sidebar Panel */}
+        <aside
+          aria-label="Mobile Drawer Navigation"
+          className="fixed inset-y-0 right-0 w-[285px] sm:w-[320px] h-full max-h-screen bg-white shadow-2xl flex flex-col justify-between p-4 z-50 animate-in slide-in-from-right duration-250 ease-out overflow-y-auto"
+        >
+            <div className="space-y-6">
+              {/* Header: Logo Card + Title + Panel Badge + Close Button */}
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div className="flex items-center space-x-3 min-w-0">
+                  <div className="w-10 h-10 rounded-xl bg-white shadow-2xs border border-slate-200 flex items-center justify-center p-1.5 shrink-0">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="/logo.png" alt="Khmer Service" className="w-full h-full object-contain" />
+                  </div>
+                  <div className="min-w-0">
+                    <h2 className="text-sm font-bold text-slate-900 truncate">
+                      {language === "km" ? "ថ្នាលសេវាខ្មែរ" : "Khmer Service"}
+                    </h2>
+                    <span
+                      className={`text-[10px] font-extrabold uppercase tracking-wider block ${
+                        isAdmin
+                          ? "text-purple-600"
+                          : isProvider
+                          ? "text-emerald-600"
+                          : isAuthenticated
+                          ? "text-blue-600"
+                          : "text-slate-500"
+                      }`}
+                    >
+                      {isAdmin
+                        ? "ADMIN PANEL"
+                        : isProvider
+                        ? "PROVIDER PANEL"
+                        : isAuthenticated
+                        ? "CUSTOMER PORTAL"
+                        : "SERVICE MARKETPLACE"}
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full text-center py-2.5 bg-indigo-600 text-white text-xs font-semibold rounded-xl"
+                  className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition"
+                  aria-label="Close menu"
                 >
-                  {t("postProblem")}
-                </Link>
-              )}
-              {isProvider && (
-                <Link
-                  href="/provider/requests"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="w-full text-center py-2.5 bg-emerald-600 text-white text-xs font-semibold rounded-xl"
-                >
-                  {t("nearbyRequests")}
-                </Link>
-              )}
-              <button
-                onClick={handleLogout}
-                className="w-full py-2.5 text-center text-xs font-semibold text-red-600 bg-red-50 rounded-xl"
-              >
-                {t("logout")}
-              </button>
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Section 1: Main Menu */}
+              <div>
+                <div className="px-3 mb-2">
+                  <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                    {language === "km" ? "ម៉ឺនុយមេ" : "Main Menu"}
+                  </span>
+                </div>
+                <nav className="space-y-1">
+                  {isAdmin ? (
+                    <>
+                      <Link
+                        href="/admin/dashboard"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition ${
+                          pathname === "/admin/dashboard"
+                            ? "bg-slate-100 text-slate-900 font-bold shadow-2xs"
+                            : "text-slate-600 hover:bg-slate-50"
+                        }`}
+                      >
+                        <LayoutDashboard className="w-4 h-4 text-slate-900" />
+                        <span>{language === "km" ? "ផ្ទាំងគ្រប់គ្រង" : "Overview"}</span>
+                      </Link>
+                      <Link
+                        href="/admin/providers"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition ${
+                          pathname.startsWith("/admin/providers")
+                            ? "bg-slate-100 text-slate-900 font-bold shadow-2xs"
+                            : "text-slate-600 hover:bg-slate-50"
+                        }`}
+                      >
+                        <ShieldCheck className="w-4 h-4 text-purple-600" />
+                        <span>{language === "km" ? "ផ្ទៀងផ្ទាត់អ្នកផ្តល់សេវា" : "Provider Verification"}</span>
+                      </Link>
+                      <Link
+                        href="/admin/users"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition ${
+                          pathname.startsWith("/admin/users")
+                            ? "bg-slate-100 text-slate-900 font-bold shadow-2xs"
+                            : "text-slate-600 hover:bg-slate-50"
+                        }`}
+                      >
+                        <Users className="w-4 h-4 text-slate-400" />
+                        <span>{language === "km" ? "គ្រប់គ្រងអ្នកប្រើប្រាស់" : "Customers & Users"}</span>
+                      </Link>
+                      <Link
+                        href="/admin/categories"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition ${
+                          pathname.startsWith("/admin/categories")
+                            ? "bg-slate-100 text-slate-900 font-bold shadow-2xs"
+                            : "text-slate-600 hover:bg-slate-50"
+                        }`}
+                      >
+                        <Tag className="w-4 h-4 text-slate-400" />
+                        <span>{language === "km" ? "ប្រភេទសេវាកម្ម" : "Service Categories"}</span>
+                      </Link>
+                      <Link
+                        href="/admin/bookings"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition ${
+                          pathname.startsWith("/admin/bookings")
+                            ? "bg-slate-100 text-slate-900 font-bold shadow-2xs"
+                            : "text-slate-600 hover:bg-slate-50"
+                        }`}
+                      >
+                        <Calendar className="w-4 h-4 text-slate-400" />
+                        <span>{language === "km" ? "ការកក់ទូទាំងប្រព័ន្ធ" : "System Bookings"}</span>
+                      </Link>
+                    </>
+                  ) : isProvider ? (
+                    <>
+                      <Link
+                        href="/provider/dashboard"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition ${
+                          pathname === "/provider/dashboard"
+                            ? "bg-slate-100 text-slate-900 font-bold shadow-2xs"
+                            : "text-slate-600 hover:bg-slate-50"
+                        }`}
+                      >
+                        <LayoutDashboard className="w-4 h-4 text-slate-900" />
+                        <span>{language === "km" ? "ផ្ទាំងគ្រប់គ្រង" : "Overview"}</span>
+                      </Link>
+                      <Link
+                        href="/provider/bookings"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition ${
+                          pathname.startsWith("/provider/bookings")
+                            ? "bg-slate-100 text-slate-900 font-bold shadow-2xs"
+                            : "text-slate-600 hover:bg-slate-50"
+                        }`}
+                      >
+                        <Calendar className="w-4 h-4 text-emerald-600" />
+                        <span>{language === "km" ? "ការងាររបស់ខ្ញុំ" : "Orders & Jobs"}</span>
+                      </Link>
+                      <Link
+                        href="/provider/requests"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition ${
+                          pathname.startsWith("/provider/requests")
+                            ? "bg-slate-100 text-slate-900 font-bold shadow-2xs"
+                            : "text-slate-600 hover:bg-slate-50"
+                        }`}
+                      >
+                        <Search className="w-4 h-4 text-slate-400" />
+                        <span>{language === "km" ? "សំណើសេវាជិតៗ" : "Nearby Requests"}</span>
+                      </Link>
+                      <Link
+                        href="/provider/offers"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition ${
+                          pathname.startsWith("/provider/offers")
+                            ? "bg-slate-100 text-slate-900 font-bold shadow-2xs"
+                            : "text-slate-600 hover:bg-slate-50"
+                        }`}
+                      >
+                        <Clock className="w-4 h-4 text-slate-400" />
+                        <span>{language === "km" ? "ការផ្តល់តម្លៃ" : "My Offers"}</span>
+                      </Link>
+                      <Link
+                        href="/provider/messages"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition ${
+                          pathname.startsWith("/provider/messages")
+                            ? "bg-slate-100 text-slate-900 font-bold shadow-2xs"
+                            : "text-slate-600 hover:bg-slate-50"
+                        }`}
+                      >
+                        <MessageSquare className="w-4 h-4 text-slate-400" />
+                        <span>{language === "km" ? "សារឆ្លើយឆ្លង" : "Messages"}</span>
+                      </Link>
+                    </>
+                  ) : isCustomer ? (
+                    <>
+                      <Link
+                        href="/customer/dashboard"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition ${
+                          pathname === "/customer/dashboard"
+                            ? "bg-slate-100 text-slate-900 font-bold shadow-2xs"
+                            : "text-slate-600 hover:bg-slate-50"
+                        }`}
+                      >
+                        <LayoutDashboard className="w-4 h-4 text-slate-900" />
+                        <span>{language === "km" ? "ផ្ទាំងគ្រប់គ្រង" : "Overview"}</span>
+                      </Link>
+                      <Link
+                        href="/customer/requests"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition ${
+                          pathname.startsWith("/customer/requests") && pathname !== "/customer/requests/create"
+                            ? "bg-slate-100 text-slate-900 font-bold shadow-2xs"
+                            : "text-slate-600 hover:bg-slate-50"
+                        }`}
+                      >
+                        <Wrench className="w-4 h-4 text-indigo-600" />
+                        <span>{language === "km" ? "សំណើរបស់ខ្ញុំ" : "My Requests"}</span>
+                      </Link>
+                      <Link
+                        href="/customer/requests/create"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl text-xs font-semibold text-indigo-700 bg-indigo-50/80 hover:bg-indigo-100 transition"
+                      >
+                        <PlusCircle className="w-4 h-4 text-indigo-600" />
+                        <span>{language === "km" ? "ស្នើសុំការជួសជុល" : "Post a Problem"}</span>
+                      </Link>
+                      <Link
+                        href="/customer/bookings"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition ${
+                          pathname.startsWith("/customer/bookings")
+                            ? "bg-slate-100 text-slate-900 font-bold shadow-2xs"
+                            : "text-slate-600 hover:bg-slate-50"
+                        }`}
+                      >
+                        <Calendar className="w-4 h-4 text-slate-400" />
+                        <span>{language === "km" ? "ការកក់របស់ខ្ញុំ" : "My Bookings"}</span>
+                      </Link>
+                      <Link
+                        href="/customer/favorites"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition ${
+                          pathname.startsWith("/customer/favorites")
+                            ? "bg-slate-100 text-slate-900 font-bold shadow-2xs"
+                            : "text-slate-600 hover:bg-slate-50"
+                        }`}
+                      >
+                        <Heart className="w-4 h-4 text-rose-500" />
+                        <span>{language === "km" ? "ជាងក្នុងចំណូលចិត្ត" : "Saved Providers"}</span>
+                      </Link>
+                      <Link
+                        href="/customer/notifications"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition ${
+                          pathname.startsWith("/customer/notifications")
+                            ? "bg-slate-100 text-slate-900 font-bold shadow-2xs"
+                            : "text-slate-600 hover:bg-slate-50"
+                        }`}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <Bell className="w-4 h-4 text-slate-400" />
+                          <span>{language === "km" ? "ការជូនដំណឹង" : "Notifications"}</span>
+                        </div>
+                        {unreadNotifications > 0 && (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white shadow-2xs">
+                            {unreadNotifications}
+                          </span>
+                        )}
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        href="/"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition ${
+                          pathname === "/" ? "bg-slate-100 text-slate-900 font-bold shadow-2xs" : "text-slate-600 hover:bg-slate-50"
+                        }`}
+                      >
+                        <Home className="w-4 h-4 text-slate-400" />
+                        <span>{t("home")}</span>
+                      </Link>
+                      <Link
+                        href="/services"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition ${
+                          pathname.startsWith("/services") ? "bg-slate-100 text-slate-900 font-bold shadow-2xs" : "text-slate-600 hover:bg-slate-50"
+                        }`}
+                      >
+                        <Search className="w-4 h-4 text-slate-400" />
+                        <span>{t("services")}</span>
+                      </Link>
+                      <Link
+                        href="/providers"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition ${
+                          pathname.startsWith("/providers") ? "bg-slate-100 text-slate-900 font-bold shadow-2xs" : "text-slate-600 hover:bg-slate-50"
+                        }`}
+                      >
+                        <Users className="w-4 h-4 text-slate-400" />
+                        <span>{t("providers")}</span>
+                      </Link>
+                      <Link
+                        href="/about"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition ${
+                          pathname.startsWith("/about") ? "bg-slate-100 text-slate-900 font-bold shadow-2xs" : "text-slate-600 hover:bg-slate-50"
+                        }`}
+                      >
+                        <Sparkles className="w-4 h-4 text-slate-400" />
+                        <span>{t("about")}</span>
+                      </Link>
+                    </>
+                  )}
+                </nav>
+              </div>
+
+              {/* Section 2: Sales Channel / Marketplace */}
+              <div>
+                <div className="px-3 mb-2">
+                  <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                    {language === "km" ? "ផ្សារសេវាកម្ម" : "Sales Channel"}
+                  </span>
+                </div>
+                <nav className="space-y-1">
+                  <Link
+                    href="/"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center space-x-3 px-3.5 py-2 rounded-2xl text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition"
+                  >
+                    <Globe className="w-4 h-4 text-slate-400" />
+                    <span>{language === "km" ? "គេហទំព័រផ្សារ" : "Online store"}</span>
+                  </Link>
+                  <Link
+                    href="/services"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center space-x-3 px-3.5 py-2 rounded-2xl text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition"
+                  >
+                    <Search className="w-4 h-4 text-slate-400" />
+                    <span>{language === "km" ? "រកមើលសេវាកម្ម" : "Browse Services"}</span>
+                  </Link>
+                  <Link
+                    href="/providers"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center space-x-3 px-3.5 py-2 rounded-2xl text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition"
+                  >
+                    <Briefcase className="w-4 h-4 text-slate-400" />
+                    <span>{language === "km" ? "បញ្ជីជាងជំនាញ" : "Point of sale"}</span>
+                  </Link>
+                </nav>
+              </div>
+
+              {/* Language Switcher pill in Drawer */}
+              <div className="p-3 bg-slate-50 rounded-2xl flex items-center justify-between">
+                <span className="text-xs font-semibold text-slate-600">
+                  {language === "km" ? "ប្តូរភាសា" : "Language"}
+                </span>
+                <LanguageSelector variant="pill" />
+              </div>
             </div>
-          ) : (
-            <div className="pt-2 border-t border-slate-100 flex flex-col space-y-2">
-              <Link
-                href="/login"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full py-2 text-center text-xs font-semibold text-slate-700 border border-slate-200 rounded-xl"
-              >
-                {t("login")}
-              </Link>
-              <Link
-                href="/register"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full py-2 text-center text-xs font-semibold text-white bg-indigo-600 rounded-xl"
-              >
-                {t("register")}
-              </Link>
+
+            {/* Bottom Pinned Profile & Sign Out (Matching Screenshot) */}
+            <div className="pt-4 border-t border-slate-100 space-y-1 mt-6">
+              {isAuthenticated ? (
+                <>
+                  <Link
+                    href={isAdmin ? "/admin/profile" : isProvider ? "/provider/profile" : "/customer/profile"}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl text-xs font-semibold text-slate-700 hover:bg-slate-50 transition"
+                  >
+                    <User className="w-4 h-4 text-slate-400" />
+                    <span>{language === "km" ? "ព័ត៌មានគណនី" : "Profile & Account"}</span>
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-2xl text-xs font-bold text-rose-600 hover:bg-rose-50 transition"
+                  >
+                    <LogOut className="w-4 h-4 text-rose-600" />
+                    <span>{language === "km" ? "ចាកចេញពីគណនី" : "Sign Out"}</span>
+                  </button>
+                </>
+              ) : (
+                <div className="space-y-2">
+                  <Link
+                    href="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full block py-2.5 text-center text-xs font-bold text-slate-700 border border-slate-200 hover:bg-slate-50 rounded-xl transition"
+                  >
+                    {t("login")}
+                  </Link>
+                  <Link
+                    href="/register"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full block py-2.5 text-center text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition shadow-xs"
+                  >
+                    {t("register")}
+                  </Link>
+                </div>
+              )}
             </div>
-          )}
+          </aside>
         </div>
       )}
-    </header>
+    </>
   );
 };

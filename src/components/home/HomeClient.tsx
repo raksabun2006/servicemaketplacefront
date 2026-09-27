@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { useAuth } from "@/lib/auth/AuthContext";
 import { serviceRequestApi } from "@/lib/api/service-request.api";
 import { providerApi } from "@/lib/api/provider.api";
 import { ServiceRequestSummaryResponse } from "@/types/service-request";
@@ -33,11 +34,13 @@ import {
   Users,
   Compass,
   ArrowRight,
+  LayoutDashboard,
 } from "lucide-react";
 
 export default function HomeClient() {
   const router = useRouter();
   const { language } = useLanguage();
+  const { isAdmin, isProvider } = useAuth();
   const isKm = language === "km";
 
   // Real backend data states
@@ -201,6 +204,73 @@ export default function HomeClient() {
 
   return (
     <div className="bg-white text-slate-800 font-sans">
+      {/* Smart Quick Navigation Bar for Admin and Provider */}
+      {isAdmin && (
+        <div className="bg-purple-900 text-white px-3 sm:px-4 py-2 sm:py-2.5 text-xs">
+          <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
+            <div className="flex items-center space-x-2 min-w-0">
+              <ShieldCheck className="w-4 h-4 text-purple-300 shrink-0" />
+              <span className="font-medium text-[11px] sm:text-xs truncate">
+                {isKm ? (
+                  <>
+                    <span className="hidden sm:inline">លោកអ្នកកំពុងមើលគេហទំព័រផ្សារជា </span>
+                    <span className="sm:hidden">ទិដ្ឋភាពផ្សារ: </span>
+                    <strong className="text-purple-200">Admin System</strong>
+                  </>
+                ) : (
+                  <>
+                    <span className="hidden sm:inline">Browsing Marketplace as </span>
+                    <span className="sm:hidden">Marketplace: </span>
+                    <strong className="text-purple-200">Admin</strong>
+                  </>
+                )}
+              </span>
+            </div>
+            <Link
+              href="/admin/dashboard"
+              className="inline-flex items-center space-x-1.5 px-2.5 sm:px-3 py-1 bg-white text-purple-900 hover:bg-purple-50 rounded-lg font-bold text-[11px] sm:text-xs shadow-xs transition shrink-0"
+            >
+              <LayoutDashboard className="w-3.5 h-3.5 text-purple-700" />
+              <span className="hidden sm:inline">ផ្ទាំងគ្រប់គ្រង (Dashboard) →</span>
+              <span className="sm:hidden">Dashboard →</span>
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {isProvider && (
+        <div className="bg-emerald-900 text-white px-3 sm:px-4 py-2 sm:py-2.5 text-xs">
+          <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
+            <div className="flex items-center space-x-2 min-w-0">
+              <CheckCircle2 className="w-4 h-4 text-emerald-300 shrink-0" />
+              <span className="font-medium text-[11px] sm:text-xs truncate">
+                {isKm ? (
+                  <>
+                    <span className="hidden sm:inline">លោកអ្នកកំពុងមើលគេហទំព័រផ្សារជា </span>
+                    <span className="sm:hidden">ទិដ្ឋភាពផ្សារ: </span>
+                    <strong className="text-emerald-200">Provider</strong>
+                  </>
+                ) : (
+                  <>
+                    <span className="hidden sm:inline">Browsing Marketplace as </span>
+                    <span className="sm:hidden">Marketplace: </span>
+                    <strong className="text-emerald-200">Provider</strong>
+                  </>
+                )}
+              </span>
+            </div>
+            <Link
+              href="/provider/dashboard"
+              className="inline-flex items-center space-x-1.5 px-2.5 sm:px-3 py-1 bg-white text-emerald-900 hover:bg-emerald-50 rounded-lg font-bold text-[11px] sm:text-xs shadow-xs transition shrink-0"
+            >
+              <LayoutDashboard className="w-3.5 h-3.5 text-emerald-700" />
+              <span className="hidden sm:inline">ផ្ទាំងគ្រប់គ្រង (Dashboard) →</span>
+              <span className="sm:hidden">Dashboard →</span>
+            </Link>
+          </div>
+        </div>
+      )}
+
       {/* 1. HERO SECTION WITH ACCESSIBLE H1 */}
       <section className="relative overflow-hidden bg-white pt-5 sm:pt-12 pb-10 sm:pb-20 border-b border-slate-100">
         <div className="absolute inset-0 pointer-events-none opacity-20 sm:opacity-25">
