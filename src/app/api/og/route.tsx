@@ -145,7 +145,7 @@ export async function GET(req: NextRequest) {
                     gap: "6px",
                   }}
                 >
-                  <span>⚠️ ការងារបន្ទាន់ (URGENT)</span>
+                  <span>ការងារបន្ទាន់ (URGENT)</span>
                 </div>
               )}
               <div
@@ -242,7 +242,7 @@ export async function GET(req: NextRequest) {
                       fontWeight: 800,
                     }}
                   >
-                    <span>💰</span>
+                    <span></span>
                     <span>{budget}</span>
                   </div>
                 )}
